@@ -45,5 +45,11 @@ public class ProtoCritter {
 	public void setHealth(int health) {
 		this.health = health;
 	}
+	@Override
+	public String toString() {
+		return "ProtoCritter [name=" + name + ", type=" + type + ", vision="
+				+ vision + ", attack=" + attack + ", movement=" + movement
+				+ ", health=" + health + "]";
+	}
 
 }
