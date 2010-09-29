@@ -64,7 +64,7 @@ public final class TimeEngine {
 	}
 
 	private static boolean isTimeLimitExceeded() {
-		return (timeLimit != 0) && currTime > timeLimit;
+		return (timeLimit != 0) && currTime >= timeLimit;
 	}
 
 	private static class Timer implements Runnable {
@@ -89,6 +89,9 @@ public final class TimeEngine {
 				for (TimeListener listener : listeners) {
 					listener.tickOccurred();
 				}
+				
+				// -- We're okay to continue.
+				cont = true;
 
 				// -- Continue?
 				while (!cont || paused) {
