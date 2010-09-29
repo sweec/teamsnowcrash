@@ -99,6 +99,16 @@ public final class TimeEngine {
 					}
 				}
 			}
+
+			if (stopped) {
+				for (TimeListener listener : listeners) {
+					listener.timerStopped();
+				}
+			} else {
+				for (TimeListener listener : listeners) {
+					listener.timeExpired();
+				}
+			}
 		}
 	}
 }
