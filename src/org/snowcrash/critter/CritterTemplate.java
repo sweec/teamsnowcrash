@@ -2,13 +2,13 @@ package org.snowcrash.critter;
 
 public class CritterTemplate {
 
-	private int type;
+	private CritterPrototype prototype;
 
-	public int getType() {
-		return type;
+	public CritterPrototype getProtoType() {
+		return prototype;
 	}
 
-	public void setType(int type) {
-		this.type = type;
+	public void setType(CritterPrototype prototype) {
+		this.prototype = prototype;
 	}
 }

@@ -1,6 +1,32 @@
+/*  
+ * CritterFactory: Returns critter instances based on CritterTemplate or parents. 
+ * Copyright (C) 2010  Team Snow Crash
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package org.snowcrash.critter;
 
-import org.snowcrash.Constants;
+/**
+ * @author dearnest
+ * Generates instances of critters based on the critter template or
+ * the two parent critters (aka, reproduction).
+ * 
+ * 10/23/10	DE 	PLANT/PREY/PREDATOR moved to enum CritterPrototype. Added License notice.
+ * 
+ */
 
 public class CritterFactory {
 	
@@ -25,12 +51,12 @@ public class CritterFactory {
 	 */
 	public static Critter getCritter(CritterTemplate template) {
 		
-		switch (template.getType()) {
-			case Constants.PLANT:
+		switch (template.getProtoType()) {
+			case PLANT:
 				return new Plant(template);
-			case Constants.PREDATOR:
+			case PREDATOR:
 				return new Predator(template);
-			case Constants.PREY:
+			case PREY:
 				return new Prey(template);
 		}
 		return null;
@@ -54,6 +80,5 @@ public class CritterFactory {
 		}
 		return null;
 	}
-
 	
 }
