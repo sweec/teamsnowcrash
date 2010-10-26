@@ -3,17 +3,19 @@
  * Copyright (C) 2010  Team Snow Crash
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the Artistic License/GNU GPL as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * Artistic License/GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the Artistic license/GNU General 
+ * Public License along with this program.  If not, see
+ * <http://dev.perl.org/licenses/artistic.html> and 
+ * <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -33,7 +35,7 @@ public class CritterFactory {
 	private CritterFactory instance = null;
 	
 	/**
-	 * Gets the singleton.
+	 * Gets the CritterFactory singleton.
 	 * @return
 	 */
 	public CritterFactory getInstance() {
@@ -48,10 +50,12 @@ public class CritterFactory {
 	
 	/**
 	 * Returns a Critter based on the template.
+	 * @param template
+	 * @return
 	 */
 	public static Critter getCritter(CritterTemplate template) {
 		
-		switch (template.getProtoType()) {
+		switch (template.getPrototype()) {
 			case PLANT:
 				return new Plant(template);
 			case PREDATOR:
@@ -64,6 +68,9 @@ public class CritterFactory {
 
 	/**
 	 * Returns a Critter based on the two types.
+	 * @param critter1
+	 * @param critter2
+	 * @return
 	 */
 	public static Critter getCritter(Critter critter1, Critter critter2) {
 		
@@ -80,5 +87,5 @@ public class CritterFactory {
 		}
 		return null;
 	}
-	
+
 }

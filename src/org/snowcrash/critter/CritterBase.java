@@ -1,17 +1,50 @@
+/*  
+ * CritterBase: Base critter class that all critter prototypes extend. 
+ * Copyright (C) 2010  Team Snow Crash
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Artistic License/GNU GPL as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Artistic License/GNU General Public License for more details.
+ *
+ * You should have received a copy of the Artistic license/GNU General 
+ * Public License along with this program.  If not, see
+ * <http://dev.perl.org/licenses/artistic.html> and 
+ * <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package org.snowcrash.critter;
 
 import java.util.HashMap;
 
+import org.snowcrash.critter.data.Size;
+import org.snowcrash.critter.data.Trait;
 import org.snowcrash.state.StateContext;
+import org.snowcrash.utilities.Pair;
+
+/**
+ * 
+ * @author dearnest
+ * Base critter class that all critter prototypes extend.
+ * 10/23/10	DE	Added License.  Added Comments.
+ * 10/24/10	DE	traits HashMap now uses Pair. Implemented stub methods
+ * 
+ */
 
 public abstract class CritterBase implements Critter {
 
-	private HashMap<String, Integer> traits;
+	private HashMap<String, Pair<Integer, Integer>> traits;
 	private boolean acted = false;
-	private int actionCost = 1;
-	private int health = 0;
-	private int healthMax = 50;
-	private int size = 2;
+	private int actionCost;
+	private int health;
+	private int maxHealth;
+	private Size size;
 	private StateContext myStateContext;
 	
 	@Override
@@ -26,58 +59,30 @@ public abstract class CritterBase implements Critter {
 
 	@Override
 	public int getActionCost() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getCamo() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getFight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return actionCost;
 	}
 
 	@Override
 	public int getHealth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return health;
 	}
 
 	@Override
 	public void setHealth(int health) {
-		// TODO Auto-generated method stub
-
+		this.health = health;
 	}
 
 	@Override
 	public int getMaxHealth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return maxHealth;
 	}
 
 	@Override
-	public int getSize() {
-		// TODO Auto-generated method stub
-		return 0;
+	public Size getSize() {
+		return size;
 	}
 
 	@Override
-	public int getSpeed() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getVision() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
 	public void die() {
 		
 	}
@@ -86,8 +91,31 @@ public abstract class CritterBase implements Critter {
 	public String toString() {
 		return "CritterBase [traits=" + traits + ", acted=" + acted
 				+ ", actionCost=" + actionCost + ", health=" + health
-				+ ", healthMax=" + healthMax + ", size=" + size
+				+ ", maxHealth=" + maxHealth + ", size=" + size
 				+ ", myStateContext=" + myStateContext + "]";
 	}
 
+	@Override
+	public int getTrait(Trait trait) {
+		Pair<Integer,Integer> pair = traits.get(trait);
+		return (pair.getLeft() + pair.getRight()) / 2;
+	}
+	
+	protected void setSizeData(Size trait) {
+		size = trait;
+		switch (trait) {
+			case SMALL:
+				maxHealth = 30;
+				actionCost = 2;
+				break;
+			case MEDIUM:
+				maxHealth = 60;
+				actionCost = 4;
+				break;
+			case LARGE:
+				maxHealth = 90;
+				actionCost = 6;
+				break;
+		}
+	}
 }
