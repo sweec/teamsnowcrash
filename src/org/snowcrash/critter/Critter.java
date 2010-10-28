@@ -29,19 +29,21 @@ import org.snowcrash.critter.data.Trait;
  * Interface that all critter instances implement.
  * 
  * 10/24/10	DE 	Added License notice and comments.
+ * 10/27/10	DE	Added age.
  * 
  */
 
 public interface Critter {
 
-	public boolean isActed();
-	public void setActed(boolean acted);
+	public void die();
 	public int getActionCost();
+	public int getAge();
 	public int getHealth();
-	public void setHealth(int health);
 	public int getMaxHealth();
 	public Size getSize();
-	public void die();
 	public int getTrait(Trait trait);
+	public boolean isActed();
+	public void setActed(boolean acted);
+	public void setHealth(int health);
 	
 }

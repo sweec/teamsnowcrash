@@ -34,6 +34,7 @@ import org.snowcrash.utilities.Pair;
  * Base critter class that all critter prototypes extend.
  * 10/23/10	DE	Added License.  Added Comments.
  * 10/24/10	DE	traits HashMap now uses Pair. Implemented stub methods
+ * 10/27/10	DE	Added age.
  * 
  */
 
@@ -46,15 +47,11 @@ public abstract class CritterBase implements Critter {
 	private int maxHealth;
 	private Size size;
 	private StateContext myStateContext;
+	private int age;
 	
 	@Override
-	public boolean isActed() {
-		return acted;
-	}
-
-	@Override
-	public void setActed(boolean acted) {
-		this.acted = acted;
+	public void die() {
+		
 	}
 
 	@Override
@@ -62,14 +59,13 @@ public abstract class CritterBase implements Critter {
 		return actionCost;
 	}
 
-	@Override
-	public int getHealth() {
-		return health;
+	public int getAge() {
+		return age;
 	}
 
 	@Override
-	public void setHealth(int health) {
-		this.health = health;
+	public int getHealth() {
+		return health;
 	}
 
 	@Override
@@ -83,22 +79,25 @@ public abstract class CritterBase implements Critter {
 	}
 
 	@Override
-	public void die() {
-		
-	}
-
-	@Override
-	public String toString() {
-		return "CritterBase [traits=" + traits + ", acted=" + acted
-				+ ", actionCost=" + actionCost + ", health=" + health
-				+ ", maxHealth=" + maxHealth + ", size=" + size
-				+ ", myStateContext=" + myStateContext + "]";
-	}
-
-	@Override
 	public int getTrait(Trait trait) {
 		Pair<Integer,Integer> pair = traits.get(trait);
 		return (pair.getLeft() + pair.getRight()) / 2;
+	}
+
+	@Override
+	public boolean isActed() {
+		return acted;
+	}
+
+	@Override
+	public void setActed(boolean acted) {
+		this.acted = acted;
+		this.age++;
+	}
+
+	@Override
+	public void setHealth(int health) {
+		this.health = health;
 	}
 	
 	protected void setSizeData(Size trait) {
@@ -117,5 +116,13 @@ public abstract class CritterBase implements Critter {
 				actionCost = 6;
 				break;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "CritterBase [traits=" + traits + ", acted=" + acted
+				+ ", actionCost=" + actionCost + ", health=" + health
+				+ ", maxHealth=" + maxHealth + ", size=" + size
+				+ ", myStateContext=" + myStateContext + "]";
 	}
 }
