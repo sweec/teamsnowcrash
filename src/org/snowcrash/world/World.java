@@ -51,6 +51,14 @@ public class World {
 		return getInstance();
 	}
 	
+	public int getSizeX() {
+		return sizeX;
+	}
+	
+	public int getSizeY() {
+		return sizeY;
+	}
+	
 	/**
 	 * Sets the world size to x by y coordinates.  This initializes
 	 * the size of the Critter map.
@@ -92,6 +100,10 @@ public class World {
 			return true;
 		}
 		return false;
+	}
+
+	public Critter[][] getMap() {
+		return map;
 	}
 	
 	/**

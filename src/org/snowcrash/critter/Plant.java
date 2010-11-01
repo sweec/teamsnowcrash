@@ -31,6 +31,10 @@ package org.snowcrash.critter;
 
 public class Plant extends CritterBase {
 
+	public Plant() {
+		
+	}
+	
 	public Plant(CritterTemplate template) {
 		
 	}
