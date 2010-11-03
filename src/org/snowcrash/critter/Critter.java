@@ -1,5 +1,5 @@
 /*  
- * Critter: Interface that all critter instances implement. 
+ * CritterBase: Base critter class that all critter prototypes extend. 
  * Copyright (C) 2010  Team Snow Crash
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,29 +21,126 @@
 
 package org.snowcrash.critter;
 
+import java.util.HashMap;
+
+import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.state.StateContext;
+import org.snowcrash.utilities.Pair;
 
 /**
- * @author dearnest
- * Interface that all critter instances implement.
  * 
- * 10/24/10	DE 	Added License notice and comments.
+ * @author dearnest
+ * Base critter class that all critter prototypes extend.
+ * 10/23/10	DE	Added License.  Added Comments.
+ * 10/24/10	DE	traits HashMap now uses Pair. Implemented stub methods
  * 10/27/10	DE	Added age.
+ * 11/03/10	DE	Removed Interface
  * 
  */
 
-public interface Critter {
+public class Critter {
 
-	public void die();
-	public int getActionCost();
-	public int getAge();
-	public int getHealth();
-	public int getMaxHealth();
-	public Size getSize();
-	public int getTrait(Trait trait);
-	public boolean isActed();
-	public void setActed(boolean acted);
-	public void setHealth(int health);
+	private HashMap<String, Pair<Integer, Integer>> traits;
+	private boolean acted = false;
+	private int actionCost;
+	private int health;
+	private int maxHealth;
+	private Size size;
+	private StateContext myStateContext;
+	private int age;
+	private CritterPrototype prototype;
+	private String templateUuid;
 	
+	public Critter(CritterTemplate template) {
+		
+	}
+	
+	public Critter(Critter critter1, Critter critter2) {
+		
+	}
+	
+	public void die() {
+		
+	}
+	
+	public int getActionCost() {
+		return actionCost;
+	}
+
+	public int getAge() {
+		return age;
+	}
+	
+	public int getHealth() {
+		return health;
+	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+
+	public CritterPrototype getPrototype() {
+		return prototype;
+	}
+
+	public Size getSize() {
+		return size;
+	}
+	
+	public String getTemplateUuid() {
+		return templateUuid;
+	}
+	
+	public int getTrait(Trait trait) {
+		Pair<Integer,Integer> pair = traits.get(trait);
+		return (pair.getLeft() + pair.getRight()) / 2;
+	}
+	
+	public boolean isActed() {
+		return acted;
+	}
+	
+	
+	public void setActed(boolean acted) {
+		this.acted = acted;
+		this.age++;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	
+	protected void setSizeData(Size trait) {
+		size = trait;
+		switch (trait) {
+			case SMALL:
+				maxHealth = 30;
+				actionCost = 2;
+				break;
+			case MEDIUM:
+				maxHealth = 60;
+				actionCost = 4;
+				break;
+			case LARGE:
+				maxHealth = 90;
+				actionCost = 6;
+				break;
+		}
+	}
+
+	public void setTemplateUuid(String templateUuid) {
+		this.templateUuid = templateUuid;
+	}
+
+	public String toString() {
+		return "Critter [traits=" + traits + ", acted=" + acted
+				+ ", actionCost=" + actionCost + ", health=" + health
+				+ ", maxHealth=" + maxHealth + ", size=" + size
+				+ ", myStateContext=" + myStateContext + ", age=" + age
+				+ ", prototype=" + prototype + ", templateUuid=" + templateUuid
+				+ "]";
+	}
+
 }
