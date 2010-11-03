@@ -27,6 +27,7 @@ package org.snowcrash.critter;
  * the two parent critters (aka, reproduction).
  * 
  * 10/23/10	DE 	PLANT/PREY/PREDATOR moved to enum CritterPrototype. Added License notice.
+ * 11/03/10	DE	Eliminated the Critter interface.
  * 
  */
 
@@ -54,16 +55,7 @@ public class CritterFactory {
 	 * @return
 	 */
 	public static Critter getCritter(CritterTemplate template) {
-		
-		switch (template.getPrototype()) {
-			case PLANT:
-				return new Plant(template);
-			case PREDATOR:
-				return new Predator(template);
-			case PREY:
-				return new Prey(template);
-		}
-		return null;
+		return new Critter(template);
 	}
 
 	/**
@@ -73,17 +65,10 @@ public class CritterFactory {
 	 * @return
 	 */
 	public static Critter getCritter(Critter critter1, Critter critter2) {
-		
-		if (critter1 != null && critter2 != null) {
-			if (critter1 instanceof Plant && critter2 instanceof Plant) {
-				return new Plant(critter1, critter2);
-			}
-			if (critter1 instanceof Predator && critter2 instanceof Predator) {
-				return new Plant(critter1, critter2);
-			}
-			if (critter1 instanceof Prey && critter2 instanceof Prey) {
-				return new Plant(critter1, critter2);
-			}
+		if (critter1 != null 
+				&& critter2 != null 
+				&& critter1.getPrototype().equals(critter2.getPrototype())) {
+			return new Critter(critter1, critter2);
 		}
 		return null;
 	}
