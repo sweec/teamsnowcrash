@@ -29,6 +29,7 @@ import org.snowcrash.utilities.Pair;
  * @author dearnest
  * Describes the world map on which critters play.
  * 11/01/2010	DE	Created.
+ * 11/03/10	DE	No more critter interface
  * 
  */
 
