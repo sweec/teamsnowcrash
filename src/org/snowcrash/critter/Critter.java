@@ -53,6 +53,10 @@ public class Critter {
 	private CritterPrototype prototype;
 	private String templateUuid;
 	
+	public Critter() {
+		
+	}
+	
 	public Critter(CritterTemplate template) {
 		
 	}
