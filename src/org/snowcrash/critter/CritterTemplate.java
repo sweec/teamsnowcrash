@@ -35,6 +35,7 @@ import org.snowcrash.utilities.Pair;
  * Describes a template upon which a critter is derived.
  * 10/24/10	DE	Traits converted to trait range, uses Pair. Added all class
  * 				variables, getters and setters, and constructor.
+ * 11/07/10	DE	Updated constructor.
  * 
  */
 
@@ -46,9 +47,11 @@ public class CritterTemplate {
 	private CritterPrototype prototype;
 	private HashMap<Trait, Pair<Integer,Integer>> traitRange;
 
-	public CritterTemplate() {
-		traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
-		uuid = UUID.randomUUID().toString();
+	public CritterTemplate(CritterPrototype prototype, String name) {
+		this.prototype = prototype;
+		this.name = name;
+		this.traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
+		this.uuid = UUID.randomUUID().toString();
 	}
 	
 	public CritterPrototype getPrototype() {
