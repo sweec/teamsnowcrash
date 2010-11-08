@@ -15,8 +15,7 @@ public class BaseGUI extends JFrame implements ActionListener
 	public static String newline = System.getProperty("line.separator");
 
 	BaseGUI()
-	{
-		
+	{	
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
 		
@@ -26,7 +25,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		mBar.add(menu);
 		menu = configurationMenu();
 		mBar.add(menu);
-		menu = simulationMenu();
+		menu = simulationMenu(true, true, true, true);
 		mBar.add(menu);
 		menu = resultsMenu();
 		mBar.add(menu);
@@ -34,23 +33,23 @@ public class BaseGUI extends JFrame implements ActionListener
 		mBar.add(menu);
 		
 		setJMenuBar(mBar);
-		JPanel mpanel = mediaButtonPanel();
+		JPanel mpanel = mediaButtonPanel(true, true, true, true);
 		content.add(mpanel, BorderLayout.SOUTH);
 		
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setVisible(true);
 		setTitle("SnowCrash");
+		setVisible(true);
 	}
-	
+	/*
 	public static void main(String[] args)
 	{
 		new BaseGUI();
 	}
+	*/
 	
 	
-	
-	private JMenu fileMenu()
+	JMenu fileMenu()
 	{
 		JMenu file = new JMenu("File");
 		final JMenuItem reset = new JMenuItem("Reset");
@@ -84,7 +83,7 @@ public class BaseGUI extends JFrame implements ActionListener
         return file;
 	}
 	
-	private JMenu configurationMenu()
+	JMenu configurationMenu()
 	{
 		JMenu configuration = new JMenu("Configuration");
 		final JMenuItem newCTemp = new JMenuItem("New Critter Template");
@@ -188,20 +187,24 @@ public class BaseGUI extends JFrame implements ActionListener
 		return configuration;
 	}
 	
-	private JMenu simulationMenu()
+	JMenu simulationMenu(boolean ma, boolean mb, boolean mc, boolean md)
 	{
 		JMenu simulation = new JMenu("Simulation");
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewind = new JMenuItem("Back to Configuration", rewindIcon);
+		rewind.setEnabled(ma);
 		simulation.add(rewind);
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		play = new JMenuItem("Play/Pause", playIcon);
+		play.setEnabled(mb);
 		simulation.add(play);
 		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
 		stop = new JMenuItem("Abort to Results", stopIcon);
+		stop.setEnabled(mc);
 		simulation.add(stop);
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ff = new JMenuItem("Simulate to End", ffIcon);
+		ff.setEnabled(md);
 		simulation.add(ff);
 		
 		simulation.addSeparator();
@@ -230,7 +233,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		return simulation;
 	}
 	
-	private JMenu resultsMenu()
+	JMenu resultsMenu()
 	{
 		JMenu results = new JMenu("Results");
 		final JMenuItem oLog = new JMenuItem("Open Log");
@@ -272,7 +275,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		return results;
 	}
 	
-	private JMenu helpMenu()
+	JMenu helpMenu()
 	{
 		JMenu help = new JMenu("Help");
 		JMenuItem about = new JMenuItem("About");
@@ -297,22 +300,24 @@ public class BaseGUI extends JFrame implements ActionListener
 		return help;
 	}
 	
-	private JPanel mediaButtonPanel()
+	JPanel mediaButtonPanel(boolean ma, boolean mb, boolean mc, boolean md)
 	{
-		JPanel mediaButtonPanel = new JPanel();
-		mediaButtonPanel.setLayout( new FlowLayout() );
+		JPanel ButtonPanel = new JPanel();
+		ButtonPanel.setLayout( new FlowLayout() );
 		
 		rewindButton = new JButton();
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewindButton.setIcon(rewindIcon);
 		rewindButton.setActionCommand("Back to Configuration");
 		rewindButton.setToolTipText("Back to Configuration");
+		rewindButton.setEnabled(ma);
 		
 		playButton = new JButton();
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
-		playButton.setIcon(playIcon);
+		playButton.setIcon(playIcon);		
 		playButton.setActionCommand("Play/Pause");
 		playButton.setToolTipText("Play/Pause");
+		playButton.setEnabled(mb);
 		
 		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
 		
@@ -321,28 +326,30 @@ public class BaseGUI extends JFrame implements ActionListener
 		stopButton.setIcon(stopIcon);
 		stopButton.setActionCommand("Abort to Results");
 		stopButton.setToolTipText("Abort to Results");
+		stopButton.setEnabled(mc);
 		
 		ffButton = new JButton();
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ffButton.setIcon(ffIcon);
 		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
+		ffButton.setEnabled(md);
 		
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
 		
-		mediaButtonPanel.add(rewindButton);
-		mediaButtonPanel.add(playButton);
-		mediaButtonPanel.add(stopButton);
-		mediaButtonPanel.add(ffButton);
-		mediaButtonPanel.add(simPBar);
+		ButtonPanel.add(rewindButton);
+		ButtonPanel.add(playButton);
+		ButtonPanel.add(stopButton);
+		ButtonPanel.add(ffButton);
+		ButtonPanel.add(simPBar);
 
         rewindButton.addActionListener( this );
         playButton.addActionListener( this );
         stopButton.addActionListener( this );
         ffButton.addActionListener( this );
 		
-		return mediaButtonPanel;
+		return ButtonPanel;
 	}
 	
 	public void actionPerformed(ActionEvent e)
