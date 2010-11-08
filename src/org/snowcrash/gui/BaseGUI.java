@@ -5,16 +5,23 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class BaseGUI extends JFrame
+public class BaseGUI extends JFrame implements ActionListener
 {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
+	
+	JMenuItem rewind, play, stop, ff;
+	JButton rewindButton, playButton, stopButton, ffButton;
+	public static String newline = System.getProperty("line.separator");
 
 	BaseGUI()
 	{
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
+		Container content = getContentPane();
+		content.setLayout( new BorderLayout() );
+		
 		JMenu file = fileMenu();
 		JMenu configuration = configurationMenu();
 		JMenu simulation = simulationMenu();
@@ -29,10 +36,9 @@ public class BaseGUI extends JFrame
 		add(mBar);
 		setJMenuBar(mBar);
 		
-		JPanel basePanel = new JPanel();
-		basePanel.setLayout( new BorderLayout() );
+		
 		JPanel mpanel = mediaButtonPanel();
-		add(mpanel, BorderLayout.SOUTH);
+		content.add(mpanel, BorderLayout.SOUTH);
 	}
 	
 	public static void main(String[] args)
@@ -110,10 +116,13 @@ public class BaseGUI extends JFrame
 		final JMenuItem startSim = new JMenuItem("Start Simulation");
 		configuration.add(startSim);
 		
+		final JFileChooser fc = new JFileChooser();
+		
 		ActionListener configMenuListener = new ActionListener()
         {
             public void actionPerformed( ActionEvent e )
             {
+            	int impCritTempVal, expCritTempVal, lConfigVal, lSimVal, lResVal, sConfigVal;
             	if (e.getActionCommand().equals("New Critter Template"))
             	{
         			// Do Something
@@ -124,27 +133,34 @@ public class BaseGUI extends JFrame
             	}
             	else if (e.getActionCommand().equals("Import Critter Templates"))
             	{
-            		// Do Something
+            		
+    				fc.setDialogTitle("Import Critter Template");
+            		impCritTempVal = fc.showOpenDialog(null);
             	}
             	else if (e.getActionCommand().equals("Export Critter Templates"))
             	{
-            		// Do Something
+            		fc.setDialogTitle("Export Critter Template");
+            		impCritTempVal = fc.showSaveDialog(null);
             	}
             	else if (e.getActionCommand().equals("Load Configuration"))
             	{
-            		// Do Something
+            		fc.setDialogTitle("Load Configuration");
+            		lConfigVal = fc.showOpenDialog(null);
             	}
             	else if (e.getActionCommand().equals("Load Simulation"))
             	{
-            		// Do Something
+            		fc.setDialogTitle("Load Simulation");
+            		lSimVal = fc.showOpenDialog(null);
             	}
             	else if (e.getActionCommand().equals("Load Results"))
             	{
-            		// Do Something
+            		fc.setDialogTitle("Load Results");
+            		lResVal = fc.showOpenDialog(null);
             	}
             	else if (e.getActionCommand().equals("Save Configuration"))
             	{
-            		// Do Something
+            		fc.setDialogTitle("Save Configuration");
+            		sConfigVal = fc.showSaveDialog(null);
             	}
             	else if (e.getActionCommand().equals("Start Simulation"))
             	{
@@ -174,16 +190,16 @@ public class BaseGUI extends JFrame
 	{
 		JMenu simulation = new JMenu("Simulation");
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
-		final JMenuItem rewind = new JMenuItem("Back to Configuration", rewindIcon);
+		rewind = new JMenuItem("Back to Configuration", rewindIcon);
 		simulation.add(rewind);
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
-		final JMenuItem play = new JMenuItem("Play/Pause", playIcon);
+		play = new JMenuItem("Play/Pause", playIcon);
 		simulation.add(play);
 		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
-		final JMenuItem stop = new JMenuItem("Abort to Results", stopIcon);
+		stop = new JMenuItem("Abort to Results", stopIcon);
 		simulation.add(stop);
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
-		final JMenuItem ff = new JMenuItem("Simulate to End", ffIcon);
+		ff = new JMenuItem("Simulate to End", ffIcon);
 		simulation.add(ff);
 		
 		simulation.addSeparator();
@@ -191,41 +207,22 @@ public class BaseGUI extends JFrame
 		final JMenuItem sSim = new JMenuItem("Save Simulation");
 		simulation.add(sSim);
 		
+		final JFileChooser fc = new JFileChooser();
+		
 		ActionListener simMenuListener = new ActionListener()
         {
-            public void actionPerformed( ActionEvent e )
-            {
-            	if (e.getActionCommand().equals("Back to Configuration"))
-            	{
-        			// Do Something
-            	}
-            	else if (e.getActionCommand().equals("Play/Pause"))
-            	{
-            		// Do Something
-            	}
-            	else if (e.getActionCommand().equals("Abort to Results"))
-            	{
-            		// Do Something
-            	}
-            	else if (e.getActionCommand().equals("Simulate to End"))
-            	{
-            		// Do Something
-            	}
-            	else if (e.getActionCommand().equals("Save Simulation"))
-            	{
-            		// Do Something
-            	}
-            	else
-            	{
-            		// Do Something
-            	}
+			public void actionPerformed( ActionEvent e )
+            {       
+	            int sSimVal;
+				fc.setDialogTitle("Save Simulation");
+        		sSimVal = fc.showSaveDialog(null);
             }
         };
 
-        rewind.addActionListener( simMenuListener );
-        play.addActionListener(simMenuListener);
-        stop.addActionListener(simMenuListener);
-        ff.addActionListener(simMenuListener);
+        rewind.addActionListener( this );
+        play.addActionListener(this);
+        stop.addActionListener(this);
+        ff.addActionListener(this);
         sSim.addActionListener(simMenuListener);
 		
 		return simulation;
@@ -242,17 +239,23 @@ public class BaseGUI extends JFrame
 		final JMenuItem sResults = new JMenuItem("Save Results");
 		results.add(sResults);
 		
+		final JFileChooser fc = new JFileChooser();
+		
+		
 		ActionListener resMenuListener = new ActionListener()
         {
             public void actionPerformed( ActionEvent e )
             {
+            	int sResVal, oLogVal;
             	if (e.getActionCommand().equals("Open Log"))
             	{
-        			// Do Something
+        			fc.setDialogTitle("Open Log");
+            		oLogVal = fc.showOpenDialog(null);
             	}
             	else if (e.getActionCommand().equals("Save Results"))
             	{
-            		// Do Something
+            		fc.setDialogTitle("Save Results");
+            		sResVal = fc.showSaveDialog(null);
             	}
             	else
             	{
@@ -277,14 +280,13 @@ public class BaseGUI extends JFrame
         {
             public void actionPerformed( ActionEvent e )
             {
-            	if (e.getActionCommand().equals("About"))
-            	{
-        			// Do Something
-            	}
-            	else
-            	{
-            		// Do Something
-            	}
+            	ImageIcon raptorIcon = new ImageIcon("images/predator-right.png");
+            			
+            	JOptionPane.showMessageDialog(null, "SnowCrash - A Simulation" + newline + 
+            			newline + "Developed by:" + newline + "Dale Earnest, Jeff Dunn," +
+            			newline + "Dong Luo, Mike McWilliams" + newline +
+            			newline + "Licensed under the Artistic License", "About SnowCrash",
+                        JOptionPane.INFORMATION_MESSAGE, raptorIcon);
             }
         };
 
@@ -298,30 +300,30 @@ public class BaseGUI extends JFrame
 		JPanel mediaButtonPanel = new JPanel();
 		mediaButtonPanel.setLayout( new FlowLayout() );
 		
-		final JButton rewindButton = new JButton();
+		rewindButton = new JButton();
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewindButton.setIcon(rewindIcon);
-		rewindButton.setActionCommand("rewind");
+		rewindButton.setActionCommand("Back to Configuration");
 		rewindButton.setToolTipText("Back to Configuration");
 		
-		final JButton playButton = new JButton();
+		playButton = new JButton();
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		playButton.setIcon(playIcon);
-		playButton.setActionCommand("play");
+		playButton.setActionCommand("Play/Pause");
 		playButton.setToolTipText("Play/Pause");
 		
 		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
 		
-		final JButton stopButton = new JButton();
+		stopButton = new JButton();
 		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
 		stopButton.setIcon(stopIcon);
-		stopButton.setActionCommand("stop");
+		stopButton.setActionCommand("Abort to Results");
 		stopButton.setToolTipText("Abort to Results");
 		
-		final JButton ffButton = new JButton();
+		ffButton = new JButton();
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ffButton.setIcon(ffIcon);
-		ffButton.setActionCommand("ff");
+		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
 		
 		JProgressBar simPBar = new JProgressBar(0, 100);
@@ -332,40 +334,40 @@ public class BaseGUI extends JFrame
 		mediaButtonPanel.add(stopButton);
 		mediaButtonPanel.add(ffButton);
 		mediaButtonPanel.add(simPBar);
-		
-		ActionListener mButtonListener = new ActionListener()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
-            	if (e.getActionCommand().equals("rewind"))
-            	{
-        			// Do Something
-            	}
-            	else if (e.getActionCommand().equals("play"))
-            	{
-        			// Do Something
-            	}
-            	else if (e.getActionCommand().equals("stop"))
-            	{
-        			// Do Something
-            	}
-            	else if (e.getActionCommand().equals("ff"))
-            	{
-        			// Do Something
-            	}
-            	else
-            	{
-            		// Do Something
-            	}
-            }
-        };
 
-        rewindButton.addActionListener( mButtonListener );
-        playButton.addActionListener( mButtonListener );
-        stopButton.addActionListener( mButtonListener );
-        ffButton.addActionListener( mButtonListener );
+        rewindButton.addActionListener( this );
+        playButton.addActionListener( this );
+        stopButton.addActionListener( this );
+        ffButton.addActionListener( this );
 		
 		return mediaButtonPanel;
+	}
+	
+	public void actionPerformed(ActionEvent e)
+	{	
+		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
+		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
+		
+		if (e.getActionCommand().equals("Back to Configuration"))
+    	{
+			// Do Something
+    	}
+    	else if (e.getActionCommand().equals("Play/Pause"))
+    	{
+			// Do Something
+    	}
+    	else if (e.getActionCommand().equals("Abort to Results"))
+    	{
+			// Do Something
+    	}
+    	else if (e.getActionCommand().equals("Simulate to End"))
+    	{
+			// Do Something
+    	}
+    	else
+    	{
+    		// Do Something
+    	}
 	}
 		
 }
