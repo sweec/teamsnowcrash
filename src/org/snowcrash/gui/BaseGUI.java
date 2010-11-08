@@ -16,29 +16,31 @@ public class BaseGUI extends JFrame implements ActionListener
 
 	BaseGUI()
 	{
-		setSize(WIDTH, HEIGHT);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setVisible(true);
+		
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
 		
-		JMenu file = fileMenu();
-		JMenu configuration = configurationMenu();
-		JMenu simulation = simulationMenu();
-		JMenu results = resultsMenu();
-		JMenu help = helpMenu();
 		JMenuBar mBar = new JMenuBar();
-		mBar.add(file);
-		mBar.add(configuration);
-		mBar.add(simulation);
-		mBar.add(results);
-		mBar.add(help);
-		add(mBar);
+		JMenu menu = new JMenu(); 
+		menu = fileMenu();
+		mBar.add(menu);
+		menu = configurationMenu();
+		mBar.add(menu);
+		menu = simulationMenu();
+		mBar.add(menu);
+		menu = resultsMenu();
+		mBar.add(menu);
+		menu = helpMenu();
+		mBar.add(menu);
+		
 		setJMenuBar(mBar);
-		
-		
 		JPanel mpanel = mediaButtonPanel();
 		content.add(mpanel, BorderLayout.SOUTH);
+		
+		setSize(WIDTH, HEIGHT);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setVisible(true);
+		setTitle("SnowCrash");
 	}
 	
 	public static void main(String[] args)
