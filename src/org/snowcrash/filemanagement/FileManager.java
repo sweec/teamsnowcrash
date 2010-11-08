@@ -39,7 +39,7 @@ import java.util.logging.*;
  * 
  * gson is used for save/load.
  * setLogger() should be called first each time a new session started.
- * 
+ * check test case for example.
  */
 
 public class FileManager implements IFileManager {
