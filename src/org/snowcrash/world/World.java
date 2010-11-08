@@ -36,41 +36,20 @@ import org.snowcrash.utilities.Pair;
 public class World {
 
 	private static World instance;
-	private Critter[][] map;
-	private int sizeX;
-	private int sizeY;
-	
 	public static World getInstance() {
 		if (instance == null) {
 			instance = new World();
 		}
 		return instance;
 	}
-	
 	public static World reset() {
 		instance = null;
 		return getInstance();
 	}
-	
-	public int getSizeX() {
-		return sizeX;
-	}
-	
-	public int getSizeY() {
-		return sizeY;
-	}
-	
-	/**
-	 * Sets the world size to x by y coordinates.  This initializes
-	 * the size of the Critter map.
-	 * @param x
-	 * @param y
-	 */
-	public void setSize(int x, int y) {
-		sizeX = x;
-		sizeY = y;
-		map = new Critter[sizeX][sizeY];
-	}
+	private Critter[][] map;
+	private int sizeX;
+	private int sizeY;
+	private int turns;
 	
 	/**
 	 * Adds a critter to a specific x,y location.
@@ -85,52 +64,6 @@ public class World {
 			return true;
 		}
 		return false;
-	}
-	
-	/**
-	 * Moves a critter from one map space to another.
-	 * @param origin
-	 * @param target
-	 * @return
-	 */
-	public boolean move(Pair<Integer, Integer> origin, Pair<Integer, Integer> target) {
-		if (checkX(target.getLeft()) && checkY(target.getRight()) 
-				&& checkX(origin.getLeft()) && checkY(origin.getRight())) {
-			map[target.getLeft()][target.getRight()] = map[origin.getLeft()][origin.getRight()];
-			map[origin.getLeft()][origin.getRight()] = null;
-			return true;
-		}
-		return false;
-	}
-
-	public Critter[][] getMap() {
-		return map;
-	}
-	
-	/**
-	 * Retrieves a critter at the coordinate or returns null if nothing is there.
-	 * @param coordinate
-	 * @return
-	 */
-	public Critter get(Pair<Integer, Integer> coordinate) {
-		try {
-			return map[coordinate.getLeft()][coordinate.getRight()];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
-	 * Sets the coordinate to null.
-	 * @param coordinate
-	 */
-	public void remove(Pair<Integer, Integer> coordinate) {
-		try {
-			map[coordinate.getLeft()][coordinate.getRight()] = null;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -157,6 +90,80 @@ public class World {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Retrieves a critter at the coordinate or returns null if nothing is there.
+	 * @param coordinate
+	 * @return
+	 */
+	public Critter get(Pair<Integer, Integer> coordinate) {
+		try {
+			return map[coordinate.getLeft()][coordinate.getRight()];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Critter[][] getMap() {
+		return map;
+	}
+
+	public int getSizeX() {
+		return sizeX;
+	}
+	
+	public int getSizeY() {
+		return sizeY;
+	}
+	
+	public int getTurns() {
+		return turns;
+	}
+	
+	/**
+	 * Moves a critter from one map space to another.
+	 * @param origin
+	 * @param target
+	 * @return
+	 */
+	public boolean move(Pair<Integer, Integer> origin, Pair<Integer, Integer> target) {
+		if (checkX(target.getLeft()) && checkY(target.getRight()) 
+				&& checkX(origin.getLeft()) && checkY(origin.getRight())) {
+			map[target.getLeft()][target.getRight()] = map[origin.getLeft()][origin.getRight()];
+			map[origin.getLeft()][origin.getRight()] = null;
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Sets the coordinate to null.
+	 * @param coordinate
+	 */
+	public void remove(Pair<Integer, Integer> coordinate) {
+		try {
+			map[coordinate.getLeft()][coordinate.getRight()] = null;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Sets the world size to x by y coordinates.  This initializes
+	 * the size of the Critter map.
+	 * @param x
+	 * @param y
+	 */
+	public void setSize(int x, int y) {
+		sizeX = x;
+		sizeY = y;
+		map = new Critter[sizeX][sizeY];
+	}
+
+	public void setTurns(int turns) {
+		this.turns = turns;
 	}
 
 	@Override

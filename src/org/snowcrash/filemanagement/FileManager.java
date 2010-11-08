@@ -113,7 +113,7 @@ public class FileManager implements IFileManager {
 		} 
 	}
 	
-	public boolean saveCritters(Critter[] critter, String filepath, String filename) {
+	public boolean saveCritters(ICritter[] critter, String filepath, String filename) {
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
 			Gson gson = new Gson();
@@ -126,7 +126,7 @@ public class FileManager implements IFileManager {
 		return true;
 	}
 
-	public Critter[] loadCritters(String filepath, String filename) {
+	public ICritter[] loadCritters(String filepath, String filename) {
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
 			
@@ -187,13 +187,13 @@ public class FileManager implements IFileManager {
 		// test saveCritters/loadCritters
 		CritterTemplate template = new CritterTemplate();
 		template.setPrototype(CritterPrototype.PREY);
-		Critter[] critter = new Critter[3];
+		ICritter[] critter = new ICritter[3];
 		critter[0] = CritterFactory.getCritter(template);
 		critter[1] = CritterFactory.getCritter(template);
 		critter[2] = CritterFactory.getCritter(template);
 		FileManager mgr = new FileManager();
 		mgr.saveCritters(critter, "", "testCritter.csv");
-		Critter[] critter2 = mgr.loadCritters("", "testCritter.csv");
+		ICritter[] critter2 = mgr.loadCritters("", "testCritter.csv");
 		int i;
 		for (i = 0;i < critter2.length;i++) {
 			System.out.println(critter2[i]);
@@ -207,7 +207,7 @@ public class FileManager implements IFileManager {
 		world.add(2, 2, critter[2]);
 		mgr.saveWorld(world, "", "testWorld.csv");
 		World world2 = mgr.loadWorld("", "testWorld.csv");
-		Critter[][] critters = new Critter[3][3];
+		ICritter[][] critters = new ICritter[3][3];
 		Pair<Integer, Integer> pair;
 		pair = new Pair<Integer, Integer>(0, 0);
 		critters[0][0] = world2.get(pair);
