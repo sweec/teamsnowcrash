@@ -141,7 +141,7 @@ public class FileManager implements IFileManager {
 
 	public static void main(String[] args) {
 		// test saveCritters/loadCritters
-		CritterTemplate template = new CritterTemplate();
+		CritterTemplate template = new CritterTemplate(CritterPrototype.PLANT, "Planty");
 		template.setPrototype(CritterPrototype.PREY);
 		Critter[] critter = new Critter[3];
 		critter[0] = CritterFactory.getCritter(template);
