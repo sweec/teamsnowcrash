@@ -22,6 +22,7 @@
 package org.snowcrash.critter;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
@@ -37,6 +38,7 @@ import org.snowcrash.utilities.Pair;
  * 10/24/10	DE	traits HashMap now uses Pair. Implemented stub methods
  * 10/27/10	DE	Added age.
  * 11/03/10	DE	Removed Interface
+ * 11/09/10	DE	Added UUID
  * 
  */
 
@@ -52,18 +54,20 @@ public class Critter {
 	private int age = 0;
 	private CritterPrototype prototype;
 	private String templateUuid;
+	private String uuid;
 
 	// add no-arguments constructor as required by gson
 	public Critter() {
-		
-	}
-	
-	public Critter(CritterTemplate template) {
-		setSizeData(template.getSize());
+		this.uuid = UUID.randomUUID().toString();
 	}
 	
 	public Critter(Critter critter1, Critter critter2) {
-		
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public Critter(CritterTemplate template) {
+		this.uuid = UUID.randomUUID().toString();
+		setSizeData(template.getSize());
 	}
 	
 	public void die() {
@@ -103,20 +107,24 @@ public class Critter {
 		return (pair.getLeft() + pair.getRight()) / 2;
 	}
 	
-	public boolean isActed() {
-		return acted;
+	public String getUuid() {
+		return uuid;
 	}
 	
 	
+	public boolean isActed() {
+		return acted;
+	}
+
 	public void setActed(boolean acted) {
 		this.acted = acted;
 		this.age++;
 	}
-
+	
 	public void setHealth(int health) {
 		this.health = health;
 	}
-	
+
 	private void setSizeData(Size trait) {
 		size = trait;
 		switch (trait) {
