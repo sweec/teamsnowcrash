@@ -23,6 +23,7 @@ package org.snowcrash.filemanagement;
 
 import org.snowcrash.critter.*;
 import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.critter.data.Size;
 import org.snowcrash.world.World;
 import org.snowcrash.utilities.*;
 
@@ -142,7 +143,7 @@ public class FileManager implements IFileManager {
 	public static void main(String[] args) {
 		// test saveCritters/loadCritters
 		CritterTemplate template = new CritterTemplate(CritterPrototype.PLANT, "Planty");
-		template.setPrototype(CritterPrototype.PREY);
+		template.setSize(Size.MEDIUM);
 		Critter[] critter = new Critter[3];
 		critter[0] = CritterFactory.getCritter(template);
 		critter[1] = CritterFactory.getCritter(template);
