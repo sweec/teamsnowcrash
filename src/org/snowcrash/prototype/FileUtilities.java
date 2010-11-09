@@ -52,6 +52,11 @@ public class FileUtilities {
 		return contents;
 	}
 
+	/**
+	 * 
+	 * @param contents
+	 * @param filename
+	 */
 	public static void saveCritterToFile(ArrayList<ProtoCritter> contents, String filename) {
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename)); 

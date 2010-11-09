@@ -21,7 +21,7 @@
 
 package org.snowcrash.filemanagement;
 
-import org.snowcrash.critter.Critter;
+import org.snowcrash.critter.ICritter;
 import org.snowcrash.world.World;
 
 /**
@@ -38,9 +38,9 @@ public interface IFileManager {
 
 	public World loadWorld(String filepath, String filename);
 	
-	public boolean saveCritters(Critter[] critter, String filepath, String filename);
+	public boolean saveCritters(ICritter[] critter, String filepath, String filename);
 
-	public Critter[] loadCritters(String filepath, String filename);
+	public ICritter[] loadCritters(String filepath, String filename);
 	
 	public void setLogger();
 	
