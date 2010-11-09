@@ -28,8 +28,8 @@ import org.snowcrash.utilities.*;
 
 import java.io.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonStreamParser;
-import com.google.gson.JsonElement;
+//import com.google.gson.JsonStreamParser;
+//import com.google.gson.JsonElement;
 
 import java.util.logging.*;
 
@@ -39,7 +39,7 @@ import java.util.logging.*;
  * 
  * gson is used for save/load.
  * setLogger() should be called first each time a new session started.
- * 
+ * check test case for example.
  */
 
 public class FileManager implements IFileManager {
@@ -51,16 +51,7 @@ public class FileManager implements IFileManager {
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
 			Gson gson = new Gson();
-			//gson.toJson(world, out);	// this works, but can't be used by fromJson
-			// gson's fromJson methods require no-arguments constructor for object
-			// both Critter and CritterBase can't have constructor
-			// World has data type Critter, which is not supported by gson
-			// have to save the data manually to satisfy loadWorld
-			int[] size = new int[2];
-			size[0] = world.getSizeX();
-			size[1] = world.getSizeY();
-			gson.toJson(size, out);
-			gson.toJson(world.getMap(), out);
+			gson.toJson(world, out);
 			out.close(); 
 		} catch (IOException e) { 
 			e.printStackTrace();
@@ -73,38 +64,7 @@ public class FileManager implements IFileManager {
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
 			Gson gson = new Gson();
-			//World world = gson.fromJson(in, World.class);	// this does not work
-			// gson's fromJson methods require no-arguments constructor for object
-			// both Critter and CritterBase can't have constructor
-			// World has data type Critter, which is not supported by gson
-			// have to load the data manually
-			// Since all Critter types do not differ in terms of the role of container,
-			// I just pick Plant. Let's see if this will cause problems.
-			World world = null;
-			int[] size = null;
-			Plant[][] critter = null;
-			JsonStreamParser parser = new JsonStreamParser(in);
-			JsonElement element;
-			if (parser.hasNext()) {
-				element = parser.next();
-				size = gson.fromJson(element, int[].class);
-			}
-			if (parser.hasNext()) {
-				element = parser.next();
-				critter = gson.fromJson(element, Plant[][].class);
-			}
-			if (size != null && critter != null) {
-				world = World.getInstance();
-				int sizeX = size[0];
-				int sizeY = size[1];
-				world.setSize(sizeX, sizeY);
-				int x, y;
-				for (x = 0;x < sizeX;x++) {
-					for (y = 0;y < sizeY;y++) {
-						world.add(x, y, critter[x][y]);
-					}
-				}
-			}
+			World world = gson.fromJson(in, World.class);
 			in.close(); 
 			return world;
 		} catch (IOException e) { 
@@ -113,7 +73,7 @@ public class FileManager implements IFileManager {
 		} 
 	}
 	
-	public boolean saveCritters(ICritter[] critter, String filepath, String filename) {
+	public boolean saveCritters(Critter[] critter, String filepath, String filename) {
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
 			Gson gson = new Gson();
@@ -126,16 +86,12 @@ public class FileManager implements IFileManager {
 		return true;
 	}
 
-	public ICritter[] loadCritters(String filepath, String filename) {
+	public Critter[] loadCritters(String filepath, String filename) {
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
 			
 			Gson gson = new Gson();
-			// gson's fromJson methods require no-arguments constructor for object
-			// both Critter and CritterBase can't have constructor
-			// Since all Critter types do not differ in terms of the role of container,
-			// I just pick Plant. Let's see if this will cause problems.
-			Plant[] critter = gson.fromJson(in, Plant[].class);
+			Critter[] critter = gson.fromJson(in, Critter[].class);
 			in.close(); 
 			return critter;
 		} catch (IOException e) { 
@@ -187,13 +143,13 @@ public class FileManager implements IFileManager {
 		// test saveCritters/loadCritters
 		CritterTemplate template = new CritterTemplate();
 		template.setPrototype(CritterPrototype.PREY);
-		ICritter[] critter = new ICritter[3];
+		Critter[] critter = new Critter[3];
 		critter[0] = CritterFactory.getCritter(template);
 		critter[1] = CritterFactory.getCritter(template);
 		critter[2] = CritterFactory.getCritter(template);
 		FileManager mgr = new FileManager();
-		mgr.saveCritters(critter, "", "testCritter.csv");
-		ICritter[] critter2 = mgr.loadCritters("", "testCritter.csv");
+		mgr.saveCritters(critter, "", "testCritter.Json");
+		Critter[] critter2 = mgr.loadCritters("", "testCritter.Json");
 		int i;
 		for (i = 0;i < critter2.length;i++) {
 			System.out.println(critter2[i]);
@@ -205,9 +161,9 @@ public class FileManager implements IFileManager {
 		world.add(0, 0, critter[0]);
 		world.add(1, 1, critter[1]);
 		world.add(2, 2, critter[2]);
-		mgr.saveWorld(world, "", "testWorld.csv");
-		World world2 = mgr.loadWorld("", "testWorld.csv");
-		ICritter[][] critters = new ICritter[3][3];
+		mgr.saveWorld(world, "", "testWorld.Json");
+		World world2 = mgr.loadWorld("", "testWorld.Json");
+		Critter[][] critters = new Critter[3][3];
 		Pair<Integer, Integer> pair;
 		pair = new Pair<Integer, Integer>(0, 0);
 		critters[0][0] = world2.get(pair);
@@ -225,13 +181,15 @@ public class FileManager implements IFileManager {
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("This is line "+i);
 		}
-		// mgr.viewLogFile();
+		mgr.viewLogFile();
 		
 		// test erase log file
+		/*
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("Now we have new line "+i);
 		}
 		mgr.viewLogFile();
+		*/
 	}
 }

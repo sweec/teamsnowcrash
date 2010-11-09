@@ -52,6 +52,11 @@ public class Critter {
 	private int age = 0;
 	private CritterPrototype prototype;
 	private String templateUuid;
+
+	// add no-arguments constructor as required by gson
+	public Critter() {
+		
+	}
 	
 	public Critter(CritterTemplate template) {
 		setSizeData(template.getSize());
