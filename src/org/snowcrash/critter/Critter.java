@@ -49,7 +49,7 @@ public class Critter {
 	private int maxHealth;
 	private Size size;
 	private StateContext myStateContext;
-	private int age;
+	private int age = 0;
 	private CritterPrototype prototype;
 	private String templateUuid;
 
@@ -59,7 +59,7 @@ public class Critter {
 	}
 	
 	public Critter(CritterTemplate template) {
-		
+		setSizeData(template.getSize());
 	}
 	
 	public Critter(Critter critter1, Critter critter2) {
@@ -117,7 +117,7 @@ public class Critter {
 		this.health = health;
 	}
 	
-	protected void setSizeData(Size trait) {
+	private void setSizeData(Size trait) {
 		size = trait;
 		switch (trait) {
 			case SMALL:
