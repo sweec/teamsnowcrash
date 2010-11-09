@@ -31,6 +31,7 @@ import org.snowcrash.world.World;
  * when a new simulation start
  * call setLogger() first before log any messages
  * Check FileManager.java for test examples
+ * 
  */
 public interface IFileManager {
 	public boolean saveWorld(World world, String filepath, String filename);

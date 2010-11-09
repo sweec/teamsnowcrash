@@ -29,7 +29,8 @@ import java.io.*;
 /**
  * @author dong
  * popup window showing large log file with quick response.
- * 
+ * mouse scroll seems not work
+ * and only show predefined lines of text
  * Adapted from free source code people shared online.
  * 
  */
