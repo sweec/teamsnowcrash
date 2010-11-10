@@ -1,7 +1,7 @@
 package org.snowcrash.commands;
 
-import org.snowcrash.critter.CritterPrototype;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.data.CritterPrototype;
 
 
 public class CommandFactory

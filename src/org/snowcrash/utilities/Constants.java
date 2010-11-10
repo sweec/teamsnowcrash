@@ -1,5 +1,5 @@
 /*  
- * StateBase: State class from which all state classes inherit. 
+ * Constants: Common constants used throughout the application. 
  * Copyright (C) 2010  Team Snow Crash
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,20 @@
  * <http://www.gnu.org/licenses/>.
  * 
  */
-package org.snowcrash.state;
 
-import org.snowcrash.critter.Critter;
+package org.snowcrash.utilities;
 
 /**
  * @author dearnest
- * State class from which all state classes inherit.
- * 
- * 10/24/10	DE 	Added License notice.
- * 11/03/10	DE	No more critter interface
+ * All constants referenced in the project go here.
+ * 10/23/10	DE 	PLANT/PREY/PREDATOR moved to enum CritterPrototype. Added License.
  * 
  */
 
-public class StateBase implements State {
+public class Constants {
 
-	@Override
-	public void act(StateContext stateContext, Critter myCritter) {
-		// TODO Auto-generated method stub
-
-	}
-
+	//public static final int PLANT = 0;
+	//public static final int PREY = 1;
+	//public static final int PREDATOR = 2;
+	
 }
