@@ -1,5 +1,5 @@
 /*  
- * StateBase: State class from which all state classes inherit. 
+ * Trait: Enumerates the traits a critter can have. 
  * Copyright (C) 2010  Team Snow Crash
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,17 @@
  * <http://www.gnu.org/licenses/>.
  * 
  */
-package org.snowcrash.state;
 
-import org.snowcrash.critter.Critter;
+package org.snowcrash.critter.data;
 
 /**
- * @author dearnest
- * State class from which all state classes inherit.
  * 
- * 10/24/10	DE 	Added License notice.
- * 11/03/10	DE	No more critter interface
+ * @author dearnest
+ * Enumerates the traits a critter can have.
+ * 10/24/10	DE	Created.
  * 
  */
 
-public class StateBase implements State {
-
-	@Override
-	public void act(StateContext stateContext, Critter myCritter) {
-		// TODO Auto-generated method stub
-
-	}
-
+public enum Trait {
+	CAMO, COMBAT, ENDURANCE, SPEED, VISION;
 }
