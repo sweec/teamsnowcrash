@@ -74,11 +74,12 @@ public class FileManager implements IFileManager {
 		} 
 	}
 	
-	public boolean saveCritters(Critter[] critter, String filepath, String filename) {
+	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, 
+			String filepath, String filename) {
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
 			Gson gson = new Gson();
-			gson.toJson(critter, out);
+			gson.toJson(critterTemplates, out);
 			out.close(); 
 		} catch (IOException e) { 
 			e.printStackTrace();
@@ -87,21 +88,21 @@ public class FileManager implements IFileManager {
 		return true;
 	}
 
-	public Critter[] loadCritters(String filepath, String filename) {
+	public CritterTemplate[] loadCritterTemplates(String filepath, String filename) {
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
 			
 			Gson gson = new Gson();
-			Critter[] critter = gson.fromJson(in, Critter[].class);
+			CritterTemplate[] critterTemplate = gson.fromJson(in, CritterTemplate[].class);
 			in.close(); 
-			return critter;
+			return critterTemplate;
 		} catch (IOException e) { 
 			e.printStackTrace();
 			return null;
 		} 
 	}
 
-	public void setLogger() {
+	public void setLogger(String filepath, String filename) {
 	    try {
 	    	// clear old log
 	    	if (fh != null) {
@@ -111,22 +112,26 @@ public class FileManager implements IFileManager {
 	    			logger.removeHandler(fh);
 	    		}
 	    	}
-	    	File file = new File(logFile);
+	    	File file = new File(filepath + filename);
 	    	if (file.exists()) {
 	    		file.delete();
 	    	}
 	    	boolean append = true;
-	    	fh = new FileHandler(logFile, append);
+	    	fh = new FileHandler(filepath + filename, append);
 	    	//fh.setFormatter(new XMLFormatter());
 	    	//fh.setFormatter(new SimpleFormatter());
 	    	fh.setFormatter(new LogFormatter());
-	    	logger = Logger.getLogger(logFile);	// logFile is just a name here
+	    	logger = Logger.getLogger(filepath + filename);	// arg is just a name here
 	    	logger.addHandler(fh);
 	    }
 	    catch (IOException e) {
 	    	e.printStackTrace();
 	    }
-	 }
+	}
+
+	public void setLogger() {
+		setLogger("", logFile);
+	}
 
 	public void logMessage(String message) {
 		if (logger != null) {
@@ -134,26 +139,38 @@ public class FileManager implements IFileManager {
 		}
 	}
 	
+	public void viewLogFile(String filepath, String filename, int w, int h, int r) {
+        LogViewer v = new LogViewer(r);
+        v.display(filepath + filename, w, h);
+	}
+
+	public void viewLogFile(String filepath, String filename) {
+		viewLogFile(filepath, filename, 40, 500, 570);
+	}
+
 	public void viewLogFile() {
-		int rows = 40;
-        LogViewer v = new LogViewer(rows);
-        v.display(logFile, 500, 570);
+		viewLogFile("", logFile, 40, 500, 570);
 	}
 
 	public static void main(String[] args) {
-		// test saveCritters/loadCritters
-		CritterTemplate template = new CritterTemplate(CritterPrototype.PLANT, "Planty");
-		template.setSize(Size.MEDIUM);
+		// test saveCritterTemplate/loadCritterTemplate
+		CritterTemplate[] templates = new CritterTemplate[3];
+		templates[0] = new CritterTemplate(CritterPrototype.PLANT, "Plant1");
+		templates[0].setSize(Size.MEDIUM);
+		templates[1] = new CritterTemplate(CritterPrototype.PREY, "Prey1");
+		templates[1].setSize(Size.SMALL);
+		templates[2] = new CritterTemplate(CritterPrototype.PREDATOR, "Predator1");
+		templates[2].setSize(Size.LARGE);
 		Critter[] critter = new Critter[3];
-		critter[0] = CritterFactory.getCritter(template);
-		critter[1] = CritterFactory.getCritter(template);
-		critter[2] = CritterFactory.getCritter(template);
+		critter[0] = CritterFactory.getCritter(templates[0]);
+		critter[1] = CritterFactory.getCritter(templates[1]);
+		critter[2] = CritterFactory.getCritter(templates[2]);
 		FileManager mgr = new FileManager();
-		mgr.saveCritters(critter, "", "testCritter.Json");
-		Critter[] critter2 = mgr.loadCritters("", "testCritter.Json");
+		mgr.saveCritterTemplates(templates, "", "testCritterTemplates.Json");
+		CritterTemplate[] template2 = mgr.loadCritterTemplates("", "testCritterTemplates.Json");
 		int i;
-		for (i = 0;i < critter2.length;i++) {
-			System.out.println(critter2[i]);
+		for (i = 0;i < template2.length;i++) {
+			System.out.println(template2[i]);
 		}
 		
 		// test saveWorld/loadWorld
@@ -173,11 +190,12 @@ public class FileManager implements IFileManager {
 		pair = new Pair<Integer, Integer>(2, 2);
 		critters[2][2] = world2.get(pair);
 		System.out.println(world2.getSizeX()+" "+world2.getSizeY());
-		for (i = 0;i < critter2.length;i++) {
-			System.out.println(critter2[i]);
-		}
+		System.out.println(critters[0][0]);
+		System.out.println(critters[1][1]);
+		System.out.println(critters[2][2]);
 		
 		// test viewLogFile
+		/*
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("This is line "+i);
@@ -185,7 +203,6 @@ public class FileManager implements IFileManager {
 		mgr.viewLogFile();
 		
 		// test erase log file
-		/*
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("Now we have new line "+i);
