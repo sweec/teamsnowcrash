@@ -4,64 +4,57 @@ import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.filemanagement.IFileManager;
 
 
+/**
+ * 
+ * This class handles commands and promotes decoupling by allowing any area of the 
+ * application to request that something happens without having to know how it 
+ * happens.  There was a conscious decision to handle the commands in a mediator, 
+ * rather than within the command implementations themselves, as it is easier to 
+ * ensure that the commands' references to managers do not get changes at run time.
+ * 
+ * @author Mike
+ *
+ */
 class CommandMediator
 {
-	private static IFileManager fileService = null;
+	/*
+	 * Reference to the file manager.
+	 */
+	private static IFileManager fileManager = null;
 
-	private static IConfigurationManager configService = null;
+	/*
+	 * Reference to the configuration manager.
+	 */
+	private static IConfigurationManager configManager = null;
 
+	/*
+	 * Private constructor enforces use as a static class.
+	 */
 	private CommandMediator()
 	{
 		// -- Static class.
 	}
 
-	public static void handleCommand( Command command, Object ... params )
+	/**
+	 * 
+	 * Handles the given command.
+	 * 
+	 * @param command the command that should be handled
+	 * 
+	 */
+	public static void handleCommand( Command command )
 	{
-		Object[] results = null;
-		
 		if (command instanceof TestCommand)
 		{
 			System.out.println( ((TestCommand) command).getMessage() );
 		}
-		/*
-		else if ( command instanceof CreateCritterTemplateCommand )
-		{
-			CreateCritterTemplateCommand c = (CreateCritterTemplateCommand) command;
-
-			Object o = configService.createCritterTemplate( c.getPrototype(), c.getName() );
-			results = new Object[] { o };
-		}
-		else if ( command instanceof ModifyCritterTemplateCommand )
-		{
-			ModifyCritterTemplateCommand c = (ModifyCritterTemplateCommand) command;
-
-			configService.updateCritterTemplate( c.getTemplate() );
-		}
-		else if ( command instanceof DeleteCritterTemplateCommand )
-		{
-			DeleteCritterTemplateCommand c = (DeleteCritterTemplateCommand) command;
-
-			configService.deleteCritterTemplate(c.getTemplate());
-		}
-		else if (command instanceof ExportCrittersCommand)
-		{
-			ExportCrittersCommand c = (ExportCrittersCommand) command;
-
-			fileService.saveCritters( c.getCritters(), c.getFilepath(),
-					c.getFilename() );
-		}
-		else if (command instanceof ImportCrittersCommand)
-		{
-			ImportCrittersCommand c = (ImportCrittersCommand) command;
-
-			fileService.loadCritters( c.getFilepath(), c.getFilename() );
-		}
-		*/
 		else
 		{
-			throw new UnsupportedOperationException( "Command "
-					+ command.getClass().getSimpleName()
-					+ " is not yet supported." );
+			// -- Let anyone who is supposed to handle this command do so.
+			maybeHandleFileCommand( command );
+			maybeHandleConfigurationCommand( command );
+			maybeHandleSimulationCommand( command );
+			maybeHandleResultsCommand( command );
 		}
 		
 		/*
@@ -72,13 +65,110 @@ class CommandMediator
 		*/
 	}
 	
-	public void setFileManager( IFileManager fileManager )
+	/*
+	 * Handle a file command IF the given command is actually a file command.
+	 */
+	private static void maybeHandleFileCommand( Command command )
 	{
-		fileService = fileManager;
+		if ( command instanceof FileCommand )
+		{
+			if (command instanceof ExportCritterTemplatesCommand)
+			{
+				ExportCritterTemplatesCommand c = (ExportCritterTemplatesCommand) command;
+
+				fileManager.saveCritterTemplates( c.getCritters(), c.getFilepath(),
+						c.getFilename() );
+			}
+			else if (command instanceof ImportCritterTemplatesCommand)
+			{
+				ImportCritterTemplatesCommand c = (ImportCritterTemplatesCommand) command;
+
+				fileManager.loadCritterTemplates( c.getFilepath(), c.getFilename() );
+			}
+			else if (command instanceof SaveConfigurationCommand)
+			{
+				SaveConfigurationCommand c = (SaveConfigurationCommand) command;
+				
+				// TODO
+			}
+			else if (command instanceof LoadConfigurationCommand)
+			{
+				LoadConfigurationCommand c = (LoadConfigurationCommand) command;
+				
+				// TODO
+			}
+			else
+			{
+				throw new UnsupportedOperationException( "The command " + 
+						command.getClass().getSimpleName() + " is not yet supported." );
+			}
+		}
 	}
 	
+	/*
+	 * Handle a configuration command IF the given command is actually a 
+	 * configuration command.
+	 */
+	private static void maybeHandleConfigurationCommand( Command command )
+	{
+		if ( command instanceof CreateCritterTemplateCommand )
+		{
+			CreateCritterTemplateCommand c = (CreateCritterTemplateCommand) command;
+
+			configManager.createCritterTemplate( c.getPrototype(), c.getName() );
+		}
+		else if ( command instanceof ModifyCritterTemplateCommand )
+		{
+			ModifyCritterTemplateCommand c = (ModifyCritterTemplateCommand) command;
+
+			configManager.updateCritterTemplate( c.getTemplate() );
+		}
+		else if ( command instanceof DeleteCritterTemplateCommand )
+		{
+			DeleteCritterTemplateCommand c = (DeleteCritterTemplateCommand) command;
+
+			configManager.deleteCritterTemplate(c.getTemplate());
+		}
+	}
+	
+	/*
+	 * Handle a simulation command IF the given command is actually a simulation 
+	 * command.
+	 */
+	private static void maybeHandleSimulationCommand( Command command )
+	{
+		// TODO : Not yet implemented.
+	}
+	
+	/*
+	 * Handle a results command IF the given command is actually a results command.
+	 */
+	private static void maybeHandleResultsCommand( Command command )
+	{
+		// TODO : Not yet implemented.
+	}
+	
+	/**
+	 * 
+	 * Sets the file manager implementation for the CommandMediator to use.
+	 * 
+	 * @param fileManager the file manager to use
+	 * 
+	 */
+	public void setFileManager( IFileManager fileManager )
+	{
+		CommandMediator.fileManager = fileManager;
+	}
+	
+	/**
+	 * 
+	 * Sets the configuration manager implementation for the CommandMediator to use.
+	 * 
+	 * @param configurationManager the configuration manager to use
+	 * 
+	 */
 	public void setConfigurationManager( IConfigurationManager configurationManager )
 	{
-		configService = configurationManager;
+		CommandMediator.configManager = configurationManager;
 	}
 }
