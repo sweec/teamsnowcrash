@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.utilities.Pair;
 
 /**
@@ -39,7 +40,7 @@ import org.snowcrash.utilities.Pair;
  * 
  */
 
-public class CritterTemplate {
+public class CritterTemplate implements DatabaseObject {
 
 	private Size size;
 	private String name;
@@ -92,6 +93,11 @@ public class CritterTemplate {
 	}
 
 	public String getUuid() {
+		return uuid;
+	}
+	
+	public Object getId()
+	{
 		return uuid;
 	}
 }
