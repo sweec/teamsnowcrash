@@ -1,8 +1,8 @@
 package org.snowcrash.configurationservice;
 
 import org.snowcrash.critter.Critter;
-import org.snowcrash.critter.CritterPrototype;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.data.CritterPrototype;
 
 public interface IConfigurationManager {
 	public CritterTemplate createCritterTemplate(CritterPrototype prototype, String name);
