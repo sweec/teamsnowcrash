@@ -39,6 +39,7 @@ import org.snowcrash.utilities.Pair;
  * 10/27/10	DE	Added age.
  * 11/03/10	DE	Removed Interface
  * 11/09/10	DE	Added UUID
+ * 11/10/10	DE	Added getMyStateContext()
  * 
  */
 
@@ -90,10 +91,14 @@ public class Critter {
 		return maxHealth;
 	}
 
+	public StateContext getMyStateContext() {
+		return myStateContext;
+	}
+
 	public CritterPrototype getPrototype() {
 		return prototype;
 	}
-
+	
 	public Size getSize() {
 		return size;
 	}
@@ -107,20 +112,20 @@ public class Critter {
 		return (pair.getLeft() + pair.getRight()) / 2;
 	}
 	
+	
 	public String getUuid() {
 		return uuid;
 	}
-	
-	
+
 	public boolean isActed() {
 		return acted;
 	}
-
+	
 	public void setActed(boolean acted) {
 		this.acted = acted;
 		this.age++;
 	}
-	
+
 	public void setHealth(int health) {
 		this.health = health;
 	}

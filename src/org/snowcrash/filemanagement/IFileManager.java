@@ -34,8 +34,27 @@ import org.snowcrash.world.World;
  */
 public interface IFileManager
 {
+	/**
+	 * 
+	 * Saves the given simulation world to a file.
+	 * 
+	 * @param world the world to save
+	 * @param filepath the file path of the file
+	 * @param filename the file name of the file
+	 * @return true, if it saved successfully; false, otherwise
+	 * 
+	 */
 	public boolean saveWorld( World world, String filepath, String filename );
 	
+	/**
+	 * 
+	 * Loads simulation world from a file.
+	 * 
+	 * @param filepath the file path of the file
+	 * @param filename the file name of the file
+	 * @return an world instance from the file
+	 * 
+	 */
 	public World loadWorld( String filepath, String filename );
 	
 	/**
@@ -62,9 +81,51 @@ public interface IFileManager
 	 */
 	public CritterTemplate[] loadCritterTemplates(String filepath, String filename);
 	
+	/**
+	 * 
+	 * Initialize the default log file.
+	 * 
+	 */
 	public void setLogger();
 	
+	/**
+	 * 
+	 * Initialize with user specified log file.
+	 * 
+	 * @param filepath the file path of the file
+	 * @param filename the file name of the file
+	 * 
+	 */
 	public void logMessage( String message );
 	
+	/**
+	 * 
+	 * Display the default log file in default window
+	 * 
+	 */
 	public void viewLogFile();
+	
+	/**
+	 * 
+	 * Display user specified log file in default window.
+	 * 
+	 * @param filepath the file path of the file
+	 * @param filename the file name of the file
+	 * 
+	 */
+	public void viewLogFile(String filepath, String filename);
+
+	/**
+	 * 
+	 * Display user specified log file in a window of wXh.
+	 * Display r rows each time.
+	 * 
+	 * @param filepath the file path of the file
+	 * @param filename the file name of the file
+	 * @param w width of the window
+	 * @param h height of the window
+	 * @param r the number of rows to display each time in the window
+	 * 
+	 */
+	public void viewLogFile(String filepath, String filename, int w, int h, int r);
 }

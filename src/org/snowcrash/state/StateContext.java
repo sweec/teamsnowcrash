@@ -32,12 +32,6 @@ package org.snowcrash.state;
 
 import org.snowcrash.critter.Critter;
 
-/**
- * This is a small wrapping class that manages what the current state is.
- * @author dearnest
- *
- */
-
 public class StateContext {
 	private State myState;
 	

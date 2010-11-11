@@ -47,6 +47,11 @@ public class CritterTemplate {
 	private CritterPrototype prototype;
 	private HashMap<Trait, Pair<Integer,Integer>> traitRange;
 
+	// add No-args constructor to gson's requirement
+	public CritterTemplate() {
+		
+	}
+	
 	public CritterTemplate(CritterPrototype prototype, String name) {
 		this.prototype = prototype;
 		this.name = name;
