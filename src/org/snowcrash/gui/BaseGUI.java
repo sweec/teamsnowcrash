@@ -302,8 +302,8 @@ public class BaseGUI extends JFrame implements ActionListener
 	
 	JPanel mediaButtonPanel(boolean ma, boolean mb, boolean mc, boolean md)
 	{
-		JPanel ButtonPanel = new JPanel();
-		ButtonPanel.setLayout( new FlowLayout() );
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout( new FlowLayout() );
 		
 		rewindButton = new JButton();
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
@@ -338,18 +338,18 @@ public class BaseGUI extends JFrame implements ActionListener
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
 		
-		ButtonPanel.add(rewindButton);
-		ButtonPanel.add(playButton);
-		ButtonPanel.add(stopButton);
-		ButtonPanel.add(ffButton);
-		ButtonPanel.add(simPBar);
+		buttonPanel.add(rewindButton);
+		buttonPanel.add(playButton);
+		buttonPanel.add(stopButton);
+		buttonPanel.add(ffButton);
+		buttonPanel.add(simPBar);
 
         rewindButton.addActionListener( this );
         playButton.addActionListener( this );
         stopButton.addActionListener( this );
         ffButton.addActionListener( this );
 		
-		return ButtonPanel;
+		return buttonPanel;
 	}
 	
 	public void actionPerformed(ActionEvent e)

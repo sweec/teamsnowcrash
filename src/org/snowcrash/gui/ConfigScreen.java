@@ -19,26 +19,35 @@ public class ConfigScreen extends BaseGUI
 		mBar.add(menu);
 		menu = simulationMenu(false, true, false, false);
 		mBar.add(menu);
+		
 		menu = resultsMenu();
 		mBar.add(menu);
+		
 		menu = helpMenu();
 		mBar.add(menu);
 		
 		setJMenuBar(mBar);
 		JPanel mPanel = mediaButtonPanel(false, true, false, false);
 		content.add(mPanel, BorderLayout.SOUTH);
-				
+		
+		JTabbedPane tabPane;
 		CritterPanel critterConfig = new CritterPanel();
 		JPanel cPanel = critterConfig.critterObjects();
-		content.add(cPanel, BorderLayout.WEST);
+		tabPane = new JTabbedPane();
+		tabPane.addTab("Critters", cPanel);
+		content.add(tabPane, BorderLayout.WEST);
 		
 		TraitsPanel traitsConfig = new TraitsPanel();
 		cPanel = traitsConfig.traitsObjects();
-		content.add(cPanel, BorderLayout.CENTER);
+		tabPane = new JTabbedPane();
+		tabPane.addTab("Traits", cPanel);
+		content.add(tabPane, BorderLayout.CENTER);
 		
 		WorldPanel worldConfig = new WorldPanel();
 		cPanel = worldConfig.worldObjects();
-		content.add(cPanel, BorderLayout.EAST);
+		tabPane = new JTabbedPane();
+		tabPane.addTab("World Settings", cPanel);
+		content.add(tabPane, BorderLayout.EAST);
 		
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -51,4 +60,5 @@ public class ConfigScreen extends BaseGUI
 		ConfigScreen gaf = new ConfigScreen();
 		gaf.BaseGUI();
 	}
+	
 }
