@@ -21,6 +21,8 @@
 
 package org.snowcrash.world;
 
+import java.util.Arrays;
+
 import org.snowcrash.critter.Critter;
 import org.snowcrash.utilities.Pair;
 
@@ -30,26 +32,32 @@ import org.snowcrash.utilities.Pair;
  * Describes the world map on which critters play.
  * 11/01/2010	DE	Created.
  * 11/03/10	DE	No more critter interface
+ * 11/10/10	DE	Added processTurn()
  * 
  */
 
 public class World {
 
 	private static World instance;
+
 	public static World getInstance() {
 		if (instance == null) {
 			instance = new World();
 		}
 		return instance;
 	}
+	
 	public static World reset() {
 		instance = null;
 		return getInstance();
 	}
+	
 	private Critter[][] map;
 	private int sizeX;
 	private int sizeY;
 	private int turns;
+	private Pair<Integer, Integer> currPos;
+	private boolean isNext = false;
 	
 	/**
 	 * Adds a critter to a specific x,y location.
@@ -65,7 +73,7 @@ public class World {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Verifies that x is in the boundaries of the map
 	 * @param x
@@ -91,7 +99,7 @@ public class World {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Retrieves a critter at the coordinate or returns null if nothing is there.
 	 * @param coordinate
@@ -106,10 +114,14 @@ public class World {
 		}
 	}
 	
+	public Pair<Integer, Integer> getCurrPos() {
+		return currPos;
+	}
+	
 	public Critter[][] getMap() {
 		return map;
 	}
-
+	
 	public int getSizeX() {
 		return sizeX;
 	}
@@ -117,9 +129,26 @@ public class World {
 	public int getSizeY() {
 		return sizeY;
 	}
-	
+
 	public int getTurns() {
 		return turns;
+	}
+	
+	private boolean hasNext() {
+		isNext = false;
+		int currX = currPos.getLeft();
+		int currY = currPos.getRight();
+		for (;currX < sizeX; currX++) {
+			for (;currY < sizeY; currY++) {
+				if (map[currX][currY] != null) {
+					isNext = true;
+					currPos = new Pair<Integer, Integer>(currX, currY);
+					return true;
+				}
+			}
+			currY = 0;
+		}
+		return false;
 	}
 	
 	/**
@@ -138,6 +167,35 @@ public class World {
 		return false;
 	}
 	
+	private Pair<Integer, Integer> next() {
+		Pair<Integer, Integer> next = null;
+		if (isNext) {
+			next = currPos;
+		} else {
+			if (hasNext()) {
+				isNext = false;
+				next = currPos;
+			}
+		}
+		if (!(currPos.getRight() + 1 < sizeY)) {
+			currPos = new Pair<Integer, Integer> (currPos.getLeft() + 1, 0);
+		}
+		return next;
+	}
+	
+	/*
+	 * Iterates through the world and causes critters that haven't acted to act.
+	 */
+	public void processTurn() {
+		while (hasNext()) {
+			Pair<Integer, Integer> next = next();
+			Critter critter = get(next);
+			if (!critter.isActed()) {
+				critter.getMyStateContext().act(critter);
+			}
+		}
+	}
+
 	/**
 	 * Sets the coordinate to null.
 	 * @param coordinate
@@ -168,16 +226,9 @@ public class World {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < sizeX; i++) {
-			for (int j = 0; j < sizeY; j++) {
-				if (map[i][j] != null) {
-					sb.append("(" + i + "," + j + "): ");
-					sb.append(map[i][j].toString() + "\n");
-				}
-			}
-		}
-		return sb.toString();
+		return "World [map=" + Arrays.toString(map) + ", sizeX=" + sizeX
+				+ ", sizeY=" + sizeY + ", turns=" + turns + ", currPos="
+				+ currPos + ", isNext=" + isNext + "]";
 	}
 	
 
