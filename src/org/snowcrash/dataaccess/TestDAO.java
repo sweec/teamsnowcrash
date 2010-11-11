@@ -5,26 +5,26 @@ import java.util.Observable;
 class TestDAO extends Observable implements DAO {
 
 	@Override
-	public void create(Object o) {
+	public void create(DatabaseObject o) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public Object read(int id) {
+	public DatabaseObject read(int id) {
 		// TODO Auto-generated method stub
 
 		return null;
 	}
 
 	@Override
-	public void update(Object o) {
+	public void update(DatabaseObject o) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void delete(Object o) {
+	public void delete(DatabaseObject o) {
 		// TODO Auto-generated method stub
 
 	}
