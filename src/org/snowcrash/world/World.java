@@ -32,7 +32,7 @@ import org.snowcrash.utilities.Pair;
  * Describes the world map on which critters play.
  * 11/01/2010	DE	Created.
  * 11/03/10	DE	No more critter interface
- * 11/10/10	DE	Added processTurn()
+ * 11/10/10	DE	Added processTurn(); added constructor; added currentTurn
  * 
  */
 
@@ -56,8 +56,16 @@ public class World {
 	private int sizeX;
 	private int sizeY;
 	private int turns;
+	private int currentTurn;
 	private Pair<Integer, Integer> currPos;
 	private boolean isNext = false;
+	
+	private World() {
+		this.currentTurn = 0;
+		this.sizeX = 0;
+		this.sizeY = 0;
+		this.turns = 1;
+	}
 	
 	/**
 	 * Adds a critter to a specific x,y location.
@@ -114,6 +122,10 @@ public class World {
 		}
 	}
 	
+	public int getCurrentTurn() {
+		return currentTurn;
+	}
+	
 	public Pair<Integer, Integer> getCurrPos() {
 		return currPos;
 	}
@@ -125,11 +137,11 @@ public class World {
 	public int getSizeX() {
 		return sizeX;
 	}
-	
+
 	public int getSizeY() {
 		return sizeY;
 	}
-
+	
 	public int getTurns() {
 		return turns;
 	}
@@ -182,7 +194,7 @@ public class World {
 		}
 		return next;
 	}
-	
+
 	/*
 	 * Iterates through the world and causes critters that haven't acted to act.
 	 */
@@ -194,6 +206,7 @@ public class World {
 				critter.getMyStateContext().act(critter);
 			}
 		}
+		currentTurn++;
 	}
 
 	/**
