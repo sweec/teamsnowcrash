@@ -1,5 +1,14 @@
 package org.snowcrash.state;
 
-public class Growing extends StateBase {
+import org.snowcrash.critter.Critter;
 
+public class Growing implements State {
+
+	@Override
+	public void act(StateContext stateContext, Critter myCritter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }
