@@ -87,13 +87,13 @@ class CommandMediator
 			}
 			else if (command instanceof SaveConfigurationCommand)
 			{
-				SaveConfigurationCommand c = (SaveConfigurationCommand) command;
+				//SaveConfigurationCommand c = (SaveConfigurationCommand) command;
 				
 				// TODO
 			}
 			else if (command instanceof LoadConfigurationCommand)
 			{
-				LoadConfigurationCommand c = (LoadConfigurationCommand) command;
+				//LoadConfigurationCommand c = (LoadConfigurationCommand) command;
 				
 				// TODO
 			}

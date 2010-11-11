@@ -1,5 +1,7 @@
 package org.snowcrash.dataaccess;
 
+import org.snowcrash.utilities.Observable;
+
 
 /**
  * 
@@ -8,7 +10,7 @@ package org.snowcrash.dataaccess;
  * @author Mike
  *
  */
-public interface DAO
+public interface DAO extends Observable
 {
 	/**
 	 * 
@@ -18,7 +20,7 @@ public interface DAO
 	 * @throws DAOException
 	 * 
 	 */
-	public void create(Object o) throws DAOException;
+	public void create(DatabaseObject o) throws DAOException;
 
 	/**
 	 * 
@@ -29,7 +31,7 @@ public interface DAO
 	 * @throws DAOException
 	 * 
 	 */
-	public Object read(int id) throws DAOException;
+	public DatabaseObject read(int id) throws DAOException;
 
 	/**
 	 * 
@@ -39,7 +41,7 @@ public interface DAO
 	 * @throws DAOException
 	 * 
 	 */
-	public void update(Object o) throws DAOException;
+	public void update(DatabaseObject o) throws DAOException;
 
 	/**
 	 * 
@@ -49,7 +51,7 @@ public interface DAO
 	 * @throws DAOException
 	 * 
 	 */
-	public void delete(Object o) throws DAOException;
+	public void delete(DatabaseObject o) throws DAOException;
 
 	/**
 	 * 
