@@ -21,18 +21,24 @@
 
 package org.snowcrash.filemanagement;
 
-import org.snowcrash.critter.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+
+import org.snowcrash.critter.Critter;
+import org.snowcrash.critter.CritterFactory;
+import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
+import org.snowcrash.utilities.Pair;
 import org.snowcrash.world.World;
-import org.snowcrash.utilities.*;
 
-import java.io.*;
 import com.google.gson.Gson;
-//import com.google.gson.JsonStreamParser;
-//import com.google.gson.JsonElement;
-
-import java.util.logging.*;
 
 /**
  * @author dong
@@ -174,7 +180,7 @@ public class FileManager implements IFileManager {
 		}
 		
 		// test saveWorld/loadWorld
-		World world = new World();
+		World world = World.getInstance();
 		world.setSize(3, 3);
 		world.add(0, 0, critter[0]);
 		world.add(1, 1, critter[1]);
