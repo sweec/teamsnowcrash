@@ -1,30 +1,30 @@
 package org.snowcrash.dataaccess;
 
-import java.util.Observable;
 import java.util.Observer;
 
 public class DAOFactory {
 	private static final DAO TEST_DAO = new TestDAO();
-
-	private static final DAO SINGLETON_DAO = null;
+	
+	private static final DAO SINGLETON_DAO = new CachedDAO();
 
 	private DAOFactory() {
 		// -- Static class.
 	}
 
 	public static DAO getDAO() {
+		return SINGLETON_DAO;
+	}
+	
+	public static DAO getTestDAO()
+	{
 		return TEST_DAO;
 	}
 
 	public static boolean addObserver(Observer observer) {
 		boolean success = false;
 
-		if (SINGLETON_DAO instanceof Observable) {
-			((Observable) SINGLETON_DAO).addObserver(observer);
-
-			success = true;
-		}
-
+		SINGLETON_DAO.addObserver( observer );
+		
 		return success;
 	}
 }
