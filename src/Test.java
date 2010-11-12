@@ -1,5 +1,9 @@
+import javax.swing.JFrame;
+
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.gui.widgets.CritterTemplateWidget;
+import org.snowcrash.gui.widgets.SimulationProgressBar;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.timeengine.TimeListener;
 
@@ -13,6 +17,10 @@ public class Test {
 		testCommands();
 
 		testTimer();
+		
+		testCritterTemplateWidget();
+		
+		testSimulationProgressBar();
 	}
 
 	private static void testCommands() {
@@ -47,5 +55,32 @@ public class Test {
 		TimeEngine.setTimeLimit(10);
 
 		TimeEngine.startTimer();
+	}
+	
+	private static void testCritterTemplateWidget()
+	{
+		JFrame frame = new JFrame();
+		frame.setSize( 800, 600 );
+		
+		CritterTemplateWidget ctw = new CritterTemplateWidget( "Test Critter" );
+		frame.add( ctw );
+		
+		CritterTemplateWidget.setMaxCritterCount( 50 );
+		
+		frame.setVisible( true );
+	}
+	
+	private static void testSimulationProgressBar()
+	{
+		JFrame frame = new JFrame();
+		frame.setSize( 800, 600 );
+		
+		SimulationProgressBar spb = new SimulationProgressBar();
+		frame.add( spb );
+		
+		spb.setSize( 600, 20 );
+		spb.setNumberOfTicks( 28 );
+		
+		frame.setVisible( true );
 	}
 }
