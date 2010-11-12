@@ -10,11 +10,11 @@ public class BaseGUI extends JFrame implements ActionListener
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
 	
-	JMenuItem rewind, play, stop, ff;
+	JMenuItem rewind, play, stop, ff, saveSimulation;
 	JButton rewindButton, playButton, stopButton, ffButton;
 	public static String newline = System.getProperty("line.separator");
 
-	BaseGUI()
+	public BaseGUI()
 	{	
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
@@ -209,8 +209,8 @@ public class BaseGUI extends JFrame implements ActionListener
 		
 		simulation.addSeparator();
 		
-		final JMenuItem sSim = new JMenuItem("Save Simulation");
-		simulation.add(sSim);
+		saveSimulation = new JMenuItem("Save Simulation");
+		simulation.add(saveSimulation);
 		
 		final JFileChooser fc = new JFileChooser();
 		
@@ -228,7 +228,7 @@ public class BaseGUI extends JFrame implements ActionListener
         play.addActionListener(this);
         stop.addActionListener(this);
         ff.addActionListener(this);
-        sSim.addActionListener(simMenuListener);
+        saveSimulation.addActionListener(simMenuListener);
 		
 		return simulation;
 	}
@@ -338,11 +338,17 @@ public class BaseGUI extends JFrame implements ActionListener
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
 		
-		buttonPanel.add(rewindButton);
-		buttonPanel.add(playButton);
-		buttonPanel.add(stopButton);
-		buttonPanel.add(ffButton);
-		buttonPanel.add(simPBar);
+		JPanel tempPanel = new JPanel();
+		tempPanel.add(rewindButton);
+		tempPanel.add(playButton);
+		tempPanel.add(stopButton);
+		tempPanel.add(ffButton);
+		buttonPanel.setLayout(new BorderLayout());
+		buttonPanel.add(tempPanel, BorderLayout.WEST);
+		simPBar.setPreferredSize(new Dimension(WIDTH - 300, 35));
+		tempPanel = new JPanel();
+		tempPanel.add(simPBar);
+		buttonPanel.add(tempPanel, BorderLayout.EAST);
 
         rewindButton.addActionListener( this );
         playButton.addActionListener( this );

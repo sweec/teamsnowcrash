@@ -7,58 +7,54 @@ import java.awt.event.*;
 
 public class ConfigScreen extends BaseGUI
 {
-	void BaseGUI()
+	public ConfigScreen()
 	{
+		rewind.setEnabled(false);
+		play.setEnabled(true);
+		stop.setEnabled(false);
+		ff.setEnabled(false);
+		saveSimulation.setEnabled(false);
+		
+		rewindButton.setEnabled(false);
+		playButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		ffButton.setEnabled(false);
+		
 		Container content = getContentPane();
-		content.setLayout( new BorderLayout() );
-		
-		JMenuBar mBar = new JMenuBar(); 
-		JMenu menu = fileMenu();
-		mBar.add(menu);
-		menu = configurationMenu();
-		mBar.add(menu);
-		menu = simulationMenu(false, true, false, false);
-		mBar.add(menu);
-		
-		menu = resultsMenu();
-		mBar.add(menu);
-		
-		menu = helpMenu();
-		mBar.add(menu);
-		
-		setJMenuBar(mBar);
-		JPanel mPanel = mediaButtonPanel(false, true, false, false);
-		content.add(mPanel, BorderLayout.SOUTH);
+
+		JPanel tempPanel = new JPanel();
+		tempPanel.setLayout(new FlowLayout());
 		
 		JTabbedPane tabPane;
 		CritterPanel critterConfig = new CritterPanel();
 		JPanel cPanel = critterConfig.critterObjects();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
-		content.add(tabPane, BorderLayout.WEST);
+		tabPane.setPreferredSize(new Dimension(WIDTH / 5 + 13, HEIGHT - 100));
+		tempPanel.add(tabPane);
+		content.add(tempPanel, BorderLayout.WEST);
 		
 		TraitsPanel traitsConfig = new TraitsPanel();
 		cPanel = traitsConfig.traitsObjects();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Traits", cPanel);
-		content.add(tabPane, BorderLayout.CENTER);
+		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 30, HEIGHT - 100));
+		tempPanel.add(tabPane);
+		content.add(tempPanel, BorderLayout.CENTER);
 		
 		WorldPanel worldConfig = new WorldPanel();
 		cPanel = worldConfig.worldObjects();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("World Settings", cPanel);
-		content.add(tabPane, BorderLayout.EAST);
+		tabPane.setPreferredSize(new Dimension(WIDTH / 5 - 15, HEIGHT - 100));
+		tempPanel.add(tabPane);
 		
-		setSize(WIDTH, HEIGHT);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("SnowCrash");
-		setVisible(true);
+		content.add(tempPanel, BorderLayout.EAST);
 	}
 	
 	public static void main(String[] args)
 	{
-		ConfigScreen gaf = new ConfigScreen();
-		gaf.BaseGUI();
+		new ConfigScreen();
 	}
 	
 }
