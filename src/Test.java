@@ -2,25 +2,26 @@ import javax.swing.JFrame;
 
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.timeengine.TimeListener;
 
+
+@SuppressWarnings( "unused" )
 public class Test {
 	public static void main(String... args) {
 		/*
 		 * Insert your own test code here. If you want to check-in changes,
 		 * please split your added code into a different method.
 		 */
-
-		testCommands();
-
-		testTimer();
 		
-		testCritterTemplateWidget();
 		
-		testSimulationProgressBar();
 	}
 
 	private static void testCommands() {
@@ -82,5 +83,27 @@ public class Test {
 		spb.setNumberOfTicks( 28 );
 		
 		frame.setVisible( true );
+	}
+	
+	private static void testDatabase() throws DAOException
+	{
+		DAO dao = DAOFactory.getDAO();
+		
+		CritterTemplate template = new CritterTemplate( CritterPrototype.PLANT, "Plant" );
+		
+		dao.create( template );
+		
+		template.setPrototype( CritterPrototype.PREDATOR );
+		
+		template = (CritterTemplate) dao.read( CritterTemplate.class, template.getId() );
+		System.out.println( template.getPrototype() + "\t" + template.getName() );
+		
+		template.setPrototype( CritterPrototype.PREY );
+		dao.update( template );
+		
+		template.setName( "Rawr" );
+		
+		template = (CritterTemplate) dao.read( CritterTemplate.class, template.getId() );
+		System.out.println( template.getPrototype() + "\t" + template.getName() );
 	}
 }
