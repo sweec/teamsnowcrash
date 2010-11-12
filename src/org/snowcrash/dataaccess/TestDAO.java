@@ -11,7 +11,7 @@ class TestDAO extends Observable implements DAO {
 	}
 
 	@Override
-	public DatabaseObject read(int id) {
+	public DatabaseObject read(Class<?> type, int id) {
 		// TODO Auto-generated method stub
 
 		return null;
@@ -30,7 +30,7 @@ class TestDAO extends Observable implements DAO {
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(Class<?> type, int id) {
 		// TODO Auto-generated method stub
 
 	}
