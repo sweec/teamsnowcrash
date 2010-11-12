@@ -39,7 +39,7 @@ import javax.swing.JTextField;
  *
  */
 @SuppressWarnings("serial")
-class CritterTemplateWidget extends JPanel implements ActionListener, MouseListener
+public class CritterTemplateWidget extends JPanel implements ActionListener, MouseListener
 {
 	// -- Keeps track of the current critter count across all instances of this widget.
 	private static int critterCount = 0;
