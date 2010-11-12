@@ -15,12 +15,8 @@ import java.util.Observable;
  * @param <T> the type of objects stored in the table
  * 
  */
-class CachedTable<T extends DatabaseObject> extends Observable implements DAO
+class CachedTable<T extends DatabaseObject> extends Observable implements DAO, DAOExceptionMessages
 {
-	private static final String ALREADY_EXISTS_MESSAGE = "Data already exists in the database.";
-	private static final String UNSUPPORTED_TYPE_MESSAGE = "UnsupportedType %s.";
-	private static final String DOES_NOT_EXIST_MESSAGE = "Object does not exist in the database.";
-	
 	/*
 	 * The type of objects stored in the table.
 	 */
@@ -74,18 +70,27 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO
 	 * (non-Javadoc)
 	 * @see org.snowcrash.dataaccess.DAO#read(int)
 	 */
-	public DatabaseObject read(int id) throws InvalidInputDAOException
+	public DatabaseObject read(Class<?> type, int id) throws InvalidInputDAOException
 	{
 		DatabaseObject object = null;
 		
-		if ( table.containsKey( id ) )
+		if ( this.type.equals( type ) )
 		{
-			object = table.get( id );
+			if ( table.containsKey( id ) )
+			{
+				object = table.get( id );
+			}
+			else
+			{
+				// -- Data does not exist.
+				throw new InvalidInputDAOException( DOES_NOT_EXIST_MESSAGE );
+			}
 		}
 		else
 		{
-			// -- Data does not exist.
-			throw new InvalidInputDAOException( DOES_NOT_EXIST_MESSAGE );
+			// -- Unsupported type.
+			throw new InvalidInputDAOException( String.format(
+					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
 		}
 		
 		return object;
@@ -149,17 +154,26 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO
 	 * (non-Javadoc)
 	 * @see org.snowcrash.dataaccess.DAO#delete(int)
 	 */
-	public void delete(int id) throws InvalidInputDAOException
+	public void delete(Class<?> type, int id) throws InvalidInputDAOException
 	{
-		if ( table.containsKey( id ) )
+		if ( this.type.equals( type ) )
 		{
-			DatabaseObject value = table.get( id );
-			table.remove( value );
+			if ( table.containsKey( id ) )
+			{
+				DatabaseObject value = table.get( id );
+				table.remove( value );
+			}
+			else
+			{
+				// -- Data does not exist.
+				throw new InvalidInputDAOException( DOES_NOT_EXIST_MESSAGE );
+			}
 		}
 		else
 		{
-			// -- Data does not exist.
-			throw new InvalidInputDAOException( DOES_NOT_EXIST_MESSAGE );
+			// -- Unsupported type.
+			throw new InvalidInputDAOException( String.format(
+					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
 		}
 	}
 }
