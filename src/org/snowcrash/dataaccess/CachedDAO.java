@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
+import org.snowcrash.utilities.CloningUtility;
+
 
 /**
  * 
@@ -41,14 +43,15 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 		/*
 		 * Any exceptions from the table are automatically passed up.
 		 */
-		table.create( o );
+		DatabaseObject clone = CloningUtility.clone( o );
+		table.create( clone );
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * @see org.snowcrash.dataaccess.DAO#read(int)
 	 */
-	public DatabaseObject read(Class<?> type, int id) throws DAOException
+	public DatabaseObject read(Class<?> type, Object id) throws DAOException
 	{
 		DatabaseObject object = null;
 		
@@ -83,7 +86,8 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 			/*
 			 * Any exceptions from the table are automatically passed up.
 			 */
-			table.update( o );
+			DatabaseObject clone = CloningUtility.clone( o );
+			table.update( clone );
 		}
 		else
 		{
@@ -118,7 +122,7 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 	 * (non-Javadoc)
 	 * @see org.snowcrash.dataaccess.DAO#delete(java.lang.Class, int)
 	 */
-	public void delete(Class<?> type, int id) throws DAOException
+	public void delete(Class<?> type, Object id) throws DAOException
 	{
 		CachedTable<? extends DatabaseObject> table = database.get( type );
 		
