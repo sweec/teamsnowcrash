@@ -70,7 +70,7 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 	 * (non-Javadoc)
 	 * @see org.snowcrash.dataaccess.DAO#read(int)
 	 */
-	public DatabaseObject read(Class<?> type, int id) throws InvalidInputDAOException
+	public DatabaseObject read(Class<?> type, Object id) throws InvalidInputDAOException
 	{
 		DatabaseObject object = null;
 		
@@ -154,7 +154,7 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 	 * (non-Javadoc)
 	 * @see org.snowcrash.dataaccess.DAO#delete(int)
 	 */
-	public void delete(Class<?> type, int id) throws InvalidInputDAOException
+	public void delete(Class<?> type, Object id) throws InvalidInputDAOException
 	{
 		if ( this.type.equals( type ) )
 		{

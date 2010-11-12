@@ -31,7 +31,7 @@ public interface DAO extends Observable
 	 * @throws DAOException
 	 * 
 	 */
-	public DatabaseObject read(Class<?> type, int id) throws DAOException;
+	public DatabaseObject read(Class<?> type, Object id) throws DAOException;
 
 	/**
 	 * 
@@ -61,5 +61,5 @@ public interface DAO extends Observable
 	 * @throws DAOException
 	 * 
 	 */
-	public void delete(Class<?> type, int id) throws DAOException;
+	public void delete(Class<?> type, Object id) throws DAOException;
 }
