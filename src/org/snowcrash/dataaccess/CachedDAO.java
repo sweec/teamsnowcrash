@@ -1,0 +1,138 @@
+package org.snowcrash.dataaccess;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+
+
+/**
+ * 
+ * This class represents a database, and is implemented as a map from type to table.
+ * 
+ * @author Mike
+ *
+ */
+class CachedDAO extends Observable implements DAO, DAOExceptionMessages
+{
+	/*
+	 * The database.
+	 */
+	private Map<Class<?>,CachedTable<? extends DatabaseObject>> database = 
+		new HashMap<Class<?>,CachedTable<? extends DatabaseObject>>();
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#create(org.snowcrash.dataaccess.DatabaseObject)
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void create(DatabaseObject o) throws DAOException
+	{
+		CachedTable<? extends DatabaseObject> table = database.get( o.getClass() );
+		
+		if ( table == null )
+		{
+			/*
+			 * Lazy-init.
+			 */
+			table = new CachedTable( o.getClass() );
+			database.put( o.getClass(), table );
+		}
+		
+		/*
+		 * Any exceptions from the table are automatically passed up.
+		 */
+		table.create( o );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#read(int)
+	 */
+	public DatabaseObject read(Class<?> type, int id) throws DAOException
+	{
+		DatabaseObject object = null;
+		
+		CachedTable<? extends DatabaseObject> table = database.get( type );
+		
+		if ( table != null )
+		{
+			/*
+			 * Any exceptions from the table are automatically passed up.
+			 */
+			object = table.read(type, id);
+		}
+		else
+		{
+			throw new InvalidInputDAOException( String.format( 
+					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
+		}
+		
+		return object;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#update(org.snowcrash.dataaccess.DatabaseObject)
+	 */
+	public void update(DatabaseObject o) throws DAOException
+	{
+		CachedTable<? extends DatabaseObject> table = database.get( o.getClass() );
+		
+		if ( table != null )
+		{
+			/*
+			 * Any exceptions from the table are automatically passed up.
+			 */
+			table.update( o );
+		}
+		else
+		{
+			throw new InvalidInputDAOException( String.format( 
+					UNSUPPORTED_TYPE_MESSAGE, o.getClass().getSimpleName() ) );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#delete(org.snowcrash.dataaccess.DatabaseObject)
+	 */
+	public void delete(DatabaseObject o) throws DAOException
+	{
+		CachedTable<? extends DatabaseObject> table = database.get( o.getClass() );
+		
+		if ( table != null )
+		{
+			/*
+			 * Any exceptions from the table are automatically passed up.
+			 */
+			table.delete( o );
+		}
+		else
+		{
+			throw new InvalidInputDAOException( String.format( 
+					UNSUPPORTED_TYPE_MESSAGE, o.getClass().getSimpleName() ) );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#delete(java.lang.Class, int)
+	 */
+	public void delete(Class<?> type, int id) throws DAOException
+	{
+		CachedTable<? extends DatabaseObject> table = database.get( type );
+		
+		if ( table != null )
+		{
+			/*
+			 * Any exceptions from the table are automatically passed up.
+			 */
+			table.delete( type, id );
+		}
+		else
+		{
+			throw new InvalidInputDAOException( String.format( 
+					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
+		}
+	}
+}
