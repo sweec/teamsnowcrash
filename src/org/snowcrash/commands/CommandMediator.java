@@ -2,6 +2,7 @@ package org.snowcrash.commands;
 
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.filemanagement.IFileManager;
+import org.snowcrash.world.World;
 
 
 /**
@@ -87,15 +88,15 @@ class CommandMediator
 			}
 			else if (command instanceof SaveConfigurationCommand)
 			{
-				//SaveConfigurationCommand c = (SaveConfigurationCommand) command;
+				SaveConfigurationCommand c = (SaveConfigurationCommand) command;
 				
-				// TODO
+				fileManager.saveWorld( World.getInstance(), c.getFilepath(), c.getFilename() );
 			}
 			else if (command instanceof LoadConfigurationCommand)
 			{
-				//LoadConfigurationCommand c = (LoadConfigurationCommand) command;
+				LoadConfigurationCommand c = (LoadConfigurationCommand) command;
 				
-				// TODO
+				fileManager.loadWorld( c.getFilepath(), c.getFilename() );
 			}
 			else
 			{
