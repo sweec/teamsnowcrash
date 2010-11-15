@@ -3,6 +3,7 @@ package org.snowcrash.gui.widgets;
 import java.awt.Dimension;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;

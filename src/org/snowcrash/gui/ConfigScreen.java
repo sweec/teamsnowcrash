@@ -1,9 +1,13 @@
 package org.snowcrash.gui;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public class ConfigScreen extends BaseGUI
 {
@@ -21,35 +25,49 @@ public class ConfigScreen extends BaseGUI
 		ffButton.setEnabled(false);
 		
 		Container content = getContentPane();
+		int contentWidth = content.getWidth();
 
-		JPanel tempPanel = new JPanel();
-		tempPanel.setLayout(new FlowLayout());
+		JPanel configPanel = new JPanel();
+		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
+		
+		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		JTabbedPane tabPane;
 		CritterPanel critterConfig = new CritterPanel();
-		JPanel cPanel = critterConfig.critterObjects();
+		JPanel cPanel = critterConfig.CritterPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
-		tabPane.setPreferredSize(new Dimension(WIDTH / 5 + 13, HEIGHT - 100));
-		tempPanel.add(tabPane);
-		content.add(tempPanel, BorderLayout.WEST);
+		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		configPanel.add(tabPane);
+		content.add(configPanel);
+		
+		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		TraitsPanel traitsConfig = new TraitsPanel();
-		cPanel = traitsConfig.traitsObjects();
+		cPanel = traitsConfig.TraitsPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Traits", cPanel);
-		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 30, HEIGHT - 100));
-		tempPanel.add(tabPane);
-		content.add(tempPanel, BorderLayout.CENTER);
+		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		configPanel.add(tabPane);
+		content.add(configPanel);
+		
+		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		WorldPanel worldConfig = new WorldPanel();
-		cPanel = worldConfig.worldObjects();
+		cPanel = worldConfig.WorldPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("World Settings", cPanel);
-		tabPane.setPreferredSize(new Dimension(WIDTH / 5 - 15, HEIGHT - 100));
-		tempPanel.add(tabPane);
+		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		configPanel.add(tabPane);	
+		content.add(configPanel);
 		
-		content.add(tempPanel, BorderLayout.EAST);
+		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 	}
 	
 	public static void main(String[] args)
