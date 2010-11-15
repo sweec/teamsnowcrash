@@ -22,34 +22,28 @@ public class ConfigScreen extends BaseGUI
 		
 		Container content = getContentPane();
 
-		JPanel tempPanel = new JPanel();
-		tempPanel.setLayout(new FlowLayout());
-		
 		JTabbedPane tabPane;
 		CritterPanel critterConfig = new CritterPanel();
 		JPanel cPanel = critterConfig.critterObjects();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
 		tabPane.setPreferredSize(new Dimension(WIDTH / 5 + 13, HEIGHT - 100));
-		tempPanel.add(tabPane);
-		content.add(tempPanel, BorderLayout.WEST);
+		content.add(tabPane, BorderLayout.LINE_START);
 		
 		TraitsPanel traitsConfig = new TraitsPanel();
 		cPanel = traitsConfig.traitsObjects();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Traits", cPanel);
 		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 30, HEIGHT - 100));
-		tempPanel.add(tabPane);
-		content.add(tempPanel, BorderLayout.CENTER);
+		content.add(tabPane, BorderLayout.CENTER);
 		
 		WorldPanel worldConfig = new WorldPanel();
 		cPanel = worldConfig.worldObjects();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("World Settings", cPanel);
 		tabPane.setPreferredSize(new Dimension(WIDTH / 5 - 15, HEIGHT - 100));
-		tempPanel.add(tabPane);
 		
-		content.add(tempPanel, BorderLayout.EAST);
+		content.add(tabPane, BorderLayout.LINE_END);
 	}
 	
 	public static void main(String[] args)

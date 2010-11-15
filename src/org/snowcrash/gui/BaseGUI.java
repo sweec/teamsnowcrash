@@ -17,7 +17,10 @@ public class BaseGUI extends JFrame implements ActionListener
 	public BaseGUI()
 	{	
 		Container content = getContentPane();
-		content.setLayout( new BorderLayout() );
+		BorderLayout bLO = new BorderLayout();
+		bLO.setHgap(10);
+		bLO.setVgap(10);
+		content.setLayout( bLO );
 		
 		JMenuBar mBar = new JMenuBar();
 		JMenu menu = new JMenu(); 
@@ -34,7 +37,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		
 		setJMenuBar(mBar);
 		JPanel mpanel = mediaButtonPanel(true, true, true, true);
-		content.add(mpanel, BorderLayout.SOUTH);
+		content.add(mpanel, BorderLayout.PAGE_END);
 		
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -335,20 +338,18 @@ public class BaseGUI extends JFrame implements ActionListener
 		ffButton.setToolTipText("Simulate to End");
 		ffButton.setEnabled(md);
 		
+		buttonPanel.setLayout(new BorderLayout());
+		
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
+		buttonPanel.add(simPBar, BorderLayout.CENTER);
 		
 		JPanel tempPanel = new JPanel();
 		tempPanel.add(rewindButton);
 		tempPanel.add(playButton);
 		tempPanel.add(stopButton);
 		tempPanel.add(ffButton);
-		buttonPanel.setLayout(new BorderLayout());
-		buttonPanel.add(tempPanel, BorderLayout.WEST);
-		simPBar.setPreferredSize(new Dimension(WIDTH - 300, 35));
-		tempPanel = new JPanel();
-		tempPanel.add(simPBar);
-		buttonPanel.add(tempPanel, BorderLayout.EAST);
+		buttonPanel.add(tempPanel, BorderLayout.LINE_START);
 
         rewindButton.addActionListener( this );
         playButton.addActionListener( this );
