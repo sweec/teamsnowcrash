@@ -96,6 +96,13 @@ public interface IFileManager
 	 * @param filename the file name of the file
 	 * 
 	 */
+	public void setLogger(String filepath, String filename);
+	
+	/**
+	 * 
+	 * add message to log file
+	 * @param message the message to be logged
+	 */
 	public void logMessage( String message );
 	
 	/**

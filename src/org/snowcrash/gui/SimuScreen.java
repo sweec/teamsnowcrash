@@ -37,9 +37,8 @@ public class SimuScreen extends BaseGUI {
 		stopButton.setEnabled(true);
 		ffButton.setEnabled(true);
 
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BorderLayout());
-		
+		Container content = getContentPane();
+
 		JTabbedPane tabPane = new JTabbedPane();
 		JScrollPane simuScrollPane = SimuPanel.SimuScrollPane();
 		ResultPanel resultPanel = new ResultPanel();
@@ -48,26 +47,16 @@ public class SimuScreen extends BaseGUI {
 		tabPane.setSelectedIndex(tabPane.indexOfTab("Simulation"));
 		tabPane.setEnabledAt(tabPane.indexOfTab("Results"), false);
 		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 15, HEIGHT - 100));
-		JPanel tempPanel = new JPanel();
-		tempPanel.setLayout(new FlowLayout());
-		tempPanel.add(tabPane);
-		simuResultPane = tabPane; 
 		
-		topPanel.add(tempPanel, BorderLayout.WEST);
+		simuResultPane = tabPane; 
+		content.add(tabPane, BorderLayout.CENTER);
 		
 		tabPane = new JTabbedPane();
 		ConsolePanel consolePanel = new ConsolePanel();
 		tabPane.addTab("Console", consolePanel);
 		tabPane.setPreferredSize(new Dimension(WIDTH * 2 / 5 - 15, HEIGHT - 100));
-		tempPanel = new JPanel();
-		tempPanel.setLayout(new FlowLayout());
-		tempPanel.add(tabPane);
-		topPanel.add(tempPanel, BorderLayout.EAST);
-		
-		Container content = getContentPane();
-		content.add(topPanel, BorderLayout.NORTH);
-		
-		
+
+		content.add(tabPane, BorderLayout.LINE_END);
 	}
 
 	/**
