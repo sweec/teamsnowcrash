@@ -17,7 +17,7 @@ public class ConfigScreen extends BaseGUI
 		play.setEnabled(true);
 		stop.setEnabled(false);
 		ff.setEnabled(false);
-		saveSimulation.setEnabled(false);
+		saveSimulation.setEnabled(true);
 		
 		rewindButton.setEnabled(false);
 		playButton.setEnabled(true);
