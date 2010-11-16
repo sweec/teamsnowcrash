@@ -50,9 +50,9 @@ import com.google.gson.Gson;
  */
 
 public class FileManager implements IFileManager {
-	static String  logFile = "EvolutionSim.log";
-	static Logger logger = null;
-	FileHandler fh = null;
+	private static String  logFile = "EvolutionSim.log";
+	private static Logger logger = null;
+	private static FileHandler fh = null;
 
 	public boolean saveWorld(World world, String filepath, String filename) {
 		try { 
