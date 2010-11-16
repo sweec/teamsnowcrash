@@ -1,64 +1,78 @@
 package org.snowcrash.gui;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public class ConfigScreen extends BaseGUI
 {
-	void BaseGUI()
+	public ConfigScreen()
 	{
+		rewind.setEnabled(false);
+		play.setEnabled(true);
+		stop.setEnabled(false);
+		ff.setEnabled(false);
+		saveSimulation.setEnabled(false);
+		
+		rewindButton.setEnabled(false);
+		playButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		ffButton.setEnabled(false);
+		
 		Container content = getContentPane();
-		content.setLayout( new BorderLayout() );
+		int contentWidth = content.getWidth();
+
+		JPanel configPanel = new JPanel();
+		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
 		
-		JMenuBar mBar = new JMenuBar(); 
-		JMenu menu = fileMenu();
-		mBar.add(menu);
-		menu = configurationMenu();
-		mBar.add(menu);
-		menu = simulationMenu(false, true, false, false);
-		mBar.add(menu);
-		
-		menu = resultsMenu();
-		mBar.add(menu);
-		
-		menu = helpMenu();
-		mBar.add(menu);
-		
-		setJMenuBar(mBar);
-		JPanel mPanel = mediaButtonPanel(false, true, false, false);
-		content.add(mPanel, BorderLayout.SOUTH);
+		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		JTabbedPane tabPane;
 		CritterPanel critterConfig = new CritterPanel();
-		JPanel cPanel = critterConfig.critterObjects();
+		JPanel cPanel = critterConfig.CritterPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
-		content.add(tabPane, BorderLayout.WEST);
+		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		configPanel.add(tabPane);
+		content.add(configPanel);
+		
+		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		TraitsPanel traitsConfig = new TraitsPanel();
-		cPanel = traitsConfig.traitsObjects();
+		cPanel = traitsConfig.TraitsPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Traits", cPanel);
-		content.add(tabPane, BorderLayout.CENTER);
+		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		configPanel.add(tabPane);
+		content.add(configPanel);
+		
+		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		WorldPanel worldConfig = new WorldPanel();
-		cPanel = worldConfig.worldObjects();
+		cPanel = worldConfig.WorldPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("World Settings", cPanel);
-		content.add(tabPane, BorderLayout.EAST);
+		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		configPanel.add(tabPane);	
+		content.add(configPanel);
 		
-		setSize(WIDTH, HEIGHT);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("SnowCrash");
-		setVisible(true);
+		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 	}
 	
 	public static void main(String[] args)
 	{
-		ConfigScreen gaf = new ConfigScreen();
-		gaf.BaseGUI();
+		new ConfigScreen();
 	}
 	
 }

@@ -1,20 +1,34 @@
 package org.snowcrash.gui;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 public class BaseGUI extends JFrame implements ActionListener
 {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
 	
-	JMenuItem rewind, play, stop, ff;
+	JMenuItem rewind, play, stop, ff, saveSimulation;
 	JButton rewindButton, playButton, stopButton, ffButton;
 	public static String newline = System.getProperty("line.separator");
 
-	BaseGUI()
+	public BaseGUI()
 	{	
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
@@ -25,7 +39,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		mBar.add(menu);
 		menu = configurationMenu();
 		mBar.add(menu);
-		menu = simulationMenu(true, true, true, true);
+		menu = simulationMenu();
 		mBar.add(menu);
 		menu = resultsMenu();
 		mBar.add(menu);
@@ -33,7 +47,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		mBar.add(menu);
 		
 		setJMenuBar(mBar);
-		JPanel mpanel = mediaButtonPanel(true, true, true, true);
+		JPanel mpanel = mediaButtonPanel();
 		content.add(mpanel, BorderLayout.SOUTH);
 		
 		setSize(WIDTH, HEIGHT);
@@ -187,30 +201,26 @@ public class BaseGUI extends JFrame implements ActionListener
 		return configuration;
 	}
 	
-	JMenu simulationMenu(boolean ma, boolean mb, boolean mc, boolean md)
+	JMenu simulationMenu()
 	{
 		JMenu simulation = new JMenu("Simulation");
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewind = new JMenuItem("Back to Configuration", rewindIcon);
-		rewind.setEnabled(ma);
 		simulation.add(rewind);
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		play = new JMenuItem("Play/Pause", playIcon);
-		play.setEnabled(mb);
 		simulation.add(play);
 		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
 		stop = new JMenuItem("Abort to Results", stopIcon);
-		stop.setEnabled(mc);
 		simulation.add(stop);
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ff = new JMenuItem("Simulate to End", ffIcon);
-		ff.setEnabled(md);
 		simulation.add(ff);
 		
 		simulation.addSeparator();
 		
-		final JMenuItem sSim = new JMenuItem("Save Simulation");
-		simulation.add(sSim);
+		saveSimulation = new JMenuItem("Save Simulation");
+		simulation.add(saveSimulation);
 		
 		final JFileChooser fc = new JFileChooser();
 		
@@ -228,7 +238,7 @@ public class BaseGUI extends JFrame implements ActionListener
         play.addActionListener(this);
         stop.addActionListener(this);
         ff.addActionListener(this);
-        sSim.addActionListener(simMenuListener);
+        saveSimulation.addActionListener(simMenuListener);
 		
 		return simulation;
 	}
@@ -300,24 +310,25 @@ public class BaseGUI extends JFrame implements ActionListener
 		return help;
 	}
 	
-	JPanel mediaButtonPanel(boolean ma, boolean mb, boolean mc, boolean md)
+	JPanel mediaButtonPanel()
 	{
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout( new FlowLayout() );
+		buttonPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 45));
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		
 		rewindButton = new JButton();
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewindButton.setIcon(rewindIcon);
 		rewindButton.setActionCommand("Back to Configuration");
 		rewindButton.setToolTipText("Back to Configuration");
-		rewindButton.setEnabled(ma);
+		rewindButton.setAlignmentY(TOP_ALIGNMENT);
 		
 		playButton = new JButton();
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		playButton.setIcon(playIcon);		
 		playButton.setActionCommand("Play/Pause");
 		playButton.setToolTipText("Play/Pause");
-		playButton.setEnabled(mb);
+		playButton.setAlignmentY(TOP_ALIGNMENT);
 		
 		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
 		
@@ -326,23 +337,33 @@ public class BaseGUI extends JFrame implements ActionListener
 		stopButton.setIcon(stopIcon);
 		stopButton.setActionCommand("Abort to Results");
 		stopButton.setToolTipText("Abort to Results");
-		stopButton.setEnabled(mc);
+		stopButton.setAlignmentY(TOP_ALIGNMENT);
 		
 		ffButton = new JButton();
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ffButton.setIcon(ffIcon);
 		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
-		ffButton.setEnabled(md);
+		ffButton.setAlignmentY(TOP_ALIGNMENT);
 		
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
+		simPBar.setToolTipText("Simulation Progress");
+		simPBar.setAlignmentY(TOP_ALIGNMENT);
 		
+		//SimulationProgressBar simPBar = new SimulationProgressBar();
+		//simPBar.setSize(100,20);
+		//simPBar.setPreferredSize(new Dimension(WIDTH - 300, 35));
+		//simPBar.setAlignmentY(TOP_ALIGNMENT);
+		
+		buttonPanel.add(Box.createRigidArea(new Dimension(5,10)));
 		buttonPanel.add(rewindButton);
 		buttonPanel.add(playButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(ffButton);
+		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(simPBar);
+		buttonPanel.add(Box.createRigidArea(new Dimension(5,10)));
 
         rewindButton.addActionListener( this );
         playButton.addActionListener( this );

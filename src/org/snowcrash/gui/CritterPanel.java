@@ -1,41 +1,43 @@
 package org.snowcrash.gui;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 
 
-public class CritterPanel extends JPanel
+public class CritterPanel extends JPanel implements ActionListener
 {
-	public JPanel critterObjects()
+	JPanel plants, prey, predators;
+	JButton newButton, delButton;
+	
+	public JPanel CritterPanel()
 	{
 		JPanel cPanelInner = new JPanel();
-		cPanelInner.setLayout(new BorderLayout());
+		cPanelInner.setLayout(new BoxLayout(cPanelInner, BoxLayout.Y_AXIS));
 		
-		Border critterBorder;
-		JPanel plants = new JPanel();
-		critterBorder = BorderFactory.createTitledBorder("Plants");
-		plants.setBorder(critterBorder);
-		cPanelInner.add(plants, BorderLayout.NORTH);
+		JPanel plants = this.borderPanel("Plants");
+		cPanelInner.add(plants);
+		JPanel prey = this.borderPanel("Prey");
+		cPanelInner.add(prey);
+		JPanel predator = this.borderPanel("Predator");
+		cPanelInner.add(predator);
 
-		JPanel prey = new JPanel();
-		critterBorder = BorderFactory.createTitledBorder("Prey");
-		prey.setBorder(critterBorder);
-		cPanelInner.add(prey, BorderLayout.CENTER);
-		
-		JPanel predators = new JPanel();
-		critterBorder = BorderFactory.createTitledBorder("Predators");
-		predators.setBorder(critterBorder);
-		cPanelInner.add(predators, BorderLayout.SOUTH);
-		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout());
-		final JButton newButton = new JButton("New");
-		final JButton delButton = new JButton("Delete");
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+		newButton = new JButton("New");
+		delButton = new JButton("Delete");
 		buttonPanel.add(newButton);
+		buttonPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		buttonPanel.add(delButton);
 		
 		JScrollPane cScroll = new JScrollPane(cPanelInner);
@@ -43,30 +45,35 @@ public class CritterPanel extends JPanel
 		cScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JPanel cPanelOuter = new JPanel();
-		cPanelOuter.setLayout(new BorderLayout());
-		cPanelOuter.add(cScroll, BorderLayout.CENTER);
-		cPanelOuter.add(buttonPanel, BorderLayout.SOUTH);
-		// Critter Config Objects start
-		
-		ActionListener critterPanelListener = new ActionListener()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
-            	if (e.getActionCommand().equals("New"))
-            	{
-            		// Do Something
-            	}
-            	else if (e.getActionCommand().equals("Delete"))
-            	{
-            		// Do Something
-            	}
-            }
-        };
+		cPanelOuter.setLayout(new BoxLayout(cPanelOuter, BoxLayout.Y_AXIS));
+		cPanelOuter.add(cScroll);
+		cPanelOuter.add(buttonPanel);
 
-        newButton.addActionListener( critterPanelListener );
+        newButton.addActionListener(this);
 		
-		// Critter Config Objects end
 		return cPanelOuter;
 	}
+	
+	public JPanel borderPanel(String borderTitle)
+	{
+		Border critterBorder;
+		JPanel cPanel = new JPanel();
+		critterBorder = BorderFactory.createTitledBorder(borderTitle);
+		cPanel.setBorder(critterBorder);
+		cPanel.setAlignmentX(CENTER_ALIGNMENT);
+		return cPanel;
+	}
+	
+	public void actionPerformed( ActionEvent e )
+    {
+    	if (e.getActionCommand().equals("New"))
+    	{
+    		// Do Something
+    	}
+    	else if (e.getActionCommand().equals("Delete"))
+    	{
+    		// Do Something
+    	}
+    }
 	
 }
