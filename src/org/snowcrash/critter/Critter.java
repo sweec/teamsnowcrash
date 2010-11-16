@@ -69,6 +69,10 @@ public class Critter {
 	public Critter(CritterTemplate template) {
 		this.uuid = UUID.randomUUID().toString();
 		setSizeData(template.getSize());
+		setPrototype(template.getPrototype());
+		setTemplateUuid(template.getUuid());
+		// to do 
+		// create traits depend on template
 	}
 	
 	public void die() {
@@ -148,6 +152,10 @@ public class Critter {
 		}
 	}
 
+	private void setPrototype(CritterPrototype type) {
+		this.prototype = type;
+	}
+	
 	public void setTemplateUuid(String templateUuid) {
 		this.templateUuid = templateUuid;
 	}
@@ -158,7 +166,7 @@ public class Critter {
 				+ ", maxHealth=" + maxHealth + ", size=" + size
 				+ ", myStateContext=" + myStateContext + ", age=" + age
 				+ ", prototype=" + prototype + ", templateUuid=" + templateUuid
-				+ "]";
+				+ ", uuid=" + uuid + "]";
 	}
 
 }

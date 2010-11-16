@@ -35,7 +35,6 @@ import org.snowcrash.critter.CritterFactory;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
-import org.snowcrash.utilities.Pair;
 import org.snowcrash.world.World;
 
 import com.google.gson.Gson;
@@ -56,7 +55,7 @@ public class FileManager implements IFileManager {
 
 	public boolean saveWorld(World world, String filepath, String filename) {
 		try { 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
+			BufferedWriter out = new BufferedWriter(new FileWriter(filepath)); 
 			Gson gson = new Gson();
 			gson.toJson(world, out);
 			out.close(); 
@@ -69,7 +68,7 @@ public class FileManager implements IFileManager {
 
 	public World loadWorld(String filepath, String filename) {
 		try { 
-			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
+			BufferedReader in = new BufferedReader(new FileReader(filepath)); 
 			Gson gson = new Gson();
 			World world = gson.fromJson(in, World.class);
 			in.close(); 
@@ -83,7 +82,7 @@ public class FileManager implements IFileManager {
 	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, 
 			String filepath, String filename) {
 		try { 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
+			BufferedWriter out = new BufferedWriter(new FileWriter(filepath)); 
 			Gson gson = new Gson();
 			gson.toJson(critterTemplates, out);
 			out.close(); 
@@ -96,7 +95,7 @@ public class FileManager implements IFileManager {
 
 	public CritterTemplate[] loadCritterTemplates(String filepath, String filename) {
 		try { 
-			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
+			BufferedReader in = new BufferedReader(new FileReader(filepath)); 
 			
 			Gson gson = new Gson();
 			CritterTemplate[] critterTemplate = gson.fromJson(in, CritterTemplate[].class);
@@ -118,16 +117,16 @@ public class FileManager implements IFileManager {
 	    			logger.removeHandler(fh);
 	    		}
 	    	}
-	    	File file = new File(filepath + filename);
+	    	File file = new File(filepath);
 	    	if (file.exists()) {
 	    		file.delete();
 	    	}
 	    	boolean append = true;
-	    	fh = new FileHandler(filepath + filename, append);
+	    	fh = new FileHandler(filepath, append);
 	    	//fh.setFormatter(new XMLFormatter());
 	    	//fh.setFormatter(new SimpleFormatter());
 	    	fh.setFormatter(new LogFormatter());
-	    	logger = Logger.getLogger(filepath + filename);	// arg is just a name here
+	    	logger = Logger.getLogger(filepath);	// arg is just a name here
 	    	logger.addHandler(fh);
 	    }
 	    catch (IOException e) {
@@ -147,7 +146,7 @@ public class FileManager implements IFileManager {
 	
 	public void viewLogFile(String filepath, String filename, int w, int h, int r) {
         LogViewer v = new LogViewer(r);
-        v.display(filepath + filename, w, h);
+        v.display(filepath, w, h);
 	}
 
 	public void viewLogFile(String filepath, String filename) {
@@ -172,8 +171,8 @@ public class FileManager implements IFileManager {
 		critter[1] = CritterFactory.getCritter(templates[1]);
 		critter[2] = CritterFactory.getCritter(templates[2]);
 		FileManager mgr = new FileManager();
-		mgr.saveCritterTemplates(templates, "", "testCritterTemplates.Json");
-		CritterTemplate[] template2 = mgr.loadCritterTemplates("", "testCritterTemplates.Json");
+		mgr.saveCritterTemplates(templates, "testCritterTemplates.Json", "");
+		CritterTemplate[] template2 = mgr.loadCritterTemplates("testCritterTemplates.Json", "");
 		int i;
 		for (i = 0;i < template2.length;i++) {
 			System.out.println(template2[i]);
@@ -185,21 +184,14 @@ public class FileManager implements IFileManager {
 		world.add(0, 0, critter[0]);
 		world.add(1, 1, critter[1]);
 		world.add(2, 2, critter[2]);
-		mgr.saveWorld(world, "", "testWorld.Json");
-		World world2 = mgr.loadWorld("", "testWorld.Json");
-		Critter[][] critters = new Critter[3][3];
-		Pair<Integer, Integer> pair;
-		pair = new Pair<Integer, Integer>(0, 0);
-		critters[0][0] = world2.get(pair);
-		pair = new Pair<Integer, Integer>(1, 1);
-		critters[1][1] = world2.get(pair);
-		pair = new Pair<Integer, Integer>(2, 2);
-		critters[2][2] = world2.get(pair);
+		mgr.saveWorld(world, "testWorld.Json", "");
+		World world2 = mgr.loadWorld("testWorld.Json", "");
+		Critter[][] critters = world2.getMap();
 		System.out.println(world2.getSizeX()+" "+world2.getSizeY());
 		System.out.println(critters[0][0]);
 		System.out.println(critters[1][1]);
 		System.out.println(critters[2][2]);
-		
+
 		// test viewLogFile
 		/*
 		mgr.setLogger();
