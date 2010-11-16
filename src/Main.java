@@ -1,6 +1,10 @@
+import java.util.Observable;
+import java.util.Observer;
+
 import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
+import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
@@ -24,6 +28,17 @@ public class Main
 		DAO dao = DAOFactory.getDAO();
 		
 		// -- Add listeners to the DAO.
+		dao.addObserver( new Observer()
+		{
+			public void update(Observable arg0, Object arg1)
+			{
+				System.out.println( arg1 );
+			}
+		});
+		
+		// FIXME
+		configManager.createCritterTemplate( CritterPrototype.PLANT, "Test" );
+		// FIXME
 		
 		// -- Run GUI.
 		new ConfigScreen();
