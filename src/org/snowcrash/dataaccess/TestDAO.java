@@ -35,4 +35,10 @@ class TestDAO extends Observable implements DAO {
 
 	}
 
+	@Override
+	public DatabaseObject[] read(Class<?> type) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

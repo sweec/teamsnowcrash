@@ -65,6 +65,28 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 					UNSUPPORTED_TYPE_MESSAGE, o.getClass().getSimpleName() ) );
 		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#read(java.lang.Class)
+	 */
+	public DatabaseObject[] read(Class<?> type) throws InvalidInputDAOException
+	{
+		DatabaseObject[] results = null;
+		
+		if ( this.type.equals( type ) )
+		{
+			results = table.values().toArray( new DatabaseObject[0] );
+		}
+		else
+		{
+			// -- Unsupported type.
+			throw new InvalidInputDAOException( String.format(
+					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
+		}
+		
+		return results;
+	}
 
 	/*
 	 * (non-Javadoc)

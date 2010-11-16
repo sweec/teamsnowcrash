@@ -26,12 +26,24 @@ public interface DAO extends Observable
 	 * 
 	 * Reads an object from the database.
 	 * 
+	 * @param type the type of the object to read
 	 * @param id the ID of the object to read
 	 * @return the object
 	 * @throws DAOException
 	 * 
 	 */
 	public DatabaseObject read(Class<?> type, Object id) throws DAOException;
+	
+	/**
+	 * 
+	 * Reads all objects of a type from the database.
+	 * 
+	 * @param type the type of the objects to read
+	 * @return all objects of the given type
+	 * @throws DAOException
+	 * 
+	 */
+	public DatabaseObject[] read(Class<?> type) throws DAOException;
 
 	/**
 	 * 
@@ -57,6 +69,7 @@ public interface DAO extends Observable
 	 * 
 	 * Deletes an object from the database.
 	 * 
+	 * @param type the type of the object to delete
 	 * @param id the ID of the object to delete
 	 * @throws DAOException
 	 * 
