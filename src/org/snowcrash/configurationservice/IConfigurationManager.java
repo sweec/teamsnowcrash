@@ -10,6 +10,10 @@ public interface IConfigurationManager {
 	public void updateCritterTemplate(CritterTemplate template);
 
 	public void deleteCritterTemplate(CritterTemplate template);
+	
+	public CritterTemplate getCritterTemplateByName(String name);
+	
+	public CritterTemplate[] getCritterTemplates();
 
 	public Critter createCritterFromTemplate();
 }
