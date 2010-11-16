@@ -17,7 +17,7 @@ import org.snowcrash.world.World;
  * @author Mike
  *
  */
-class CommandMediator
+public class CommandMediator
 {
 	/*
 	 * Reference to the file manager.
@@ -44,7 +44,7 @@ class CommandMediator
 	 * @param command the command that should be handled
 	 * 
 	 */
-	public static void handleCommand( Command command )
+	static void handleCommand( Command command )
 	{
 		Object[] results = null;
 		
