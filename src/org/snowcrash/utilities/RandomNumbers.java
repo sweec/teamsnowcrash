@@ -50,4 +50,13 @@ public class RandomNumbers {
 			return pair.getRight();
 		}
 	}
+	
+	/**
+	 * Returns a random integer based on the range passed in.
+	 * @param range
+	 * @return
+	 */
+	public int getInt(int range) {
+		return generator.nextInt(range);
+	}
 }

@@ -48,7 +48,9 @@ public class CritterTemplate implements DatabaseObject {
 	private CritterPrototype prototype;
 	private HashMap<Trait, Pair<Integer,Integer>> traitRange;
 
-	// add No-args constructor to gson's requirement
+	/**
+	 *  No-args constructor required by gson
+	 */
 	public CritterTemplate() {
 		
 	}
@@ -86,10 +88,6 @@ public class CritterTemplate implements DatabaseObject {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getUuid() {
