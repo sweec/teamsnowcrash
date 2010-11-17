@@ -100,9 +100,7 @@ public class Test {
 		
 		template.setPrototype( CritterPrototype.PREY );
 		dao.update( template );
-		
-		template.setName( "Rawr" );
-		
+			
 		template = (CritterTemplate) dao.read( CritterTemplate.class, template.getId() );
 		System.out.println( template.getPrototype() + "\t" + template.getName() );
 	}
