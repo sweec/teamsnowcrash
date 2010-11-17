@@ -50,9 +50,9 @@ public class SimuPanel extends JPanel {
 		sizeY = h * hUnit;
 		isDirty = new boolean[w][h];
     	try {
-    		plant = ImageIO.read(new File("Images/plant.png"));
-    		prey = ImageIO.read(new File("Images/prey-left.png"));
-    		predator = ImageIO.read(new File("Images/predator-left.png"));
+    		plant = ImageIO.read(new File("images/plant.png"));
+    		prey = ImageIO.read(new File("images/prey-left.png"));
+    		predator = ImageIO.read(new File("images/predator-left.png"));
     	} catch (IOException e) {
 	    	e.printStackTrace();
     	}

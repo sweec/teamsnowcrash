@@ -113,7 +113,7 @@ public class SimuScreen extends BaseGUI {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SimuScreen sScreen = new SimuScreen(4,4);
+		SimuScreen sScreen = new SimuScreen(20,20);
 		sScreen.test();
 	}
 
