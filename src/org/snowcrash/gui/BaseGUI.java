@@ -18,10 +18,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.gui.widgets.SimulationProgressBar;
 
 public class BaseGUI extends JFrame implements ActionListener
 {
@@ -424,16 +424,17 @@ public class BaseGUI extends JFrame implements ActionListener
 		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
 		ffButton.setAlignmentY(TOP_ALIGNMENT);
-		
+		/*
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
 		simPBar.setToolTipText("Simulation Progress");
 		simPBar.setAlignmentY(TOP_ALIGNMENT);
-		
-		//SimulationProgressBar simPBar = new SimulationProgressBar();
-		//simPBar.setSize(100,20);
+		*/
+		SimulationProgressBar simPBar = new SimulationProgressBar();
+		simPBar.setSize(100,20);
 		//simPBar.setPreferredSize(new Dimension(WIDTH - 300, 35));
-		//simPBar.setAlignmentY(TOP_ALIGNMENT);
+		simPBar.setSize(WIDTH-300, 35);
+		simPBar.setAlignmentY(TOP_ALIGNMENT);
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(5,10)));
 		buttonPanel.add(rewindButton);

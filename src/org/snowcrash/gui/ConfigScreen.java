@@ -1,12 +1,12 @@
 package org.snowcrash.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 public class ConfigScreen extends BaseGUI
@@ -51,7 +51,7 @@ public class ConfigScreen extends BaseGUI
 		tabPane.addTab("Traits", cPanel);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
-		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE)); 
 		configPanel.add(tabPane);
 		content.add(configPanel);
 		
