@@ -1,4 +1,8 @@
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
@@ -21,7 +25,29 @@ public class Test {
 		 * please split your added code into a different method.
 		 */
 		
+		JFrame frame = new JFrame();
+		frame.setSize( 800, 600 );
 		
+		JSlider slider = new JSlider();
+		frame.add(slider);
+		
+		slider.addChangeListener( new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent arg0)
+			{
+				if ( arg0.getSource() instanceof JSlider )
+				{
+					JSlider slider = (JSlider) arg0.getSource();
+					
+					if ( !slider.getValueIsAdjusting() )
+					{
+						JOptionPane.showMessageDialog( null, "Rawr", null, JOptionPane.OK_OPTION );
+					}
+				}
+			}
+		});
+		
+		frame.setVisible( true );
 	}
 
 	private static void testCommands() {

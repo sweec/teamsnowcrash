@@ -33,8 +33,7 @@ public class ConfigScreen extends BaseGUI
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		JTabbedPane tabPane;
-		CritterPanel critterConfig = new CritterPanel();
-		JPanel cPanel = critterConfig.CritterPanel();
+		JPanel cPanel = new CritterPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);

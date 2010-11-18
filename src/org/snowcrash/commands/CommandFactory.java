@@ -2,6 +2,7 @@ package org.snowcrash.commands;
 
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.utilities.Callback;
 
 
 public class CommandFactory
@@ -49,6 +50,13 @@ public class CommandFactory
 	public static Command getDeleteTemplateCommand( CritterTemplate template )
 	{
 		Command command = new DeleteCritterTemplateCommand(template);
+		
+		return command;
+	}
+	
+	public static Command getRetrieveTemplateCommand( String name, Callback callback )
+	{
+		Command command = new GetCritterTemplateCommand( name, callback );
 		
 		return command;
 	}

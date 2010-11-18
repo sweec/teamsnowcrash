@@ -3,12 +3,12 @@ package org.snowcrash.gui.widgets;
 import java.awt.Dimension;
 
 import javax.swing.BoundedRangeModel;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.metal.MetalSliderUI;
 
 /**
  * 
@@ -55,6 +55,8 @@ public class SimulationProgressBar extends JPanel implements ChangeListener
 		 * value updates.
 		 */
 		slider.setMajorTickSpacing( 1 );
+		
+		slider.setUI( new UneditableSliderUI( slider ) );
 		
 		/*
 		 * Add this class as a listener for events to the slider.
@@ -119,6 +121,47 @@ public class SimulationProgressBar extends JPanel implements ChangeListener
 		if ( e != null )
 		{
 			// -- Do nothing for now.
+		}
+	}
+	
+	/**
+	 * 
+	 * Private class to ensure that the scrollbar is not editable.
+	 * 
+	 * @author Mike
+	 *
+	 */
+	protected class UneditableSliderUI extends MetalSliderUI
+	{
+		/**
+		 * 
+		 * Constructor.
+		 * 
+		 * @param slider the component for this UI
+		 * 
+		 */
+		public UneditableSliderUI( JSlider slider )
+		{
+			super();
+		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.plaf.basic.BasicSliderUI#installListeners(javax.swing.JSlider)
+		 */
+		protected void installListeners( JSlider slider )
+		{
+			// -- No listeners.
+		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.plaf.basic.BasicSliderUI#createScrollListener(javax.swing.JSlider)
+		 */
+		protected ScrollListener createScrollListener( JSlider slider )
+		{
+			class NoScrollListener extends ScrollListener {}
+			return new NoScrollListener();
 		}
 	}
 }
