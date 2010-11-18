@@ -1,12 +1,12 @@
 package org.snowcrash.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 public class ConfigScreen extends BaseGUI
@@ -17,7 +17,7 @@ public class ConfigScreen extends BaseGUI
 		play.setEnabled(true);
 		stop.setEnabled(false);
 		ff.setEnabled(false);
-		saveSimulation.setEnabled(false);
+		saveSimulation.setEnabled(true);
 		
 		rewindButton.setEnabled(false);
 		playButton.setEnabled(true);
@@ -33,8 +33,7 @@ public class ConfigScreen extends BaseGUI
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		JTabbedPane tabPane;
-		CritterPanel critterConfig = new CritterPanel();
-		JPanel cPanel = critterConfig.CritterPanel();
+		JPanel cPanel = new CritterPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
@@ -51,7 +50,7 @@ public class ConfigScreen extends BaseGUI
 		tabPane.addTab("Traits", cPanel);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
-		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
+		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE)); 
 		configPanel.add(tabPane);
 		content.add(configPanel);
 		

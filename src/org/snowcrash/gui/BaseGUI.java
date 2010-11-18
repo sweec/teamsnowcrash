@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -17,7 +18,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.gui.widgets.SimulationProgressBar;
 
 public class BaseGUI extends JFrame implements ActionListener
 {
@@ -137,6 +141,7 @@ public class BaseGUI extends JFrame implements ActionListener
         {
             public void actionPerformed( ActionEvent e )
             {
+            	String filePath, fileName;
             	int impCritTempVal, expCritTempVal, lConfigVal, lSimVal, lResVal, sConfigVal;
             	if (e.getActionCommand().equals("New Critter Template"))
             	{
@@ -148,34 +153,81 @@ public class BaseGUI extends JFrame implements ActionListener
             	}
             	else if (e.getActionCommand().equals("Import Critter Templates"))
             	{
-            		
     				fc.setDialogTitle("Import Critter Template");
             		impCritTempVal = fc.showOpenDialog(null);
+            		if (impCritTempVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Export Critter Templates"))
             	{
             		fc.setDialogTitle("Export Critter Template");
             		impCritTempVal = fc.showSaveDialog(null);
+            		if (impCritTempVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			Command command = CommandFactory.getExportTemplatesCommand(filePath, fileName);
+            			command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Load Configuration"))
             	{
             		fc.setDialogTitle("Load Configuration");
             		lConfigVal = fc.showOpenDialog(null);
+            		if (lConfigVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			//command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Load Simulation"))
             	{
             		fc.setDialogTitle("Load Simulation");
             		lSimVal = fc.showOpenDialog(null);
+            		if (lSimVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			//command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Load Results"))
             	{
             		fc.setDialogTitle("Load Results");
             		lResVal = fc.showOpenDialog(null);
+            		if (lResVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			//command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Save Configuration"))
             	{
             		fc.setDialogTitle("Save Configuration");
             		sConfigVal = fc.showSaveDialog(null);
+            		if (sConfigVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			//command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Start Simulation"))
             	{
@@ -229,8 +281,17 @@ public class BaseGUI extends JFrame implements ActionListener
 			public void actionPerformed( ActionEvent e )
             {       
 	            int sSimVal;
+	            String filePath, fileName;
 				fc.setDialogTitle("Save Simulation");
         		sSimVal = fc.showSaveDialog(null);
+        		if (sSimVal == JFileChooser.APPROVE_OPTION)
+        		{
+        			File f=fc.getSelectedFile();
+        			filePath=f.getPath();
+        			fileName=f.getName();
+        			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+        			//command.execute();
+        		}
             }
         };
 
@@ -262,15 +323,33 @@ public class BaseGUI extends JFrame implements ActionListener
             public void actionPerformed( ActionEvent e )
             {
             	int sResVal, oLogVal;
+            	String filePath, fileName;
             	if (e.getActionCommand().equals("Open Log"))
             	{
         			fc.setDialogTitle("Open Log");
             		oLogVal = fc.showOpenDialog(null);
+            		if (oLogVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			//command.execute();
+            		}
             	}
             	else if (e.getActionCommand().equals("Save Results"))
             	{
             		fc.setDialogTitle("Save Results");
             		sResVal = fc.showSaveDialog(null);
+            		if (sResVal == JFileChooser.APPROVE_OPTION)
+            		{
+            			File f=fc.getSelectedFile();
+            			filePath=f.getPath();
+            			fileName=f.getName();
+            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			//command.execute();
+            		}
+            		
             	}
             	else
             	{
@@ -345,16 +424,17 @@ public class BaseGUI extends JFrame implements ActionListener
 		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
 		ffButton.setAlignmentY(TOP_ALIGNMENT);
-		
+		/*
 		JProgressBar simPBar = new JProgressBar(0, 100);
 		simPBar.setStringPainted(true);
 		simPBar.setToolTipText("Simulation Progress");
 		simPBar.setAlignmentY(TOP_ALIGNMENT);
-		
-		//SimulationProgressBar simPBar = new SimulationProgressBar();
-		//simPBar.setSize(100,20);
+		*/
+		SimulationProgressBar simPBar = new SimulationProgressBar();
+		simPBar.setSize(100,20);
 		//simPBar.setPreferredSize(new Dimension(WIDTH - 300, 35));
-		//simPBar.setAlignmentY(TOP_ALIGNMENT);
+		simPBar.setSize(WIDTH-300, 35);
+		simPBar.setAlignmentY(TOP_ALIGNMENT);
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(5,10)));
 		buttonPanel.add(rewindButton);
