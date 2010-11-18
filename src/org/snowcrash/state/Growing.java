@@ -41,7 +41,7 @@ public class Growing implements State {
 		} else {
 			myCritter.setHealth(myCritter.getMaxHealth());
 		}
-		
+		myCritter.setActed(true);
 	}
 	
 }

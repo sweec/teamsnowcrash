@@ -1,8 +1,4 @@
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
@@ -11,6 +7,7 @@ import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
 import org.snowcrash.timeengine.TimeEngine;
@@ -19,35 +16,12 @@ import org.snowcrash.timeengine.TimeListener;
 
 @SuppressWarnings( "unused" )
 public class Test {
-	public static void main(String... args) {
+	public static void main(String... args) throws DAOException {
 		/*
 		 * Insert your own test code here. If you want to check-in changes,
 		 * please split your added code into a different method.
 		 */
-		
-		JFrame frame = new JFrame();
-		frame.setSize( 800, 600 );
-		
-		JSlider slider = new JSlider();
-		frame.add(slider);
-		
-		slider.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent arg0)
-			{
-				if ( arg0.getSource() instanceof JSlider )
-				{
-					JSlider slider = (JSlider) arg0.getSource();
-					
-					if ( !slider.getValueIsAdjusting() )
-					{
-						JOptionPane.showMessageDialog( null, "Rawr", null, JOptionPane.OK_OPTION );
-					}
-				}
-			}
-		});
-		
-		frame.setVisible( true );
+		testDatabase();
 	}
 
 	private static void testCommands() {
@@ -126,10 +100,20 @@ public class Test {
 		
 		template.setPrototype( CritterPrototype.PREY );
 		dao.update( template );
-		
-		template.setName( "Rawr" );
-		
+			
 		template = (CritterTemplate) dao.read( CritterTemplate.class, template.getId() );
 		System.out.println( template.getPrototype() + "\t" + template.getName() );
+		
+		
+		CritterTemplate template2 = new CritterTemplate( CritterPrototype.PREDATOR, "Test" );
+		
+		DatabaseObject[] objects = dao.read( CritterTemplate.class );
+		
+		CritterTemplate[] templates = new CritterTemplate[ objects.length ];
+		
+		for ( int i = 0; i < objects.length; i++ )
+		{
+			templates[i] = (CritterTemplate) objects[i];
+		}
 	}
 }
