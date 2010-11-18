@@ -35,6 +35,10 @@ import org.snowcrash.critter.CritterFactory;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.dataaccess.DAOFactory;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.world.World;
 
 import com.google.gson.Gson;
@@ -81,6 +85,19 @@ public class FileManager implements IFileManager {
 	
 	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, 
 			String filepath, String filename) {
+		if (critterTemplates == null) {
+			DatabaseObject[] objects;
+			DAO dao = DAOFactory.getDAO();
+			try {
+				objects = dao.read( CritterTemplate.class );
+			} catch (DAOException e) {
+				throw new RuntimeException( e );
+			}
+			critterTemplates = new CritterTemplate[objects.length];
+			int i;
+			for (i = 0;i < objects.length;i++)
+				critterTemplates[i] = (CritterTemplate) (objects[i]);
+		}
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filepath)); 
 			Gson gson = new Gson();
@@ -89,22 +106,32 @@ public class FileManager implements IFileManager {
 		} catch (IOException e) { 
 			e.printStackTrace();
 			return false;
-		} 	
+		}
 		return true;
 	}
 
 	public CritterTemplate[] loadCritterTemplates(String filepath, String filename) {
+		CritterTemplate[] critterTemplate = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath)); 
 			
 			Gson gson = new Gson();
-			CritterTemplate[] critterTemplate = gson.fromJson(in, CritterTemplate[].class);
+			critterTemplate = gson.fromJson(in, CritterTemplate[].class);
 			in.close(); 
-			return critterTemplate;
 		} catch (IOException e) { 
 			e.printStackTrace();
-			return null;
-		} 
+		}
+		if (critterTemplate == null) return null;
+		DAO dao = DAOFactory.getDAO();
+		int i;
+		for (i = 0;i < critterTemplate.length;i++) {
+			try {
+				dao.create( critterTemplate[i] );
+			} catch (DAOException e) {
+				throw new RuntimeException( e );
+			}
+		}
+		return critterTemplate;
 	}
 
 	public void setLogger(String filepath, String filename) {
