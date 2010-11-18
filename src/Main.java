@@ -4,11 +4,9 @@ import java.util.Observer;
 import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
-import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOFactory;
-import org.snowcrash.filemanagement.FileManager;
-import org.snowcrash.filemanagement.IFileManager;
+import org.snowcrash.filemanagement.IFileManager2;
 import org.snowcrash.gui.ConfigScreen;
 
 
@@ -17,7 +15,7 @@ public class Main
 	public static void main(String... args)
 	{
 		// -- Create managers.
-		IFileManager fileManager = new FileManager();
+		IFileManager2 fileManager = null;	//FIXME
 		IConfigurationManager configManager = new ConfigurationManager();
 		
 		// -- Add managers to the CommandMediator.
@@ -35,10 +33,6 @@ public class Main
 				System.out.println( arg1 );
 			}
 		});
-		
-		// FIXME
-		configManager.createCritterTemplate( CritterPrototype.PLANT, "Test" );
-		// FIXME
 		
 		// -- Run GUI.
 		new ConfigScreen();
