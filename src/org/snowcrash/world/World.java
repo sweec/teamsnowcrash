@@ -21,10 +21,14 @@
 
 package org.snowcrash.world;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.snowcrash.critter.Critter;
+import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.critter.data.Trait;
 import org.snowcrash.utilities.Pair;
+import org.snowcrash.utilities.RandomNumbers;
 
 /**
  *   
@@ -57,13 +61,13 @@ public class World {
 	private int sizeY;
 	private int turns;
 	private int currentTurn;
-	private Pair<Integer, Integer> currPos;
+	private Pair<Integer, Integer> currentPos;
 	private boolean isNext = false;
 	
 	private World() {
 		this.currentTurn = 0;
-		this.sizeX = 0;
-		this.sizeY = 0;
+		this.sizeX = 50;
+		this.sizeY = 50;
 		this.turns = 1;
 	}
 	
@@ -126,8 +130,8 @@ public class World {
 		return currentTurn;
 	}
 	
-	public Pair<Integer, Integer> getCurrPos() {
-		return currPos;
+	public Pair<Integer, Integer> getCurrentPos() {
+		return currentPos;
 	}
 	
 	public Critter[][] getMap() {
@@ -148,19 +152,81 @@ public class World {
 	
 	private boolean hasNext() {
 		isNext = false;
-		int currX = currPos.getLeft();
-		int currY = currPos.getRight();
+		int currX = currentPos.getLeft();
+		int currY = currentPos.getRight();
 		for (;currX < sizeX; currX++) {
 			for (;currY < sizeY; currY++) {
 				if (map[currX][currY] != null) {
 					isNext = true;
-					currPos = new Pair<Integer, Integer>(currX, currY);
+					currentPos = new Pair<Integer, Integer>(currX, currY);
 					return true;
 				}
 			}
 			currY = 0;
 		}
 		return false;
+	}
+
+	/**
+	 * Searches for a critter of the passed in prototype based on the passed in critter's traits.
+	 * @param critter
+	 * @param prototype
+	 * @return
+	 */
+	public Pair<Integer, Integer> search(Critter critter, CritterPrototype prototype) {
+		return search(critter, prototype, null);
+	}
+	
+	/**
+	 * Searches for another critter of the same type as the one passed in based on the passed in critter's traits.
+	 * @param critter
+	 * @return
+	 */
+	public Pair<Integer, Integer> search(Critter critter) {
+		return search(critter, null, critter.getTemplateUuid());
+	}
+	
+	private Pair<Integer, Integer> search(Critter critter, CritterPrototype prototype, String templateUuid) {
+		int radius = critter.getTrait(Trait.VISION);
+		int x = currentPos.getLeft();
+		int y = currentPos.getRight();
+		int xLow = 0;
+		int yLow = 0;
+		
+		if (!((x - radius) < 0)) {
+			xLow = x - radius; 
+		}
+		if (!((y - radius) < 0)) {
+			yLow = y - radius; 
+		}
+		
+		ArrayList<Pair<Integer, Integer>> targets = new ArrayList<Pair<Integer,Integer>>();
+		Critter target = null;
+		for (int i = xLow; (i < sizeX) || (i < x + radius); i++) {
+			for (int j = yLow; (j < sizeY) || (j < y + radius); j++) {
+				if (x == i && y == j) {
+					continue;
+				}
+				target = get(new Pair<Integer, Integer> (i,j));
+				if (target == null) {
+					continue;
+				}
+				if (prototype != null && prototype.equals(target.getPrototype())) {
+					targets.add(new Pair<Integer, Integer> (i,j));
+					continue;
+				}
+				if (templateUuid != null && templateUuid.equals(target.getTemplateUuid())) {
+					targets.add(new Pair<Integer, Integer> (i,j));
+					continue;
+				}
+			}
+		}
+
+		if (targets.size() > 0) {
+			return targets.get(RandomNumbers.getInstance().getInt(targets.size()));
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -182,15 +248,15 @@ public class World {
 	private Pair<Integer, Integer> next() {
 		Pair<Integer, Integer> next = null;
 		if (isNext) {
-			next = currPos;
+			next = currentPos;
 		} else {
 			if (hasNext()) {
 				isNext = false;
-				next = currPos;
+				next = currentPos;
 			}
 		}
-		if (!(currPos.getRight() + 1 < sizeY)) {
-			currPos = new Pair<Integer, Integer> (currPos.getLeft() + 1, 0);
+		if (!(currentPos.getRight() + 1 < sizeY)) {
+			currentPos = new Pair<Integer, Integer> (currentPos.getLeft() + 1, 0);
 		}
 		return next;
 	}
@@ -241,7 +307,7 @@ public class World {
 	public String toString() {
 		return "World [map=" + Arrays.toString(map) + ", sizeX=" + sizeX
 				+ ", sizeY=" + sizeY + ", turns=" + turns + ", currPos="
-				+ currPos + ", isNext=" + isNext + "]";
+				+ currentPos + ", isNext=" + isNext + "]";
 	}
 	
 

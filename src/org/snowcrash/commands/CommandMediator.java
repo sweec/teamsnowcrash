@@ -58,8 +58,8 @@ public class CommandMediator
 			
 			CritterTemplate[] templates = configManager.getCritterTemplates();
 
-			fileManager.saveCritterTemplates( templates, c.getFilepath(),
-					c.getFilename() );
+			fileManager.saveCritterTemplates( templates, c.getFilename(),
+					null );
 		}
 		else if (command instanceof ImportCritterTemplatesCommand)
 		{

@@ -47,6 +47,10 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 		table.create( clone );
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.dataaccess.DAO#read(java.lang.Class)
+	 */
 	public DatabaseObject[] read(Class<?> type) throws DAOException
 	{
 		DatabaseObject[] results = null;
