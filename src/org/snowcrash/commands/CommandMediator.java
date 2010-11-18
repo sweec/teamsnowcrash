@@ -2,7 +2,7 @@ package org.snowcrash.commands;
 
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
-import org.snowcrash.filemanagement.IFileManager;
+import org.snowcrash.filemanagement.IFileManager2;
 import org.snowcrash.world.World;
 
 
@@ -22,7 +22,7 @@ public class CommandMediator
 	/*
 	 * Reference to the file manager.
 	 */
-	private static IFileManager fileManager = null;
+	private static IFileManager2 fileManager = null;
 
 	/*
 	 * Reference to the configuration manager.
@@ -58,26 +58,25 @@ public class CommandMediator
 			
 			CritterTemplate[] templates = configManager.getCritterTemplates();
 
-			fileManager.saveCritterTemplates( templates, c.getFilename(),
-					null );
+			fileManager.saveCritterTemplates( templates, c.getFilename() );
 		}
 		else if (command instanceof ImportCritterTemplatesCommand)
 		{
 			ImportCritterTemplatesCommand c = (ImportCritterTemplatesCommand) command;
 
-			fileManager.loadCritterTemplates( c.getFilepath(), c.getFilename() );
+			fileManager.loadCritterTemplates( c.getFilename() );
 		}
 		else if (command instanceof SaveConfigurationCommand)
 		{
 			SaveConfigurationCommand c = (SaveConfigurationCommand) command;
 			
-			fileManager.saveWorld( World.getInstance(), c.getFilepath(), c.getFilename() );
+			fileManager.saveWorld( World.getInstance(), c.getFilename() );
 		}
 		else if (command instanceof LoadConfigurationCommand)
 		{
 			LoadConfigurationCommand c = (LoadConfigurationCommand) command;
 			
-			fileManager.loadWorld( c.getFilepath(), c.getFilename() );
+			fileManager.loadWorld( c.getFilename() );
 		}
 		else if ( command instanceof CreateCritterTemplateCommand )
 		{
@@ -125,7 +124,7 @@ public class CommandMediator
 	 * @param fileManager the file manager to use
 	 * 
 	 */
-	public static void setFileManager( IFileManager fileManager )
+	public static void setFileManager( IFileManager2 fileManager )
 	{
 		CommandMediator.fileManager = fileManager;
 	}
