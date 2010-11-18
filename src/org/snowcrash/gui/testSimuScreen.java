@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.Timer;
@@ -22,7 +23,7 @@ import org.snowcrash.world.World;
  * @author dong
  *
  */
-public class SimuScreen extends BaseGUI {
+public class testSimuScreen extends BaseGUI {
 	/**
 	 * the world size should be set by configuration
 	 */
@@ -30,15 +31,14 @@ public class SimuScreen extends BaseGUI {
 	private static int worldHeight = 20;
 	private static SimuPanel simuPanel = null;
 	private static Critter[][] map = null;
-
-	JTabbedPane simuResultPane = null;
+	private static JTabbedPane simuResultPane = null;
 
 	/**
 	 * constructor for simulation screen
 	 * @param w the width of the world
 	 * @param h the height of the world
 	 */
-	public SimuScreen(int w, int h)
+	public testSimuScreen(int w, int h)
 	{
 		rewind.setEnabled(true);
 		play.setEnabled(true);
@@ -57,12 +57,8 @@ public class SimuScreen extends BaseGUI {
 
 		JTabbedPane tabPane = new JTabbedPane();
 		simuPanel = new SimuPanel(worldWidth, worldHeight);
-		JScrollPane simuScrollPane = new JScrollPane(simuPanel);
-		simuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		simuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		ResultPanel resultPanel = new ResultPanel();
-		tabPane.addTab("Simulation", simuScrollPane);
-		tabPane.addTab("Results", resultPanel);
+		tabPane.addTab("Simulation", simuPanel.getScrollPane());
+		tabPane.addTab("Results", new ResultsPanel().getScrollPane());
 		tabPane.setSelectedIndex(tabPane.indexOfTab("Simulation"));
 		tabPane.setEnabledAt(tabPane.indexOfTab("Results"), false);
 		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 15, HEIGHT - 100));
@@ -71,8 +67,7 @@ public class SimuScreen extends BaseGUI {
 		content.add(tabPane, BorderLayout.CENTER);
 		
 		tabPane = new JTabbedPane();
-		ConsolePanel consolePanel = new ConsolePanel();
-		tabPane.addTab("Console", consolePanel);
+		tabPane.addTab("Console", new JPanel());
 		tabPane.setPreferredSize(new Dimension(WIDTH * 2 / 5 - 15, HEIGHT - 100));
 
 		content.add(tabPane, BorderLayout.LINE_END);
@@ -103,7 +98,7 @@ public class SimuScreen extends BaseGUI {
         Timer timer = new Timer(1000, new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
             	translate(map);
-        		simuPanel.updateworld(map);
+            	simuPanel.updateworld(map);
             } 
         }); 
         timer.start(); 
@@ -113,7 +108,8 @@ public class SimuScreen extends BaseGUI {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SimuScreen sScreen = new SimuScreen(20,20);
+		testSimuScreen sScreen = new testSimuScreen(20,20);
+		simuResultPane.setEnabledAt(simuResultPane.indexOfTab("Results"), true);
 		sScreen.test();
 	}
 
