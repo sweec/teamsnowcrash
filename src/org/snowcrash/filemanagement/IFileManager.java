@@ -42,8 +42,10 @@ public interface IFileManager
 	 * @param filepath the file path of the file
 	 * @param filename the file name of the file
 	 * @return true, if it saved successfully; false, otherwise
+	 * @deprecated
 	 * 
 	 */
+	@Deprecated
 	public boolean saveWorld( World world, String filepath, String filename );
 	
 	/**
@@ -53,8 +55,10 @@ public interface IFileManager
 	 * @param filepath the file path of the file
 	 * @param filename the file name of the file
 	 * @return an world instance from the file
+	 * @deprecated
 	 * 
 	 */
+	@Deprecated
 	public World loadWorld( String filepath, String filename );
 	
 	/**
@@ -65,8 +69,10 @@ public interface IFileManager
 	 * @param filepath the file path of the file
 	 * @param filename the file name of the file
 	 * @return true, if it saved successfully; false, otherwise
+	 * @deprecated
 	 * 
 	 */
+	@Deprecated
 	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, 
 			String filepath, String filename);
 
@@ -77,8 +83,9 @@ public interface IFileManager
 	 * @param filepath the file path of the file
 	 * @param filename the file name of the file
 	 * @return an array of critter templates from the file
-	 * 
+	 * @deprecated
 	 */
+	@Deprecated
 	public CritterTemplate[] loadCritterTemplates(String filepath, String filename);
 	
 	/**
