@@ -44,7 +44,7 @@ public class testSimuScreen extends BaseGUI {
 		play.setEnabled(true);
 		stop.setEnabled(true);
 		ff.setEnabled(true);
-		saveSimulation.setEnabled(true);
+		saveSim.setEnabled(true);
 		
 		rewindButton.setEnabled(true);
 		playButton.setEnabled(true);
