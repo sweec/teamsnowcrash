@@ -25,11 +25,14 @@ import org.snowcrash.gui.widgets.SimulationProgressBar;
 
 public class BaseGUI extends JFrame implements ActionListener
 {
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 600;
+	public static final int WIDTH = 800;	// minimum window width
+	public static final int HEIGHT = 600;	// minimum window height
 	
-	JMenuItem rewind, play, stop, ff, saveSimulation;
+	// objects for the menus and media panel
+	JMenuItem rewind, play, stop, ff, saveSim;
 	JButton rewindButton, playButton, stopButton, ffButton;
+	
+	// universal cross-platform newline
 	public static String newline = System.getProperty("line.separator");
 
 	public BaseGUI()
@@ -37,6 +40,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
 		
+		// display all menus and menu items
 		JMenuBar mBar = new JMenuBar();
 		JMenu menu = new JMenu(); 
 		menu = fileMenu();
@@ -50,6 +54,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		menu = helpMenu();
 		mBar.add(menu);
 		
+		// add menus to the menu bar
 		setJMenuBar(mBar);
 		JPanel mpanel = mediaButtonPanel();
 		content.add(mpanel, BorderLayout.SOUTH);
@@ -59,20 +64,18 @@ public class BaseGUI extends JFrame implements ActionListener
 		setTitle("SnowCrash");
 		setVisible(true);
 	}
-	/*
-	public static void main(String[] args)
-	{
-		new BaseGUI();
-	}
-	*/
 	
-	
-	JMenu fileMenu()
+	JMenu fileMenu() // file menu
 	{
 		JMenu file = new JMenu("File");
+		
+		// menu item - "Reset"
 		final JMenuItem reset = new JMenuItem("Reset");
 		file.add(reset);
+		
 		file.addSeparator();
+		
+		// menu item - "Exit"
 		final JMenuItem exit = new JMenuItem("Exit");
 		file.add(exit);
 		
@@ -101,37 +104,51 @@ public class BaseGUI extends JFrame implements ActionListener
         return file;
 	}
 	
-	JMenu configurationMenu()
+	JMenu configurationMenu() // configuration menu
 	{
 		JMenu configuration = new JMenu("Configuration");
-		final JMenuItem newCTemp = new JMenuItem("New Critter Template");
-		configuration.add(newCTemp);
-		final JMenuItem delCTemp = new JMenuItem("Delete Critter Template");
-		configuration.add(delCTemp);
+		
+		// menu item - "New Critter Template"
+		final JMenuItem newCritterTemp = new JMenuItem("New Critter Template");
+		configuration.add(newCritterTemp);
+		
+		// menu item - "Delete Critter Template"
+		final JMenuItem delCritterTemp = new JMenuItem("Delete Critter Template");
+		configuration.add(delCritterTemp);
 		
 		configuration.addSeparator();
 		
-		final JMenuItem impCTemp = new JMenuItem("Import Critter Templates");
-		configuration.add(impCTemp);
-		final JMenuItem expCTemp = new JMenuItem("Export Critter Templates");
-		configuration.add(expCTemp);
+		// menu item - "Import Critter Template"
+		final JMenuItem impCritterTemp = new JMenuItem("Import Critter Templates");
+		configuration.add(impCritterTemp);
+		
+		// menu item - "Export Critter Template"
+		final JMenuItem expCritterTemp = new JMenuItem("Export Critter Templates");
+		configuration.add(expCritterTemp);
 		
 		configuration.addSeparator();
 		
-		final JMenuItem lConfig = new JMenuItem("Load Configuration");
-		configuration.add(lConfig);
-		final JMenuItem lSim = new JMenuItem("Load Simulation");
-		configuration.add(lSim);
-		final JMenuItem lResults = new JMenuItem("Load Results");
-		configuration.add(lResults);
+		// menu item - "Load Configuration"
+		final JMenuItem loadConfig = new JMenuItem("Load Configuration");
+		configuration.add(loadConfig);
+		
+		// menu item - "Load Simulation"
+		final JMenuItem loadSim = new JMenuItem("Load Simulation");
+		configuration.add(loadSim);
+		
+		// menu item - "Load Results"
+		final JMenuItem loadResults = new JMenuItem("Load Results");
+		configuration.add(loadResults);
 		
 		configuration.addSeparator();
 		
-		final JMenuItem sConfig = new JMenuItem("Save Configuration");
-		configuration.add(sConfig);
+		// menu item - "Save Configuration"
+		final JMenuItem saveConfig = new JMenuItem("Save Configuration");
+		configuration.add(saveConfig);
 		
 		configuration.addSeparator();
 		
+		// menu item - "Start Simulation"
 		final JMenuItem startSim = new JMenuItem("Start Simulation");
 		configuration.add(startSim);
 		
@@ -142,7 +159,7 @@ public class BaseGUI extends JFrame implements ActionListener
             public void actionPerformed( ActionEvent e )
             {
             	String filePath, fileName;
-            	int impCritTempVal, expCritTempVal, lConfigVal, lSimVal, lResVal, sConfigVal;
+            	int impCritTempVal, expCritTempVal, loadConfigVal, loadSimVal, lResVal, saveConfigVal;
             	if (e.getActionCommand().equals("New Critter Template"))
             	{
         			// Do Something
@@ -180,8 +197,8 @@ public class BaseGUI extends JFrame implements ActionListener
             	else if (e.getActionCommand().equals("Load Configuration"))
             	{
             		fc.setDialogTitle("Load Configuration");
-            		lConfigVal = fc.showOpenDialog(null);
-            		if (lConfigVal == JFileChooser.APPROVE_OPTION)
+            		loadConfigVal = fc.showOpenDialog(null);
+            		if (loadConfigVal == JFileChooser.APPROVE_OPTION)
             		{
             			File f=fc.getSelectedFile();
             			filePath=f.getPath();
@@ -193,8 +210,8 @@ public class BaseGUI extends JFrame implements ActionListener
             	else if (e.getActionCommand().equals("Load Simulation"))
             	{
             		fc.setDialogTitle("Load Simulation");
-            		lSimVal = fc.showOpenDialog(null);
-            		if (lSimVal == JFileChooser.APPROVE_OPTION)
+            		loadSimVal = fc.showOpenDialog(null);
+            		if (loadSimVal == JFileChooser.APPROVE_OPTION)
             		{
             			File f=fc.getSelectedFile();
             			filePath=f.getPath();
@@ -219,8 +236,8 @@ public class BaseGUI extends JFrame implements ActionListener
             	else if (e.getActionCommand().equals("Save Configuration"))
             	{
             		fc.setDialogTitle("Save Configuration");
-            		sConfigVal = fc.showSaveDialog(null);
-            		if (sConfigVal == JFileChooser.APPROVE_OPTION)
+            		saveConfigVal = fc.showSaveDialog(null);
+            		if (saveConfigVal == JFileChooser.APPROVE_OPTION)
             		{
             			File f=fc.getSelectedFile();
             			filePath=f.getPath();
@@ -240,39 +257,48 @@ public class BaseGUI extends JFrame implements ActionListener
             }
         };
 
-        newCTemp.addActionListener( configMenuListener );
-        delCTemp.addActionListener(configMenuListener);
-        impCTemp.addActionListener(configMenuListener);
-        expCTemp.addActionListener(configMenuListener);
-        lConfig.addActionListener(configMenuListener);
-        lSim.addActionListener(configMenuListener);
-        lResults.addActionListener(configMenuListener);
-        sConfig.addActionListener(configMenuListener);
+        newCritterTemp.addActionListener( configMenuListener );
+        delCritterTemp.addActionListener(configMenuListener);
+        impCritterTemp.addActionListener(configMenuListener);
+        expCritterTemp.addActionListener(configMenuListener);
+        loadConfig.addActionListener(configMenuListener);
+        loadSim.addActionListener(configMenuListener);
+        loadResults.addActionListener(configMenuListener);
+        saveConfig.addActionListener(configMenuListener);
         startSim.addActionListener(configMenuListener);
 		
 		return configuration;
 	}
 	
-	JMenu simulationMenu()
+	JMenu simulationMenu() // simulation menu
 	{
 		JMenu simulation = new JMenu("Simulation");
+		
+		// menu item - "Back to Configuration"
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewind = new JMenuItem("Back to Configuration", rewindIcon);
 		simulation.add(rewind);
+		
+		// menu item - "Play/Pause Simulation"
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		play = new JMenuItem("Play/Pause", playIcon);
 		simulation.add(play);
+		
+		// menu item - "Abort to Results"
 		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
 		stop = new JMenuItem("Abort to Results", stopIcon);
 		simulation.add(stop);
+		
+		// menu item - "Simulate to End"
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ff = new JMenuItem("Simulate to End", ffIcon);
 		simulation.add(ff);
 		
 		simulation.addSeparator();
 		
-		saveSimulation = new JMenuItem("Save Simulation");
-		simulation.add(saveSimulation);
+		// menu item - "Save Simulation"
+		saveSim = new JMenuItem("Save Simulation");
+		simulation.add(saveSim);
 		
 		final JFileChooser fc = new JFileChooser();
 		
@@ -299,21 +325,24 @@ public class BaseGUI extends JFrame implements ActionListener
         play.addActionListener(this);
         stop.addActionListener(this);
         ff.addActionListener(this);
-        saveSimulation.addActionListener(simMenuListener);
+        saveSim.addActionListener(simMenuListener);
 		
 		return simulation;
 	}
 	
-	JMenu resultsMenu()
+	JMenu resultsMenu() // results menu
 	{
 		JMenu results = new JMenu("Results");
-		final JMenuItem oLog = new JMenuItem("Open Log");
-		results.add(oLog);
+		
+		// menu item - "Open Log"
+		final JMenuItem openLog = new JMenuItem("Open Log");
+		results.add(openLog);
 		
 		results.addSeparator();
 		
-		final JMenuItem sResults = new JMenuItem("Save Results");
-		results.add(sResults);
+		// menu item - "Save Results"
+		final JMenuItem saveResults = new JMenuItem("Save Results");
+		results.add(saveResults);
 		
 		final JFileChooser fc = new JFileChooser();
 		
@@ -322,13 +351,13 @@ public class BaseGUI extends JFrame implements ActionListener
         {
             public void actionPerformed( ActionEvent e )
             {
-            	int sResVal, oLogVal;
+            	int sResVal, openLogVal;
             	String filePath, fileName;
             	if (e.getActionCommand().equals("Open Log"))
             	{
         			fc.setDialogTitle("Open Log");
-            		oLogVal = fc.showOpenDialog(null);
-            		if (oLogVal == JFileChooser.APPROVE_OPTION)
+            		openLogVal = fc.showOpenDialog(null);
+            		if (openLogVal == JFileChooser.APPROVE_OPTION)
             		{
             			File f=fc.getSelectedFile();
             			filePath=f.getPath();
@@ -358,15 +387,17 @@ public class BaseGUI extends JFrame implements ActionListener
             }
         };
 
-        oLog.addActionListener( resMenuListener );
-        sResults.addActionListener( resMenuListener );
+        openLog.addActionListener( resMenuListener );
+        saveResults.addActionListener( resMenuListener );
 		
 		return results;
 	}
 	
-	JMenu helpMenu()
+	JMenu helpMenu() // help menu
 	{
 		JMenu help = new JMenu("Help");
+		
+		// menu item - "About"
 		JMenuItem about = new JMenuItem("About");
 		help.add(about);
 		
@@ -389,12 +420,13 @@ public class BaseGUI extends JFrame implements ActionListener
 		return help;
 	}
 	
-	JPanel mediaButtonPanel()
+	JPanel mediaButtonPanel() // media panel contains rewind, play, stop, ff buttons
 	{
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 45));
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		
+		// rewind button, aka "Back to Configuration"
 		rewindButton = new JButton();
 		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
 		rewindButton.setIcon(rewindIcon);
@@ -402,6 +434,7 @@ public class BaseGUI extends JFrame implements ActionListener
 		rewindButton.setToolTipText("Back to Configuration");
 		rewindButton.setAlignmentY(TOP_ALIGNMENT);
 		
+		// play/pause button
 		playButton = new JButton();
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		playButton.setIcon(playIcon);		
@@ -409,8 +442,10 @@ public class BaseGUI extends JFrame implements ActionListener
 		playButton.setToolTipText("Play/Pause");
 		playButton.setAlignmentY(TOP_ALIGNMENT);
 		
+		// pause icon for play/pause button
 		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
 		
+		// stop button, aka "Abort to Results"
 		stopButton = new JButton();
 		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
 		stopButton.setIcon(stopIcon);
@@ -418,21 +453,17 @@ public class BaseGUI extends JFrame implements ActionListener
 		stopButton.setToolTipText("Abort to Results");
 		stopButton.setAlignmentY(TOP_ALIGNMENT);
 		
+		// fast-forward button, aka "Simulate to End"
 		ffButton = new JButton();
 		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
 		ffButton.setIcon(ffIcon);
 		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
 		ffButton.setAlignmentY(TOP_ALIGNMENT);
-		/*
-		JProgressBar simPBar = new JProgressBar(0, 100);
-		simPBar.setStringPainted(true);
-		simPBar.setToolTipText("Simulation Progress");
-		simPBar.setAlignmentY(TOP_ALIGNMENT);
-		*/
+		
+		// simulation progress bar
 		SimulationProgressBar simPBar = new SimulationProgressBar();
 		simPBar.setSize(100,20);
-		//simPBar.setPreferredSize(new Dimension(WIDTH - 300, 35));
 		simPBar.setSize(WIDTH-300, 35);
 		simPBar.setAlignmentY(TOP_ALIGNMENT);
 		

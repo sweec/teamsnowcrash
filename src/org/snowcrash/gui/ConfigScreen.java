@@ -17,7 +17,7 @@ public class ConfigScreen extends BaseGUI
 		play.setEnabled(true);
 		stop.setEnabled(false);
 		ff.setEnabled(false);
-		saveSimulation.setEnabled(true);
+		saveSim.setEnabled(true);
 		
 		rewindButton.setEnabled(false);
 		playButton.setEnabled(true);
@@ -57,10 +57,11 @@ public class ConfigScreen extends BaseGUI
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
+		JScrollPane cScroll = new JScrollPane();
 		WorldPanel worldConfig = new WorldPanel();
-		cPanel = worldConfig.WorldPanel();
+		cScroll = worldConfig.WorldPanel();
 		tabPane = new JTabbedPane();
-		tabPane.addTab("World Settings", cPanel);
+		tabPane.addTab("World Settings", cScroll);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
 		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));

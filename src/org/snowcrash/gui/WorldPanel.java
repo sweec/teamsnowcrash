@@ -8,6 +8,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -15,15 +16,16 @@ import javax.swing.event.ChangeListener;
 
 public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 {
-	public static final int SIZEMIN = 20;
-	public static final int SIZEMAX = 100;
-	public static final int SIZEINIT = 30;
-	public static final int TURNSINIT = 30;
+	public static final int SIZEMIN = 20;		// minimum value for each slider
+	public static final int SIZEMAX = 100;		// maximum value for each slider
+	public static final int SIZEINIT = 30;		// initial value for each slider
+	public static final int TURNSINIT = 30;		// initial number of turns
+	
 	JSlider worldSlider;
 	JLabel currentSizeLabel, currentTurnsLabel;
 	JTextField worldTurns;
 	
-	public JPanel WorldPanel()
+	public JScrollPane WorldPanel()
 	{
 		JPanel cPanel = new JPanel();
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
@@ -36,6 +38,7 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
+		// creates the slider that specifies the world size in grid spaces
 		worldSlider = new JSlider(JSlider.HORIZONTAL, SIZEMIN, SIZEMAX, SIZEINIT);
 		worldSlider.addChangeListener(this);
 		worldSlider.setMajorTickSpacing(80);
@@ -67,6 +70,7 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
+		// allows the user to change the number of turns
 		worldTurns = new JTextField(10);
 		worldTurns.setActionCommand("jtext");
 		worldTurns.setMaximumSize( worldTurns.getPreferredSize() );
@@ -80,10 +84,13 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		cPanel.add(currentTurnsLabel);
 		
 		cPanel.add(Box.createVerticalGlue());
+		JScrollPane cScroll = new JScrollPane(cPanel);
+		cScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		cScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		
 		worldTurns.addActionListener(this);
 		
-		return cPanel;
+		return cScroll;
 	}
 	
 	public void stateChanged(ChangeEvent e)
