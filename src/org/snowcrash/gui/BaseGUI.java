@@ -484,24 +484,25 @@ public class BaseGUI extends JFrame implements ActionListener
 		return buttonPanel;
 	}
 	
+	// event handler for simulation menu and media panel
 	public void actionPerformed(ActionEvent e)
 	{	
 		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
 		
-		if (e.getActionCommand().equals("Back to Configuration"))
+		if (e.getActionCommand().equals("Back to Configuration")) // rewind
     	{
 			// Do Something
     	}
-    	else if (e.getActionCommand().equals("Play/Pause"))
+    	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
 			// Do Something
     	}
-    	else if (e.getActionCommand().equals("Abort to Results"))
+    	else if (e.getActionCommand().equals("Abort to Results")) // stop
     	{
 			// Do Something
     	}
-    	else if (e.getActionCommand().equals("Simulate to End"))
+    	else if (e.getActionCommand().equals("Simulate to End")) // fast forward
     	{
 			// Do Something
     	}

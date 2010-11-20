@@ -93,13 +93,13 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		return cScroll;
 	}
 	
-	public void stateChanged(ChangeEvent e)
+	public void stateChanged(ChangeEvent e) // event handler for the "World Size" slider
 	{
 		String worldSize = Integer.toString(worldSlider.getValue());
 		currentSizeLabel.setText(worldSize + " X " + worldSize);
 	}
 	
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(ActionEvent e) // event handler for the "World Turns field
 	{
 		int turnsint = Integer.parseInt(worldTurns.getText().trim());
 		if (turnsint >= 10 && turnsint <= 100)
