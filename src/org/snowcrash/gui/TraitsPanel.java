@@ -40,6 +40,13 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	
 	JTextField nameField; // indicates and changes the critter name
 	
+	// determinants that store values for the command factory
+	private static String size, name;
+	private static int points = critterPoints;
+	private static int visionUpper, visionLower, speedUpper, speedLower;
+	private static int camoUpper, camoLower, combatUpper, combatLower;
+	private static int endurUpper, endurLower, ageUpper, ageLower;
+	
 	public JPanel TraitsPanel()
 	{
 		JPanel cPanelInner = new JPanel();
@@ -48,7 +55,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		cPanelInner.add(Box.createRigidArea(new Dimension(0,10)));
 		
 		JPanel namePanel = new JPanel();
-		namePanel = this.namePanel("predator", "Dopey");
+		namePanel = this.namePanel("predator", "Barney");
 		cPanelInner.add(namePanel);
 		this.traitSeparator(cPanelInner);
 		
@@ -58,38 +65,62 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		this.traitSeparator(cPanelInner);
 
 		// create the Vision trait sliders
+		upVisionSlider = this.traitsSlider();
+		upVisionSlider.addChangeListener(this);
+		lowVisionSlider = this.traitsSlider();
+		lowVisionSlider.addChangeListener(this);
 		JPanel visionPanel = new JPanel();
-		visionPanel = this.sliderPairPanel(upVisionSlider, lowVisionSlider, "Vision");
+		visionPanel = this.sliderPanel(upVisionSlider, lowVisionSlider, "Vision");
 		cPanelInner.add(visionPanel);
 		this.traitSeparator(cPanelInner);
 		
 		// create the Speed trait sliders
+		upSpeedSlider = this.traitsSlider();
+		upSpeedSlider.addChangeListener(this);
+		lowSpeedSlider = this.traitsSlider();
+		lowSpeedSlider.addChangeListener(this);
 		JPanel speedPanel = new JPanel();
-		speedPanel = this.sliderPairPanel(upSpeedSlider, lowSpeedSlider, "Speed");
+		speedPanel = this.sliderPanel(upSpeedSlider, lowSpeedSlider, "Speed");
 		cPanelInner.add(speedPanel);
 		this.traitSeparator(cPanelInner);
 		
 		// create the Camouflage trait sliders
+		upCamoSlider = this.traitsSlider();
+		upCamoSlider.addChangeListener(this);
+		lowCamoSlider = this.traitsSlider();
+		lowCamoSlider.addChangeListener(this);
 		JPanel camoflagePanel = new JPanel();
-		camoflagePanel = this.sliderPairPanel(upCamoSlider, lowCamoSlider, "Camoflage");
+		camoflagePanel = this.sliderPanel(upCamoSlider, lowCamoSlider, "Camoflage");
 		cPanelInner.add(camoflagePanel);
 		this.traitSeparator(cPanelInner);
 		
 		// create the Combat trait sliders
+		upCombatSlider = this.traitsSlider();
+		upCombatSlider.addChangeListener(this);
+		lowCombatSlider = this.traitsSlider();
+		lowCombatSlider.addChangeListener(this);
 		JPanel combatPanel = new JPanel();
-		combatPanel = this.sliderPairPanel(upCombatSlider, lowCombatSlider, "Combat");
+		combatPanel = this.sliderPanel(upCombatSlider, lowCombatSlider, "Combat");
 		cPanelInner.add(combatPanel);
 		this.traitSeparator(cPanelInner);
 		
 		// create the Endurance trait sliders
+		upEndurSlider = this.traitsSlider();
+		upEndurSlider.addChangeListener(this);
+		lowEndurSlider = this.traitsSlider();
+		lowEndurSlider.addChangeListener(this);
 		JPanel endurancePanel = new JPanel();
-		endurancePanel = this.sliderPairPanel(upEndurSlider, lowEndurSlider, "Endurance");
+		endurancePanel = this.sliderPanel(upEndurSlider, lowEndurSlider, "Endurance");
 		cPanelInner.add(endurancePanel);
 		this.traitSeparator(cPanelInner);
 		
 		// create the age trait sliders
+		upAgeSlider = this.traitsSlider();
+		upAgeSlider.addChangeListener(this);
+		lowAgeSlider = this.traitsSlider();
+		lowAgeSlider.addChangeListener(this);
 		JPanel agePanel = new JPanel();
-		agePanel = this.sliderPairPanel(upAgeSlider, lowAgeSlider, "Age");
+		agePanel = this.sliderPanel(upAgeSlider, lowAgeSlider, "Age");
 		cPanelInner.add(agePanel);
 		
 		cPanelInner.add(Box.createRigidArea(new Dimension(0,10)));	
@@ -219,7 +250,19 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		return cPanel;
 	}
 	
-	private JPanel sliderPairPanel(JSlider upSlider, JSlider lowSlider, String critterTrait)
+	private JSlider traitsSlider() // slider characteristics
+	{
+		JSlider someSlider = new JSlider(JSlider.HORIZONTAL, SLIDEMIN, SLIDEMAX, SLIDEINIT);
+		someSlider.setMajorTickSpacing(1);
+		someSlider.setMinorTickSpacing(1);
+		someSlider.setSnapToTicks(true);
+		someSlider.setPaintLabels(true);
+		someSlider.setMaximumSize( someSlider.getPreferredSize() );
+		someSlider.setAlignmentY(CENTER_ALIGNMENT);
+		return someSlider;
+	}
+	
+	private JPanel sliderPanel(JSlider upSlider, JSlider lowSlider, String critterTrait)
 	{	// this method adds lower and upper value critter sliders for some traits
 		JPanel cPanel = new JPanel();
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
@@ -239,14 +282,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		upperBox.add(Box.createHorizontalStrut(10));
 		
 		// upper value slider
-		upSlider = new JSlider(JSlider.HORIZONTAL, SLIDEMIN, SLIDEMAX, SLIDEINIT);
-		upSlider.addChangeListener(this);
-		upSlider.setMajorTickSpacing(1);
-		upSlider.setMinorTickSpacing(1);
-		upSlider.setSnapToTicks(true);
-		upSlider.setPaintLabels(true);
-		upSlider.setMaximumSize( upSlider.getPreferredSize() );
-		upSlider.setAlignmentY(CENTER_ALIGNMENT);
 		upperBox.add(upSlider);
 		upperBox.add(Box.createHorizontalStrut(10));
 		cPanel.add(upperBox);
@@ -261,14 +296,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		lowerBox.add(Box.createHorizontalStrut(10));
 		
 		// lower value slider
-		lowSlider = new JSlider(JSlider.HORIZONTAL, SLIDEMIN, SLIDEMAX, SLIDEINIT);
-		lowSlider.addChangeListener(this);
-		lowSlider.setMajorTickSpacing(1);
-		lowSlider.setMinorTickSpacing(1);
-		lowSlider.setSnapToTicks(true);
-		lowSlider.setPaintLabels(true);
-		lowSlider.setMaximumSize( lowSlider.getPreferredSize() );
-		lowSlider.setAlignmentY(CENTER_ALIGNMENT);
 		lowerBox.add(lowSlider);
 		lowerBox.add(Box.createHorizontalStrut(10));
 		cPanel.add(lowerBox);
@@ -276,16 +303,83 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		return cPanel;
 	}
 	
-	public void stateChanged(ChangeEvent e)
+	public void stateChanged(ChangeEvent e) // slider event handler
 	{
-		
+		if (upVisionSlider.getValueIsAdjusting()) // for vision trait
+		{
+			// do something
+		}
+		else if (lowVisionSlider.getValueIsAdjusting())
+		{
+			// do something
+		}
+		else if (upSpeedSlider.getValueIsAdjusting()) // for speed trait
+		{
+			// do something
+		}
+		else if (lowSpeedSlider.getValueIsAdjusting())
+		{
+			// do something
+		}
+		else if (upCamoSlider.getValueIsAdjusting()) // for camouflage trait
+		{
+			// do something
+		}
+		else if (lowCamoSlider.getValueIsAdjusting())
+		{
+			// do something
+		}
+		else if (upCombatSlider.getValueIsAdjusting()) // for combat trait
+		{
+			// do something
+		}
+		else if (lowCombatSlider.getValueIsAdjusting())
+		{
+			// do something
+		}
+		else if (upEndurSlider.getValueIsAdjusting()) // for endurance trait
+		{
+			// do something
+		}
+		else if (lowEndurSlider.getValueIsAdjusting())
+		{
+			// do something
+		}
+		else if (upAgeSlider.getValueIsAdjusting()) // for age trait
+		{
+			// do something
+		}
+		else if (lowAgeSlider.getValueIsAdjusting())
+		{
+			// do something
+		}
+		else
+		{
+			// do something
+		}
 	}
 	
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(ActionEvent e) // event handler for other objects
 	{
-		if (e.getActionCommand().equals("Small"))
+		if (e.getActionCommand().equals("Small")) // for critter size
 		{
-
+			size = "small";
+		}
+		else if (e.getActionCommand().equals("Medium"))
+		{
+			size = "medium";
+		}
+		else if (e.getActionCommand().equals("large"))
+		{
+			size = "large";
+		}
+		else if (e.getActionCommand().equals("jtext")) // for critter name field
+		{
+			// do something
+		}
+		else
+		{
+			
 		}
 	}
 }
