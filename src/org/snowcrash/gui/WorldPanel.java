@@ -95,21 +95,36 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 	
 	public void stateChanged(ChangeEvent e) // event handler for the "World Size" slider
 	{
-		String worldSize = Integer.toString(worldSlider.getValue());
-		currentSizeLabel.setText(worldSize + " X " + worldSize);
-	}
-	
-	public void actionPerformed(ActionEvent e) // event handler for the "World Turns field
-	{
-		int turnsint = Integer.parseInt(worldTurns.getText().trim());
-		if (turnsint >= 10 && turnsint <= 100)
+		if (e.getSource().equals(this.worldSlider) 
+				&& !worldSlider.getValueIsAdjusting())
 		{
-			currentTurnsLabel.setText(worldTurns.getText());
-			worldTurns.setText("");
+			// do something
 		}
 		else
 		{
-			worldTurns.setText("");
+			String worldSize = Integer.toString(worldSlider.getValue());
+			currentSizeLabel.setText(worldSize + " X " + worldSize);
 		}
+	}
+	
+	public void actionPerformed(ActionEvent e) // event handler for the "World Turns"
+	{
+		try // ensure that turnsint is a number
+		{
+			int turnsint = Integer.parseInt(worldTurns.getText().trim());
+			if (turnsint >= 10 && turnsint <= 100)
+			{
+				currentTurnsLabel.setText(worldTurns.getText());
+				worldTurns.setText("");
+			}
+			else
+			{
+				worldTurns.setText("");
+			}
+		}
+		catch (NumberFormatException err) 
+		{
+			worldTurns.setText("");
+		} 
 	}
 }

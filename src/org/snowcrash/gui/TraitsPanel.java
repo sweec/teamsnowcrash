@@ -37,15 +37,16 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	JSlider upVisionSlider, lowVisionSlider, upCombatSlider, lowCombatSlider;
 	JSlider upEndurSlider, lowEndurSlider, upAgeSlider, lowAgeSlider;
 	JRadioButton smallRButton, medRButton, lrgRButton;
+	JLabel remainingPoints;
 	
 	JTextField nameField; // indicates and changes the critter name
 	
 	// determinants that store values for the command factory
 	private static String size, name;
 	private static int points = critterPoints;
-	private static int visionUpper, visionLower, speedUpper, speedLower;
-	private static int camoUpper, camoLower, combatUpper, combatLower;
-	private static int endurUpper, endurLower, ageUpper, ageLower;
+	private static int visionUpper = 1, visionLower = 1, speedUpper = 1, speedLower = 1;
+	private static int camoUpper = 1, camoLower = 1, combatUpper = 1, combatLower = 1;
+	private static int endurUpper = 1, endurLower = 1, ageUpper = 1, ageLower = 1;
 	
 	public JPanel TraitsPanel()
 	{
@@ -56,8 +57,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		
 		JPanel namePanel = new JPanel();
 		namePanel = this.namePanel("predator", "Barney");
-		cPanelInner.add(namePanel);
-		this.traitSeparator(cPanelInner);
 		
 		JPanel sizePanel = new JPanel();
 		sizePanel = this.sizePanel();
@@ -141,6 +140,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 
 		JPanel cPanelOuter = new JPanel();
 		cPanelOuter.setLayout(new BoxLayout(cPanelOuter, BoxLayout.Y_AXIS));
+		cPanelOuter.add(namePanel);
 		cPanelOuter.add(cScroll);
 		cPanelOuter.add(buttonPanel);
 		
@@ -191,11 +191,12 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.X_AXIS));
 		JLabel critterLabel = new JLabel(critterIcon);
 		cPanel.add(critterLabel);
+		cPanel.add(Box.createRigidArea(new Dimension(10,0)));
 		
 		// displays and allows user to change the critter name
 		Box namePointBox = new Box(BoxLayout.Y_AXIS);
 		nameField = new JTextField(20);
-		nameField.setActionCommand("jtext");
+		nameField.setActionCommand("jtextname");
 		nameField.setMaximumSize( nameField.getPreferredSize() );
 		nameField.setAlignmentX(CENTER_ALIGNMENT);
 		nameField.setText(critterName);
@@ -203,7 +204,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		namePointBox.add(nameField);
 		
 		namePointBox.add(Box.createVerticalStrut(10));
-		JLabel remainingPoints = new JLabel("Points Remaining: " + critterPoints);
+		remainingPoints = new JLabel("Points Remaining: " + critterPoints);
 		namePointBox.add(remainingPoints);
 		
 		cPanel.add(namePointBox);
@@ -257,13 +258,15 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		someSlider.setMinorTickSpacing(1);
 		someSlider.setSnapToTicks(true);
 		someSlider.setPaintLabels(true);
-		someSlider.setMaximumSize( someSlider.getPreferredSize() );
+		someSlider.setPreferredSize(new Dimension(120, 40));
+		//someSlider.setMaximumSize(new Dimension(120, 40));
 		someSlider.setAlignmentY(CENTER_ALIGNMENT);
 		return someSlider;
 	}
 	
+	// this method adds lower and upper value critter sliders for some traits
 	private JPanel sliderPanel(JSlider upSlider, JSlider lowSlider, String critterTrait)
-	{	// this method adds lower and upper value critter sliders for some traits
+	{	
 		JPanel cPanel = new JPanel();
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 		cPanel.setAlignmentX(CENTER_ALIGNMENT);
@@ -305,54 +308,354 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	
 	public void stateChanged(ChangeEvent e) // slider event handler
 	{
-		if (upVisionSlider.getValueIsAdjusting()) // for vision trait
-		{
-			// do something
-		}
-		else if (lowVisionSlider.getValueIsAdjusting())
-		{
-			// do something
-		}
-		else if (upSpeedSlider.getValueIsAdjusting()) // for speed trait
-		{
-			// do something
-		}
-		else if (lowSpeedSlider.getValueIsAdjusting())
-		{
-			// do something
-		}
-		else if (upCamoSlider.getValueIsAdjusting()) // for camouflage trait
-		{
-			// do something
-		}
-		else if (lowCamoSlider.getValueIsAdjusting())
-		{
-			// do something
-		}
-		else if (upCombatSlider.getValueIsAdjusting()) // for combat trait
-		{
-			// do something
-		}
-		else if (lowCombatSlider.getValueIsAdjusting())
-		{
-			// do something
-		}
-		else if (upEndurSlider.getValueIsAdjusting()) // for endurance trait
-		{
-			// do something
-		}
-		else if (lowEndurSlider.getValueIsAdjusting())
-		{
-			// do something
-		}
-		else if (upAgeSlider.getValueIsAdjusting()) // for age trait
-		{
-			// do something
-		}
-		else if (lowAgeSlider.getValueIsAdjusting())
-		{
-			// do something
-		}
+		// vision trait upper slider
+		if (e.getSource().equals(this.upVisionSlider) 
+				&& !upVisionSlider.getValueIsAdjusting())
+	    {
+	        // prevents upper slider from being less than lower slider
+			if (upVisionSlider.getValue() < lowVisionSlider.getValue())
+	        {
+	        	upVisionSlider.setValue(lowVisionSlider.getValue());
+	        	points = points - (upVisionSlider.getValue() - visionUpper);
+	        	visionUpper = upVisionSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	        // prevents slider from using more than remaining points
+			else if (upVisionSlider.getValue() > visionUpper 
+	        		&& upVisionSlider.getValue() - visionUpper > points)
+	        {
+	        	upVisionSlider.setValue(visionUpper + points);
+	        	points = points - (upVisionSlider.getValue() - visionUpper);
+	        	visionUpper = upVisionSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (upVisionSlider.getValue() - visionUpper);
+	        	visionUpper = upVisionSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// vision trait lower slider
+		if ( e.getSource().equals( this.lowVisionSlider ) 
+				&& !lowVisionSlider.getValueIsAdjusting() )
+	    {
+			// prevents upper slider from being less than lower slider
+			if (upVisionSlider.getValue() < lowVisionSlider.getValue())
+	        {
+	        	lowVisionSlider.setValue(upVisionSlider.getValue());
+	        	points = points - (lowVisionSlider.getValue() - visionLower);
+	        	visionLower = lowVisionSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+			// prevents slider from using more than remaining points
+			else if (lowVisionSlider.getValue() > visionLower 
+	        		&& lowVisionSlider.getValue() - visionLower > points)
+	        {
+	        	lowVisionSlider.setValue(visionLower + points);
+	        	points = points - (lowVisionSlider.getValue() - visionLower);
+	        	visionLower = lowVisionSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (lowVisionSlider.getValue() - visionLower);
+	        	visionLower = lowVisionSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// speed trait upper slider
+		if (e.getSource().equals(this.upSpeedSlider) 
+				&& !upSpeedSlider.getValueIsAdjusting())
+	    {
+	        // prevents upper slider from being less than lower slider
+			if (upSpeedSlider.getValue() < lowSpeedSlider.getValue())
+	        {
+	        	upSpeedSlider.setValue(lowSpeedSlider.getValue());
+	        	points = points - (upSpeedSlider.getValue() - speedUpper);
+	        	speedUpper = upSpeedSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	        // prevents slider from using more than remaining points
+			else if (upSpeedSlider.getValue() > speedUpper 
+	        		&& upSpeedSlider.getValue() - speedUpper > points)
+	        {
+	        	upSpeedSlider.setValue(speedUpper + points);
+	        	points = points - (upSpeedSlider.getValue() - speedUpper);
+	        	speedUpper = upSpeedSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (upSpeedSlider.getValue() - speedUpper);
+	        	speedUpper = upSpeedSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// speed trait lower slider
+		if ( e.getSource().equals( this.lowSpeedSlider ) 
+				&& !lowSpeedSlider.getValueIsAdjusting() )
+	    {
+			// prevents upper slider from being less than lower slider
+			if (upSpeedSlider.getValue() < lowSpeedSlider.getValue())
+	        {
+	        	lowSpeedSlider.setValue(upSpeedSlider.getValue());
+	        	points = points - (lowSpeedSlider.getValue() - speedLower);
+	        	speedLower = lowSpeedSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+			// prevents slider from using more than remaining points
+			else if (lowSpeedSlider.getValue() > speedLower 
+	        		&& lowSpeedSlider.getValue() - speedLower > points)
+	        {
+	        	lowSpeedSlider.setValue(speedLower + points);
+	        	points = points - (lowSpeedSlider.getValue() - speedLower);
+	        	speedLower = lowSpeedSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (lowSpeedSlider.getValue() - speedLower);
+	        	speedLower = lowSpeedSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// camouflage trait upper slider
+		if (e.getSource().equals(this.upCamoSlider) 
+				&& !upCamoSlider.getValueIsAdjusting())
+	    {
+	        // prevents upper slider from being less than lower slider
+			if (upCamoSlider.getValue() < lowCamoSlider.getValue())
+	        {
+	        	upCamoSlider.setValue(lowCamoSlider.getValue());
+	        	points = points - (upCamoSlider.getValue() - camoUpper);
+	        	camoUpper = upCamoSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	        // prevents slider from using more than remaining points
+			else if (upCamoSlider.getValue() > camoUpper 
+	        		&& upCamoSlider.getValue() - camoUpper > points)
+	        {
+	        	upCamoSlider.setValue(camoUpper + points);
+	        	points = points - (upCamoSlider.getValue() - camoUpper);
+	        	camoUpper = upCamoSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (upCamoSlider.getValue() - camoUpper);
+	        	camoUpper = upCamoSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// camouflage trait lower slider
+		if ( e.getSource().equals( this.lowCamoSlider ) 
+				&& !lowCamoSlider.getValueIsAdjusting() )
+	    {
+			// prevents upper slider from being less than lower slider
+			if (upCamoSlider.getValue() < lowCamoSlider.getValue())
+	        {
+	        	lowCamoSlider.setValue(upCamoSlider.getValue());
+	        	points = points - (lowCamoSlider.getValue() - camoLower);
+	        	camoLower = lowCamoSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+			// prevents slider from using more than remaining points
+			else if (lowCamoSlider.getValue() > camoLower 
+	        		&& lowCamoSlider.getValue() - camoLower > points)
+	        {
+	        	lowCamoSlider.setValue(camoLower + points);
+	        	points = points - (lowCamoSlider.getValue() - camoLower);
+	        	camoLower = lowCamoSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (lowCamoSlider.getValue() - camoLower);
+	        	camoLower = lowCamoSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// combat trait upper slider
+		if (e.getSource().equals(this.upCombatSlider) 
+				&& !upCombatSlider.getValueIsAdjusting())
+	    {
+	        // prevents upper slider from being less than lower slider
+			if (upCombatSlider.getValue() < lowCombatSlider.getValue())
+	        {
+	        	upCombatSlider.setValue(lowCombatSlider.getValue());
+	        	points = points - (upCombatSlider.getValue() - combatUpper);
+	        	combatUpper = upCombatSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	        // prevents slider from using more than remaining points
+			else if (upCombatSlider.getValue() > combatUpper 
+	        		&& upCombatSlider.getValue() - combatUpper > points)
+	        {
+	        	upCombatSlider.setValue(combatUpper + points);
+	        	points = points - (upCombatSlider.getValue() - combatUpper);
+	        	combatUpper = upCombatSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (upCombatSlider.getValue() - combatUpper);
+	        	combatUpper = upCombatSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// combat trait lower slider
+		if ( e.getSource().equals( this.lowCombatSlider ) 
+				&& !lowCombatSlider.getValueIsAdjusting() )
+	    {
+			// prevents upper slider from being less than lower slider
+			if (upCombatSlider.getValue() < lowCombatSlider.getValue())
+	        {
+	        	lowCombatSlider.setValue(upCombatSlider.getValue());
+	        	points = points - (lowCombatSlider.getValue() - combatLower);
+	        	combatLower = lowCombatSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+			// prevents slider from using more than remaining points
+			else if (lowCombatSlider.getValue() > combatLower 
+	        		&& lowCombatSlider.getValue() - combatLower > points)
+	        {
+	        	lowCombatSlider.setValue(combatLower + points);
+	        	points = points - (lowCombatSlider.getValue() - combatLower);
+	        	combatLower = lowCombatSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (lowCombatSlider.getValue() - combatLower);
+	        	combatLower = lowCombatSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// endurance trait upper slider
+		if (e.getSource().equals(this.upEndurSlider) 
+				&& !upEndurSlider.getValueIsAdjusting())
+	    {
+	        // prevents upper slider from being less than lower slider
+			if (upEndurSlider.getValue() < lowEndurSlider.getValue())
+	        {
+	        	upEndurSlider.setValue(lowEndurSlider.getValue());
+	        	points = points - (upEndurSlider.getValue() - endurUpper);
+	        	endurUpper = upEndurSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	        // prevents slider from using more than remaining points
+			else if (upEndurSlider.getValue() > endurUpper 
+	        		&& upEndurSlider.getValue() - endurUpper > points)
+	        {
+	        	upEndurSlider.setValue(endurUpper + points);
+	        	points = points - (upEndurSlider.getValue() - endurUpper);
+	        	endurUpper = upEndurSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (upEndurSlider.getValue() - endurUpper);
+	        	endurUpper = upEndurSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// endurance trait lower slider
+		if ( e.getSource().equals( this.lowEndurSlider ) 
+				&& !lowEndurSlider.getValueIsAdjusting() )
+	    {
+			// prevents upper slider from being less than lower slider
+			if (upEndurSlider.getValue() < lowEndurSlider.getValue())
+	        {
+	        	lowEndurSlider.setValue(upEndurSlider.getValue());
+	        	points = points - (lowEndurSlider.getValue() - endurLower);
+	        	endurLower = lowEndurSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+			// prevents slider from using more than remaining points
+			else if (lowEndurSlider.getValue() > endurLower 
+	        		&& lowEndurSlider.getValue() - endurLower > points)
+	        {
+	        	lowEndurSlider.setValue(endurLower + points);
+	        	points = points - (lowEndurSlider.getValue() - endurLower);
+	        	endurLower = lowEndurSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (lowEndurSlider.getValue() - endurLower);
+	        	endurLower = lowEndurSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// age trait upper slider
+		if (e.getSource().equals(this.upAgeSlider) 
+				&& !upAgeSlider.getValueIsAdjusting())
+	    {
+	        // prevents upper slider from being less than lower slider
+			if (upAgeSlider.getValue() < lowAgeSlider.getValue())
+	        {
+	        	upAgeSlider.setValue(lowAgeSlider.getValue());
+	        	points = points - (upAgeSlider.getValue() - ageUpper);
+	        	ageUpper = upAgeSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	        // prevents slider from using more than remaining points
+			else if (upAgeSlider.getValue() > ageUpper 
+	        		&& upAgeSlider.getValue() - ageUpper > points)
+	        {
+	        	upAgeSlider.setValue(ageUpper + points);
+	        	points = points - (upAgeSlider.getValue() - ageUpper);
+	        	ageUpper = upAgeSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (upAgeSlider.getValue() - ageUpper);
+	        	ageUpper = upAgeSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
+		// age trait lower slider
+		if ( e.getSource().equals( this.lowAgeSlider ) 
+				&& !lowAgeSlider.getValueIsAdjusting() )
+	    {
+			// prevents upper slider from being less than lower slider
+			if (upAgeSlider.getValue() < lowAgeSlider.getValue())
+	        {
+	        	lowAgeSlider.setValue(upAgeSlider.getValue());
+	        	points = points - (lowAgeSlider.getValue() - ageLower);
+	        	ageLower = lowAgeSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+			// prevents slider from using more than remaining points
+			else if (lowAgeSlider.getValue() > ageLower 
+	        		&& lowAgeSlider.getValue() - ageLower > points)
+	        {
+	        	lowAgeSlider.setValue(ageLower + points);
+	        	points = points - (lowAgeSlider.getValue() - ageLower);
+	        	ageLower = lowAgeSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);	
+	        }
+	        else
+	        {
+	        	points = points - (lowAgeSlider.getValue() - ageLower);
+	        	ageLower = lowAgeSlider.getValue();
+	        	remainingPoints.setText("Points Remaining: " + points);
+	        }
+	    }
+		
 		else
 		{
 			// do something
@@ -373,7 +676,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		{
 			size = "large";
 		}
-		else if (e.getActionCommand().equals("jtext")) // for critter name field
+		else if (e.getActionCommand().equals("jtextname")) // for critter name field
 		{
 			// do something
 		}
