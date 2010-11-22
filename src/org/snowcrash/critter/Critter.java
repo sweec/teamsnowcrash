@@ -61,12 +61,12 @@ public class Critter {
 
 	// add no-arguments constructor as required by gson
 	public Critter() {
-		this.uuid = UUID.randomUUID().toString();
 	}
 	
 	public Critter(Critter critter1, Critter critter2) {
 		this.uuid = UUID.randomUUID().toString();
 		RandomNumbers rn = RandomNumbers.getInstance();
+		traits = new HashMap<Trait, Pair<Integer, Integer>>();
 		traits.put(Trait.CAMO, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.CAMO)), rn.getInteger(critter2.traits.get(Trait.CAMO))));
 		traits.put(Trait.COMBAT, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.COMBAT)), rn.getInteger(critter2.traits.get(Trait.COMBAT))));
 		traits.put(Trait.ENDURANCE, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.ENDURANCE)), rn.getInteger(critter2.traits.get(Trait.ENDURANCE))));
@@ -81,6 +81,7 @@ public class Critter {
 		setPrototype(template.getPrototype());
 		setTemplateUuid(template.getUuid());
 		RandomNumbers rn = RandomNumbers.getInstance();
+		traits = new HashMap<Trait, Pair<Integer, Integer>>();
 		traits.put(Trait.CAMO, rn.getIntegerPair(template.getTraitRange(Trait.CAMO)));
 		traits.put(Trait.COMBAT, rn.getIntegerPair(template.getTraitRange(Trait.COMBAT)));
 		traits.put(Trait.ENDURANCE, rn.getIntegerPair(template.getTraitRange(Trait.ENDURANCE)));
