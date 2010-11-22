@@ -8,7 +8,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 
@@ -28,9 +28,9 @@ public class SimuPanel extends JPanel {
 	final private int offset = line_width;
     final private BasicStroke stroke = new BasicStroke(line_width);
     final private int wUnit = 64, hUnit = 64;
-    private BufferedImage plant = null;
-    private BufferedImage prey = null;
-    private BufferedImage predator = null;
+    private Image plant = null;
+    private Image prey = null;
+    private Image predator = null;
 	private Critter[][] critters = null;
 	private boolean[][] isDirty = null;
    
@@ -52,22 +52,13 @@ public class SimuPanel extends JPanel {
 		isDirty = new boolean[w][h];
 		
     	try {
-    		BufferedImage originalPlant = ImageIO.read(new File("images/plant.png"));
-    		BufferedImage originalPrey = ImageIO.read(new File("images/prey-left.png"));
-    		BufferedImage originalPredator = ImageIO.read(new File("images/predator-left.png"));
-    	    plant = new BufferedImage(wUnit, hUnit, originalPlant.getType());
-    	    prey = new BufferedImage(wUnit, hUnit, originalPrey.getType());
-    	    predator = new BufferedImage(wUnit, hUnit, originalPredator.getType());
-    	    Graphics2D g = plant.createGraphics();
-        	g.drawImage(originalPlant, 0, 0, wUnit, hUnit, null);
-        	g.dispose();
-    	    g = prey.createGraphics();
-        	g.drawImage(originalPrey, 0, 0, wUnit, hUnit, null);
-        	g.dispose();
-    	    g = predator.createGraphics();
-        	g.drawImage(originalPredator, 0, 0, wUnit, hUnit, null);
-        	g.dispose();
-   	} catch (IOException e) {
+    		Image originalPlant = ImageIO.read(new File("images/plant.png"));
+    		Image originalPrey = ImageIO.read(new File("images/prey-right.png"));
+    		Image originalPredator = ImageIO.read(new File("images/predator-right.png"));
+    	    plant = originalPlant.getScaledInstance(wUnit, hUnit, java.awt.Image.SCALE_SMOOTH);
+       	    prey = originalPrey.getScaledInstance(wUnit, hUnit, java.awt.Image.SCALE_SMOOTH);
+       	    predator = originalPredator.getScaledInstance(wUnit, hUnit, java.awt.Image.SCALE_SMOOTH);
+    	} catch (IOException e) {
 	    	e.printStackTrace();
     	}
 	}
@@ -159,7 +150,7 @@ public class SimuPanel extends JPanel {
         for (i = 0;i < w;i++)
         	for (j = 0;j < h;j++) {
         		if (critters[i][j] != null) {
-        			BufferedImage img = null;
+        			Image img = null;
         			CritterPrototype type = critters[i][j].getPrototype();
         			switch (type) {
         			case PLANT:

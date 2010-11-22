@@ -71,6 +71,7 @@ public class CritterTemplate implements DatabaseObject {
 	}
 	
 	public void setTraitRange(Trait trait, Pair<Integer,Integer> range) {
+		if (traitRange == null) traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
 		traitRange.put(trait, range);
 	}
 	
@@ -88,6 +89,10 @@ public class CritterTemplate implements DatabaseObject {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getUuid() {

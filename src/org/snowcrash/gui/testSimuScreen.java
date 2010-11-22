@@ -3,18 +3,20 @@
  */
 package org.snowcrash.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.Timer;
 
 import org.snowcrash.critter.Critter;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.world.World;
 
@@ -53,24 +55,35 @@ public class testSimuScreen extends BaseGUI {
 
 		worldWidth = w;
 		worldHeight = h;
+		
 		Container content = getContentPane();
+		int contentWidth = content.getWidth();
 
+		JPanel cPanel = new JPanel();
+		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.X_AXIS));
+		
+		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		
 		JTabbedPane tabPane = new JTabbedPane();
 		simuPanel = new SimuPanel(worldWidth, worldHeight);
 		tabPane.addTab("Simulation", simuPanel.getScrollPane());
-		tabPane.addTab("Results", new ResultsPanel().getScrollPane());
+		tabPane.addTab("Results", new ResultsPanel());
 		tabPane.setSelectedIndex(tabPane.indexOfTab("Simulation"));
 		tabPane.setEnabledAt(tabPane.indexOfTab("Results"), false);
-		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 15, HEIGHT - 100));
-		
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 2, Short.MAX_VALUE));
 		simuResultPane = tabPane; 
-		content.add(tabPane, BorderLayout.CENTER);
+		
+		cPanel.add(tabPane);
+		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Console", new JPanel());
-		tabPane.setPreferredSize(new Dimension(WIDTH * 2 / 5 - 15, HEIGHT - 100));
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 2, Short.MAX_VALUE));
+		
+		cPanel.add(tabPane);
+		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-		content.add(tabPane, BorderLayout.LINE_END);
+		content.add(cPanel);
 		
 	}
 	
@@ -90,7 +103,7 @@ public class testSimuScreen extends BaseGUI {
 	}
 	
 	// test simuPanel
-	private void test() {
+	private void testSimuPanel() {
 		FileManager mgr = new FileManager();
 		World world = mgr.loadWorld("testWorld.Json", "");
 		map = world.getMap();
@@ -104,13 +117,21 @@ public class testSimuScreen extends BaseGUI {
         timer.start(); 
 	}
 	
+	private void testResultsPanel() {
+		FileManager mgr = new FileManager();
+		mgr.loadCritterTemplates("testCritterTemplates.Json");
+		DAO dao = DAOFactory.getDAO();
+		
+	}
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		testSimuScreen sScreen = new testSimuScreen(20,20);
 		simuResultPane.setEnabledAt(simuResultPane.indexOfTab("Results"), true);
-		sScreen.test();
+		sScreen.testSimuPanel();
+		sScreen.testResultsPanel();
 	}
 
 }
