@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 public class ConfigScreen extends BaseGUI
@@ -17,7 +16,7 @@ public class ConfigScreen extends BaseGUI
 		play.setEnabled(true);
 		stop.setEnabled(false);
 		ff.setEnabled(false);
-		saveSimulation.setEnabled(true);
+		saveSim.setEnabled(true);
 		
 		rewindButton.setEnabled(false);
 		playButton.setEnabled(true);
@@ -32,37 +31,38 @@ public class ConfigScreen extends BaseGUI
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
+		// get the critter panel and add a tab
 		JTabbedPane tabPane;
 		JPanel cPanel = new CritterPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Critters", cPanel);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
-		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
 		configPanel.add(tabPane);
 		content.add(configPanel);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
+		// get the traits panel and add a tab
 		TraitsPanel traitsConfig = new TraitsPanel();
 		cPanel = traitsConfig.TraitsPanel();
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Traits", cPanel);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
-		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE)); 
 		configPanel.add(tabPane);
 		content.add(configPanel);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
+		// get the world panel and add a tab
+		JScrollPane cScroll = new JScrollPane();
 		WorldPanel worldConfig = new WorldPanel();
-		cPanel = worldConfig.WorldPanel();
+		cScroll = worldConfig.WorldPanel();
 		tabPane = new JTabbedPane();
-		tabPane.addTab("World Settings", cPanel);
+		tabPane.addTab("World Settings", cScroll);
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 3, Short.MAX_VALUE));
-		//tabPane.setMinimumSize(new Dimension(260, Short.MAX_VALUE));
 		configPanel.add(tabPane);	
 		content.add(configPanel);
 		

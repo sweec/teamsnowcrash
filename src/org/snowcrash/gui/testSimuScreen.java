@@ -3,17 +3,20 @@
  */
 package org.snowcrash.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JScrollPane;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.Timer;
 
 import org.snowcrash.critter.Critter;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.world.World;
 
@@ -22,7 +25,7 @@ import org.snowcrash.world.World;
  * @author dong
  *
  */
-public class SimuScreen extends BaseGUI {
+public class testSimuScreen extends BaseGUI {
 	/**
 	 * the world size should be set by configuration
 	 */
@@ -30,21 +33,20 @@ public class SimuScreen extends BaseGUI {
 	private static int worldHeight = 20;
 	private static SimuPanel simuPanel = null;
 	private static Critter[][] map = null;
-
-	JTabbedPane simuResultPane = null;
+	private static JTabbedPane simuResultPane = null;
 
 	/**
 	 * constructor for simulation screen
 	 * @param w the width of the world
 	 * @param h the height of the world
 	 */
-	public SimuScreen(int w, int h)
+	public testSimuScreen(int w, int h)
 	{
 		rewind.setEnabled(true);
 		play.setEnabled(true);
 		stop.setEnabled(true);
 		ff.setEnabled(true);
-		saveSimulation.setEnabled(true);
+		saveSim.setEnabled(true);
 		
 		rewindButton.setEnabled(true);
 		playButton.setEnabled(true);
@@ -53,29 +55,35 @@ public class SimuScreen extends BaseGUI {
 
 		worldWidth = w;
 		worldHeight = h;
+		
 		Container content = getContentPane();
+		int contentWidth = content.getWidth();
 
+		JPanel cPanel = new JPanel();
+		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.X_AXIS));
+		
+		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		
 		JTabbedPane tabPane = new JTabbedPane();
 		simuPanel = new SimuPanel(worldWidth, worldHeight);
-		JScrollPane simuScrollPane = new JScrollPane(simuPanel);
-		simuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		simuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		ResultPanel resultPanel = new ResultPanel();
-		tabPane.addTab("Simulation", simuScrollPane);
-		tabPane.addTab("Results", resultPanel);
+		tabPane.addTab("Simulation", simuPanel.getScrollPane());
+		tabPane.addTab("Results", new ResultsPanel());
 		tabPane.setSelectedIndex(tabPane.indexOfTab("Simulation"));
 		tabPane.setEnabledAt(tabPane.indexOfTab("Results"), false);
-		tabPane.setPreferredSize(new Dimension(WIDTH * 3 / 5 - 15, HEIGHT - 100));
-		
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 2, Short.MAX_VALUE));
 		simuResultPane = tabPane; 
-		content.add(tabPane, BorderLayout.CENTER);
+		
+		cPanel.add(tabPane);
+		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		tabPane = new JTabbedPane();
-		ConsolePanel consolePanel = new ConsolePanel();
-		tabPane.addTab("Console", consolePanel);
-		tabPane.setPreferredSize(new Dimension(WIDTH * 2 / 5 - 15, HEIGHT - 100));
+		tabPane.addTab("Console", new JPanel());
+		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 2, Short.MAX_VALUE));
+		
+		cPanel.add(tabPane);
+		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-		content.add(tabPane, BorderLayout.LINE_END);
+		content.add(cPanel);
 		
 	}
 	
@@ -95,7 +103,7 @@ public class SimuScreen extends BaseGUI {
 	}
 	
 	// test simuPanel
-	private void test() {
+	private void testSimuPanel() {
 		FileManager mgr = new FileManager();
 		World world = mgr.loadWorld("testWorld.Json", "");
 		map = world.getMap();
@@ -103,18 +111,27 @@ public class SimuScreen extends BaseGUI {
         Timer timer = new Timer(1000, new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
             	translate(map);
-        		simuPanel.updateworld(map);
+            	simuPanel.updateworld(map);
             } 
         }); 
         timer.start(); 
+	}
+	
+	private void testResultsPanel() {
+		FileManager mgr = new FileManager();
+		mgr.loadCritterTemplates("testCritterTemplates.Json");
+		DAO dao = DAOFactory.getDAO();
+		
 	}
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SimuScreen sScreen = new SimuScreen(20,20);
-		sScreen.test();
+		testSimuScreen sScreen = new testSimuScreen(20,20);
+		simuResultPane.setEnabledAt(simuResultPane.indexOfTab("Results"), true);
+		sScreen.testSimuPanel();
+		sScreen.testResultsPanel();
 	}
 
 }
