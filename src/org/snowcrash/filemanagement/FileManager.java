@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterFactory;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.testCritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.dataaccess.DAO;
@@ -134,6 +135,56 @@ public class FileManager implements IFileManager {
 		return critterTemplate;
 	}
 
+	public boolean saveCritterTemplates(testCritterTemplate[] critterTemplates, String filepath) {
+		if (critterTemplates == null) {
+			DatabaseObject[] objects;
+			DAO dao = DAOFactory.getDAO();
+			try {
+				objects = dao.read( CritterTemplate.class );
+			} catch (DAOException e) {
+				throw new RuntimeException( e );
+			}
+			critterTemplates = new testCritterTemplate[objects.length];
+			int i;
+			for (i = 0;i < objects.length;i++)
+				critterTemplates[i] = (testCritterTemplate) (objects[i]);
+		}
+		try { 
+			BufferedWriter out = new BufferedWriter(new FileWriter(filepath)); 
+			Gson gson = new Gson();
+			gson.toJson(critterTemplates, out);
+			out.close(); 
+		} catch (IOException e) { 
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public testCritterTemplate[] loadCritterTemplates(String filepath) {
+		testCritterTemplate[] critterTemplate = null;
+		try { 
+			BufferedReader in = new BufferedReader(new FileReader(filepath)); 
+			
+			Gson gson = new Gson();
+			critterTemplate = gson.fromJson(in, testCritterTemplate[].class);
+			in.close(); 
+		} catch (IOException e) { 
+			e.printStackTrace();
+		}
+		if (critterTemplate == null) return null;
+		DAO dao = DAOFactory.getDAO();
+		int i;
+		for (i = 0;i < critterTemplate.length;i++) {
+			try {
+				dao.create( critterTemplate[i] );
+			} catch (DAOException e) {
+				throw new RuntimeException( e );
+			}
+		}
+		return critterTemplate;
+	}
+
 	public void setLogger(String filepath, String filename) {
 	    try {
 	    	// clear old log
@@ -186,20 +237,20 @@ public class FileManager implements IFileManager {
 
 	public static void main(String[] args) {
 		// test saveCritterTemplate/loadCritterTemplate
-		CritterTemplate[] templates = new CritterTemplate[3];
-		templates[0] = new CritterTemplate(CritterPrototype.PLANT, "Plant1");
+		testCritterTemplate[] templates = new testCritterTemplate[3];
+		templates[0] = new testCritterTemplate(CritterPrototype.PLANT, "Plant1");
 		templates[0].setSize(Size.MEDIUM);
-		templates[1] = new CritterTemplate(CritterPrototype.PREY, "Prey1");
+		templates[1] = new testCritterTemplate(CritterPrototype.PREY, "Prey1");
 		templates[1].setSize(Size.SMALL);
-		templates[2] = new CritterTemplate(CritterPrototype.PREDATOR, "Predator1");
+		templates[2] = new testCritterTemplate(CritterPrototype.PREDATOR, "Predator1");
 		templates[2].setSize(Size.LARGE);
 		Critter[] critter = new Critter[3];
 		critter[0] = CritterFactory.getCritter(templates[0]);
 		critter[1] = CritterFactory.getCritter(templates[1]);
 		critter[2] = CritterFactory.getCritter(templates[2]);
 		FileManager mgr = new FileManager();
-		mgr.saveCritterTemplates(templates, "testCritterTemplates.Json", "");
-		CritterTemplate[] template2 = mgr.loadCritterTemplates("testCritterTemplates.Json", "");
+		mgr.saveCritterTemplates(templates, "testCritterTemplates.Json");
+		testCritterTemplate[] template2 = mgr.loadCritterTemplates("testCritterTemplates.Json");
 		int i;
 		for (i = 0;i < template2.length;i++) {
 			System.out.println(template2[i]);

@@ -118,6 +118,21 @@ public class CommandFactory
 	
 	/**
 	 * 
+	 * Returns a delete critter template command.
+	 * 
+	 * @param templateName the name of the critter template to delete
+	 * @return a delete critter template command
+	 * 
+	 */
+	public static Command getDeleteTemplateCommand( String templateName )
+	{
+		Command command = new DeleteCritterTemplateCommand(templateName);
+		
+		return command;
+	}
+	
+	/**
+	 * 
 	 * Returns a retrieve critter template command.
 	 * 
 	 * @param name the name of the critter template to retrieve

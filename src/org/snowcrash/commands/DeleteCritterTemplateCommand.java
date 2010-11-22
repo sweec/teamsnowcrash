@@ -16,6 +16,11 @@ public class DeleteCritterTemplateCommand extends AbstractCommand
 	 * The critter template to delete.
 	 */
 	private CritterTemplate template;
+	
+	/*
+	 * The name of the critter template to delete.
+	 */
+	private String templateName;
 
 	/**
 	 * 
@@ -28,6 +33,18 @@ public class DeleteCritterTemplateCommand extends AbstractCommand
 	{
 		this.template = template;
 	}
+	
+	/**
+	 * 
+	 * Constructor.
+	 * 
+	 * @param templateName the name of the critter template to delete
+	 * 
+	 */
+	public DeleteCritterTemplateCommand(String templateName)
+	{
+		this.templateName = templateName;
+	}
 
 	/**
 	 * 
@@ -39,5 +56,17 @@ public class DeleteCritterTemplateCommand extends AbstractCommand
 	public CritterTemplate getTemplate()
 	{
 		return template;
+	}
+	
+	/**
+	 * 
+	 * Returns the name of the critter template to delete.
+	 * 
+	 * @return the name of the critter template to delete
+	 * 
+	 */
+	public String getTemplateName()
+	{
+		return templateName;
 	}
 }

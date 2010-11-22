@@ -29,6 +29,7 @@ import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.state.StateContext;
 import org.snowcrash.utilities.Pair;
+import org.snowcrash.utilities.RandomNumbers;
 
 /**
  * 
@@ -40,12 +41,13 @@ import org.snowcrash.utilities.Pair;
  * 11/03/10	DE	Removed Interface
  * 11/09/10	DE	Added UUID
  * 11/10/10	DE	Added getMyStateContext()
+ * 11/19/10	DE	Updated constructors
  * 
  */
 
 public class Critter {
 
-	private HashMap<String, Pair<Integer, Integer>> traits;
+	private HashMap<Trait, Pair<Integer, Integer>> traits;
 	private boolean acted = false;
 	private int actionCost;
 	private int health;
@@ -59,11 +61,18 @@ public class Critter {
 
 	// add no-arguments constructor as required by gson
 	public Critter() {
-		this.uuid = UUID.randomUUID().toString();
 	}
 	
 	public Critter(Critter critter1, Critter critter2) {
 		this.uuid = UUID.randomUUID().toString();
+		RandomNumbers rn = RandomNumbers.getInstance();
+		traits = new HashMap<Trait, Pair<Integer, Integer>>();
+		traits.put(Trait.CAMO, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.CAMO)), rn.getInteger(critter2.traits.get(Trait.CAMO))));
+		traits.put(Trait.COMBAT, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.COMBAT)), rn.getInteger(critter2.traits.get(Trait.COMBAT))));
+		traits.put(Trait.ENDURANCE, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.ENDURANCE)), rn.getInteger(critter2.traits.get(Trait.ENDURANCE))));
+		traits.put(Trait.SPEED, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.SPEED)), rn.getInteger(critter2.traits.get(Trait.SPEED))));
+		traits.put(Trait.VISION, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.VISION)), rn.getInteger(critter2.traits.get(Trait.VISION))));
+		this.size = critter1.getSize();
 	}
 	
 	public Critter(CritterTemplate template) {
@@ -71,8 +80,14 @@ public class Critter {
 		setSizeData(template.getSize());
 		setPrototype(template.getPrototype());
 		setTemplateUuid(template.getUuid());
-		// to do 
-		// create traits depend on template
+		RandomNumbers rn = RandomNumbers.getInstance();
+		traits = new HashMap<Trait, Pair<Integer, Integer>>();
+		traits.put(Trait.CAMO, rn.getIntegerPair(template.getTraitRange(Trait.CAMO)));
+		traits.put(Trait.COMBAT, rn.getIntegerPair(template.getTraitRange(Trait.COMBAT)));
+		traits.put(Trait.ENDURANCE, rn.getIntegerPair(template.getTraitRange(Trait.ENDURANCE)));
+		traits.put(Trait.SPEED, rn.getIntegerPair(template.getTraitRange(Trait.SPEED)));
+		traits.put(Trait.VISION, rn.getIntegerPair(template.getTraitRange(Trait.VISION)));
+		template.setSize(template.getSize());
 	}
 	
 	public void die() {

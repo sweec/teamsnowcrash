@@ -2,6 +2,8 @@ package org.snowcrash.gui.widgets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -9,7 +11,6 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -39,7 +40,8 @@ import javax.swing.JTextField;
  *
  */
 @SuppressWarnings("serial")
-public class CritterTemplateWidget extends JPanel implements ActionListener, MouseListener
+public class CritterTemplateWidget extends JPanel implements ActionListener, 
+		MouseListener, FocusListener
 {
 	// -- Keeps track of the current critter count across all instances of this widget.
 	private static int critterCount = 0;
@@ -148,6 +150,11 @@ public class CritterTemplateWidget extends JPanel implements ActionListener, Mou
 		return numCritters;
 	}
 	
+	public String getCritterTemplateName()
+	{
+		return lblCritterTemplateName.getText();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.Component#addMouseListener(java.awt.event.MouseListener)
@@ -177,27 +184,7 @@ public class CritterTemplateWidget extends JPanel implements ActionListener, Mou
 		// -- If the event is coming from this widget's JTextField...
 		if ( e.getSource() == txtNumCritters )
 		{
-			// -- Perform validation on the user input.
-			if ( !isValid( txtNumCritters.getText() ) )
-			{
-				JOptionPane.showMessageDialog( this, "Invalid input.", "Invalid Input", JOptionPane.ERROR_MESSAGE );
-				
-				// -- Reset the text back to what it was before the user changed it.
-				txtNumCritters.setText( Integer.toString( numCritters ) );
-				
-				// -- Select all text so the user can easily change it again.
-				txtNumCritters.selectAll();
-			}
-			else
-			{
-				// -- Adjust the critter count and persist the user-entered data.
-				critterCount -= numCritters;
-				numCritters = Integer.parseInt( txtNumCritters.getText() );
-				critterCount += numCritters;
-				
-				// -- Prevent the user from editing the text field.
-				setDisabled();
-			}
+			commitChanges();
 		}
 	}
 	
@@ -212,10 +199,15 @@ public class CritterTemplateWidget extends JPanel implements ActionListener, Mou
 		{
 			// -- Allow the user to edit the data.
 			setEnabled();
+			
+			// -- Re-dispatch the event.
+			for ( MouseListener mouseListener : mouseListeners )
+			{
+				e.setSource( this );
+				mouseListener.mouseClicked( e );
+			}
 		}
-		
-		// -- If the event is coming from the widget's JLabel...
-		else if ( e.getSource() == lblCritterTemplateName && e.getClickCount() == 2 )
+		else if ( e.getSource() != txtNumCritters )
 		{
 			// -- Re-dispatch the event.
 			for ( MouseListener mouseListener : mouseListeners )
@@ -230,25 +222,100 @@ public class CritterTemplateWidget extends JPanel implements ActionListener, Mou
 	 * (non-Javadoc)
 	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
 	 */
-	public void mouseEntered( MouseEvent e ) {}
+	public void mouseEntered( MouseEvent e )
+	{
+		// -- Re-dispatch the event.
+		for ( MouseListener mouseListener : mouseListeners )
+		{
+			e.setSource( this );
+			mouseListener.mouseEntered( e );
+		}
+	}
 	
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
 	 */
-	public void mouseExited( MouseEvent e ) {}
+	public void mouseExited( MouseEvent e )
+	{
+		// -- Re-dispatch the event.
+		for ( MouseListener mouseListener : mouseListeners )
+		{
+			e.setSource( this );
+			mouseListener.mouseExited( e );
+		}
+	}
 	
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
 	 */
-	public void mousePressed( MouseEvent e ) {}
+	public void mousePressed( MouseEvent e )
+	{
+		// -- Re-dispatch the event.
+		for ( MouseListener mouseListener : mouseListeners )
+		{
+			e.setSource( this );
+			mouseListener.mousePressed( e );
+		}
+	}
 	
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
 	 */
-	public void mouseReleased( MouseEvent e ) {}
+	public void mouseReleased( MouseEvent e )
+	{
+		// -- Re-dispatch the event.
+		for ( MouseListener mouseListener : mouseListeners )
+		{
+			e.setSource( this );
+			mouseListener.mouseReleased( e );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+	 */
+	public void focusGained( FocusEvent e ) {}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+	 */
+	public void focusLost( FocusEvent e )
+	{
+		if ( e.getSource() == txtNumCritters )
+		{
+			commitChanges();
+		}
+	}
+	
+	private void commitChanges()
+	{
+		// -- Perform validation on the user input.
+		if ( !isValid( txtNumCritters.getText() ) )
+		{
+			JOptionPane.showMessageDialog( this, "Invalid input.", "Invalid Input", JOptionPane.ERROR_MESSAGE );
+			
+			// -- Reset the text back to what it was before the user changed it.
+			txtNumCritters.setText( Integer.toString( numCritters ) );
+			
+			// -- Select all text so the user can easily change it again.
+			txtNumCritters.selectAll();
+		}
+		else
+		{
+			// -- Adjust the critter count and persist the user-entered data.
+			critterCount -= numCritters;
+			numCritters = Integer.parseInt( txtNumCritters.getText() );
+			critterCount += numCritters;
+			
+			// -- Prevent the user from editing the text field.
+			setDisabled();
+		}
+	}
 	
 	/*
 	 * Determines whether the given object is valid user input.
@@ -300,43 +367,5 @@ public class CritterTemplateWidget extends JPanel implements ActionListener, Mou
 	{
 		txtNumCritters.setFocusable( false );
 		txtNumCritters.setEditable( false );
-	}
-	
-	
-	/*
-	 * Test.
-	 */
-	public static void main( String ... args )
-	{
-		JFrame test = new JFrame();
-		test.setSize( 800,600 );
-		
-		Box box = new Box( BoxLayout.LINE_AXIS );
-		test.add( box );
-		
-		final CritterTemplateWidget ctw = new CritterTemplateWidget( "Test Template" );
-		box.add( ctw );
-		
-		CritterTemplateWidget.setMaxCritterCount( 50 );
-		
-		MouseListener listener = new MouseListener()
-		{
-			public void mouseClicked( MouseEvent e )
-			{
-				JOptionPane.showMessageDialog( null, ctw.getNumCritters() );
-			}
-
-			public void mouseEntered(MouseEvent arg0) {}
-
-			public void mouseExited(MouseEvent arg0) {}
-
-			public void mousePressed(MouseEvent arg0) {}
-
-			public void mouseReleased(MouseEvent arg0) {}
-		};
-		
-		ctw.addMouseListener( listener );
-		
-		test.setVisible( true );
 	}
 }
