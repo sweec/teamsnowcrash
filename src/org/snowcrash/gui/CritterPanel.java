@@ -49,11 +49,6 @@ public class CritterPanel extends JPanel implements SelectionListener
 		add( listScrollPane );
 		add( buttonPanel );
 		
-		list.addItemToList( "Test1", PLANTS_TITLE );
-		list.addItemToList( "Test2", PLANTS_TITLE );
-		list.addItemToList( "Test3", PREY_TITLE );
-		list.addItemToList( "Test4", PLANTS_TITLE );
-		
 		list.addSelectionListener( this );
 	}
 	
@@ -127,34 +122,35 @@ public class CritterPanel extends JPanel implements SelectionListener
 				NewCritterTemplateWindow nctw = new NewCritterTemplateWindow();
 				nctw.setVisible( true );
 				
-				// -- FIXME: Flow continuing before input gathered.
-				
 				CritterPrototype prototype = nctw.getTemplatePrototype();
 				String name = nctw.getTemplateName();
 				
-				Command createCommand = CommandFactory.getCreateTemplateCommand(prototype, name);
-				createCommand.execute();
-				
-				String listTitle = null;
-				
-				switch ( prototype )
+				if ( prototype != null && name != null )
 				{
-				case PLANT:
-					listTitle = PLANTS_TITLE;
-					break;
+					Command createCommand = CommandFactory.getCreateTemplateCommand(prototype, name);
+					createCommand.execute();
 					
-				case PREDATOR:
-					listTitle = PREDATORS_TITLE;
-					break;
+					String listTitle = null;
 					
-				case PREY:
-					listTitle = PREY_TITLE;
-					break;
+					switch ( prototype )
+					{
+					case PLANT:
+						listTitle = PLANTS_TITLE;
+						break;
+						
+					case PREDATOR:
+						listTitle = PREDATORS_TITLE;
+						break;
+						
+					case PREY:
+						listTitle = PREY_TITLE;
+						break;
+						
+					default:
+					}
 					
-				default:
+					list.addItemToList( name, listTitle );
 				}
-				
-				list.addItemToList( name, listTitle );
 			}
 		};
 	}
