@@ -19,11 +19,14 @@ public class CloningUtility
 		{
 			clone = (T) bean.getClass().newInstance();
 			
-			for ( Field field : bean.getClass().getDeclaredFields() )
+			for ( Class<?> clazz = bean.getClass(); !Object.class.equals( clazz ); clazz = clazz.getSuperclass() )
 			{
-				field.setAccessible( true );
-				field.set( clone, field.get( bean ) );
-				field.setAccessible( false );
+				for ( Field field : clazz.getDeclaredFields() )
+				{
+					field.setAccessible( true );
+					field.set( clone, field.get( bean ) );
+					field.setAccessible( false );
+				}
 			}
 		}
 		catch (InstantiationException e)
