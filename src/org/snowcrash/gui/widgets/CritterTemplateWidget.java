@@ -13,7 +13,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
@@ -40,7 +39,7 @@ import javax.swing.JTextField;
  *
  */
 @SuppressWarnings("serial")
-public class CritterTemplateWidget extends JPanel implements ActionListener, 
+public class CritterTemplateWidget extends Box implements ActionListener, 
 		MouseListener, FocusListener
 {
 	// -- Keeps track of the current critter count across all instances of this widget.
@@ -84,7 +83,8 @@ public class CritterTemplateWidget extends JPanel implements ActionListener,
 	 */
 	public CritterTemplateWidget( String critterTemplateName )
 	{
-		super();
+		super( BoxLayout.X_AXIS );
+		setAlignmentX( LEFT_ALIGNMENT );
 		
 		/*
 		 * Using a Box so I don't have to mess with layouts.
