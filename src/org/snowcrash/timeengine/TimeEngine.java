@@ -31,15 +31,18 @@ public final class TimeEngine {
 
 	public static void startTimer() {
 		Timer timer = new Timer();
+		timerThread = new Thread( timer );
 
 		stopped = false;
 
-		timer.run();
+		timerThread.start();
 	}
 
 	public static void stopTimer() {
 		stopped = true;
 		paused = false;
+		
+		timerThread = null;
 	}
 
 	public static void pauseTimer() {
@@ -48,7 +51,11 @@ public final class TimeEngine {
 
 	public static void resumeTimer() {
 		paused = false;
-		timerThread.notify();
+		
+		synchronized ( timerThread )
+		{
+			timerThread.notify();
+		}
 	}
 
 	public static void addTimeListener(TimeListener timeListener) {
@@ -69,7 +76,7 @@ public final class TimeEngine {
 
 	private static class Timer implements Runnable {
 		public void run() {
-			timerThread = Thread.currentThread();
+			//timerThread = Thread.currentThread();
 
 			while (!stopped && !isTimeLimitExceeded()) {
 				// -- Sleep for the preset interval.
@@ -94,11 +101,14 @@ public final class TimeEngine {
 				cont = true;
 
 				// -- Continue?
-				while (!cont || paused) {
-					try {
-						timerThread.wait();
-					} catch (InterruptedException e) {
-
+				synchronized ( timerThread )
+				{
+					while (!cont || paused) {
+						try {
+							timerThread.wait();
+						} catch (InterruptedException e) {
+							
+						}
 					}
 				}
 			}
