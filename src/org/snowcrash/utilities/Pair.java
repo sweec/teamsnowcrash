@@ -26,6 +26,7 @@ package org.snowcrash.utilities;
  * @author dearnest
  * Generic that stores a pair of values.
  * 10/24/10	DE	Created.
+ * 11/21/10	DE	Added GSON required constructor and methods.
  * 
  */
 
@@ -34,10 +35,35 @@ public class Pair<L,R> {
 	private L left;
 	private R right;
 	
+	/**
+	 * This constructor is for GSON requirements.  It should not be used for any other purpose.
+	 */
 	public Pair() {
-		
+		// Do nothing; 
 	}
 	
+	/**
+	 * This setter is for GSON requirements.  It should not be used for any other purpose.
+	 * @param left
+	 */
+	public void setLeft(L left) {
+		this.left = left;
+	}
+	
+	/**
+	 * This setter is for GSON requirements.  It should not be used for any other purpose.
+	 * @param right
+	 */
+	public void setRight(R right) {
+		this.right = right;
+	}
+	
+	/**
+	 * This is the public constructor that all code should use over the constructor without
+	 * any parameters.
+	 * @param left
+	 * @param right
+	 */
 	public Pair(L left, R right) {
 		this.left = left;
 		this.right = right;
@@ -61,7 +87,6 @@ public class Pair<L,R> {
 		return o instanceof Pair 
 		&& equals(left, ((Pair<L,R>) o).left)
 		&& equals(right, ((Pair<L,R>) o).right);
-		
 	}
 	
 	private static boolean equals(Object x, Object y) {
