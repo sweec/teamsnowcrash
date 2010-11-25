@@ -28,6 +28,7 @@ package org.snowcrash.critter;
  * 
  * 10/23/10	DE 	PLANT/PREY/PREDATOR moved to enum CritterPrototype. Added License notice.
  * 11/03/10	DE	Eliminated the Critter interface.
+ * 11/21/10	DE	Added clone
  * 
  */
 
@@ -71,6 +72,17 @@ public class CritterFactory {
 			return new Critter(critter1, critter2);
 		}
 		return null;
+	}
+	
+	public static Critter getClone(Critter critter) {
+		Critter child = null;
+		try {
+			child = critter.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+
+		return child;
 	}
 
 }
