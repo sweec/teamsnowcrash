@@ -37,6 +37,7 @@ import org.snowcrash.utilities.Pair;
  * 10/24/10	DE	Traits converted to trait range, uses Pair. Added all class
  * 				variables, getters and setters, and constructor.
  * 11/07/10	DE	Updated constructor.
+ * 11/21/10	DE	Added toString().
  * 
  */
 
@@ -52,7 +53,7 @@ public class CritterTemplate implements DatabaseObject {
 	 *  No-args constructor required by gson
 	 */
 	public CritterTemplate() {
-		
+		this.traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
 	}
 	
 	public CritterTemplate(CritterPrototype prototype, String name) {
@@ -71,7 +72,6 @@ public class CritterTemplate implements DatabaseObject {
 	}
 	
 	public void setTraitRange(Trait trait, Pair<Integer,Integer> range) {
-		if (traitRange == null) traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
 		traitRange.put(trait, range);
 	}
 	
@@ -91,10 +91,6 @@ public class CritterTemplate implements DatabaseObject {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getUuid() {
 		return uuid;
 	}
@@ -102,5 +98,12 @@ public class CritterTemplate implements DatabaseObject {
 	public Object getId()
 	{
 		return uuid;
+	}
+
+	@Override
+	public String toString() {
+		return "CritterTemplate [size=" + size + ", name=" + name + ", uuid="
+				+ uuid + ", prototype=" + prototype + ", traitRange="
+				+ traitRange + "]";
 	}
 }
