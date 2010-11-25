@@ -27,6 +27,7 @@ import java.util.Arrays;
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.state.Searching;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.utilities.RandomNumbers;
 
@@ -37,6 +38,9 @@ import org.snowcrash.utilities.RandomNumbers;
  * 11/01/2010	DE	Created.
  * 11/03/10	DE	No more critter interface
  * 11/10/10	DE	Added processTurn(); added constructor; added currentTurn
+ * 11/20/10	DE	Added clearCritterActedFlags
+ * 11/21/10	DE	Set initial currentPos.
+ * 11/22/10	DE	Fixed iterating bugs with search and processTurn
  * 
  */
 
@@ -69,21 +73,43 @@ public class World {
 		this.sizeX = 50;
 		this.sizeY = 50;
 		this.turns = 1;
+		this.currentPos = new Pair<Integer, Integer> (0,0);
 	}
 	
 	/**
 	 * Adds a critter to a specific x,y location.
-	 * @param x
-	 * @param y
+	 * @param pair 
 	 * @param critter
 	 * @return
 	 */
-	public boolean add(int x, int y, Critter critter) {
-		if (checkX(x) && checkY(y)) {
-			map[x][y] = critter;
+	public boolean add(Pair<Integer, Integer> pair, Critter critter) {
+		if (checkX(pair.getLeft()) && checkY(pair.getRight())) {
+			map[pair.getLeft()][pair.getRight()] = critter;
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Adjusts the acted flag of a target location's critter.
+	 * @param target
+	 * @param health
+	 */
+	public void adjustCritterActed(Pair<Integer, Integer> target, boolean isActed) {
+		if (map[target.getLeft()][target.getRight()] != null) {
+			map[target.getLeft()][target.getRight()].setActed(isActed);
+		}
+	}
+	
+	/**
+	 * Adjusts the health of a target location's critter.
+	 * @param target
+	 * @param health
+	 */
+	public void adjustCritterHealth(Pair<Integer, Integer> target, int health) {
+		if (map[target.getLeft()][target.getRight()] != null) {
+			map[target.getLeft()][target.getRight()].setHealth(health);
+		}
 	}
 
 	/**
@@ -111,7 +137,21 @@ public class World {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Resets all the map Critter's isActed flag to false. 
+	 */
+	public void clearCritterActedFlags() {
+		for (int i = 0; i < sizeX; i++ ) {
+			for (int j = 0; j < sizeY; j++) {
+				if (map[i][j] != null) {
+					map[i][j].setActed(false);
+					map[i][j].getMyStateContext().setState(new Searching());
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Retrieves a critter at the coordinate or returns null if nothing is there.
 	 * @param coordinate
@@ -126,12 +166,12 @@ public class World {
 		}
 	}
 	
-	public int getCurrentTurn() {
-		return currentTurn;
-	}
-	
 	public Pair<Integer, Integer> getCurrentPos() {
 		return currentPos;
+	}
+
+	public int getCurrentTurn() {
+		return currentTurn;
 	}
 	
 	public Critter[][] getMap() {
@@ -151,7 +191,14 @@ public class World {
 	}
 	
 	private boolean hasNext() {
-		isNext = false;
+		if (isNext) {
+			isNext = false;
+			if (currentPos.getRight() + 1 < sizeY) {
+				currentPos = new Pair<Integer, Integer> (currentPos.getLeft() + 1, 0);
+			} else {
+				currentPos = new Pair<Integer, Integer> (currentPos.getLeft(), currentPos.getRight() + 1);
+			}
+		}
 		int currX = currentPos.getLeft();
 		int currY = currentPos.getRight();
 		for (;currX < sizeX; currX++) {
@@ -165,68 +212,6 @@ public class World {
 			currY = 0;
 		}
 		return false;
-	}
-
-	/**
-	 * Searches for a critter of the passed in prototype based on the passed in critter's traits.
-	 * @param critter
-	 * @param prototype
-	 * @return
-	 */
-	public Pair<Integer, Integer> search(Critter critter, CritterPrototype prototype) {
-		return search(critter, prototype, null);
-	}
-	
-	/**
-	 * Searches for another critter of the same type as the one passed in based on the passed in critter's traits.
-	 * @param critter
-	 * @return
-	 */
-	public Pair<Integer, Integer> search(Critter critter) {
-		return search(critter, null, critter.getTemplateUuid());
-	}
-	
-	private Pair<Integer, Integer> search(Critter critter, CritterPrototype prototype, String templateUuid) {
-		int radius = critter.getTrait(Trait.VISION);
-		int x = currentPos.getLeft();
-		int y = currentPos.getRight();
-		int xLow = 0;
-		int yLow = 0;
-		
-		if (!((x - radius) < 0)) {
-			xLow = x - radius; 
-		}
-		if (!((y - radius) < 0)) {
-			yLow = y - radius; 
-		}
-		
-		ArrayList<Pair<Integer, Integer>> targets = new ArrayList<Pair<Integer,Integer>>();
-		Critter target = null;
-		for (int i = xLow; (i < sizeX) || (i < x + radius); i++) {
-			for (int j = yLow; (j < sizeY) || (j < y + radius); j++) {
-				if (x == i && y == j) {
-					continue;
-				}
-				target = get(new Pair<Integer, Integer> (i,j));
-				if (target == null) {
-					continue;
-				}
-				if (prototype != null && prototype.equals(target.getPrototype())) {
-					targets.add(new Pair<Integer, Integer> (i,j));
-					continue;
-				}
-				if (templateUuid != null && templateUuid.equals(target.getTemplateUuid())) {
-					targets.add(new Pair<Integer, Integer> (i,j));
-					continue;
-				}
-			}
-		}
-
-		if (targets.size() > 0) {
-			return targets.get(RandomNumbers.getInstance().getInt(targets.size()));
-		} else {
-			return null;
-		}
 	}
 	
 	/**
@@ -251,20 +236,18 @@ public class World {
 			next = currentPos;
 		} else {
 			if (hasNext()) {
-				isNext = false;
 				next = currentPos;
 			}
 		}
-		if (!(currentPos.getRight() + 1 < sizeY)) {
-			currentPos = new Pair<Integer, Integer> (currentPos.getLeft() + 1, 0);
-		}
+		
 		return next;
 	}
-
-	/*
+	
+	/**
 	 * Iterates through the world and causes critters that haven't acted to act.
 	 */
 	public void processTurn() {
+		System.out.println("Turn: " + currentTurn);
 		while (hasNext()) {
 			Pair<Integer, Integer> next = next();
 			Critter critter = get(next);
@@ -272,6 +255,8 @@ public class World {
 				critter.getMyStateContext().act(critter);
 			}
 		}
+		//clearCritterActedFlags();
+		currentPos = new Pair<Integer, Integer> (0,0);
 		currentTurn++;
 	}
 
@@ -286,7 +271,75 @@ public class World {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Searches for either an empty grid spot in range (if isEmpty is true) or another 
+	 * critter of the same type as the one passed in based on the passed in critter's traits.
+	 * @param critter 
+	 * @param isEmpty 
+	 * @return
+	 */
+	public Pair<Integer, Integer> search(Critter critter, boolean isEmpty) {
+		if (isEmpty) {
+			return search(critter, null, null);
+		}
+		return search(critter, null, critter.getTemplateUuid());
+	}
 
+	/**
+	 * Searches for a critter of the passed in prototype based on the passed in critter's traits.
+	 * @param critter
+	 * @param prototype
+	 * @return
+	 */
+	public Pair<Integer, Integer> search(Critter critter, CritterPrototype prototype) {
+		return search(critter, prototype, null);
+	}
+
+	private Pair<Integer, Integer> search(Critter critter, CritterPrototype prototype, String templateUuid) {
+		int radius = critter.getTrait(Trait.VISION);
+		int x = currentPos.getLeft();
+		int y = currentPos.getRight();
+		int xLow = 0;
+		int yLow = 0;
+		
+		if (!((x - radius) < 0)) {
+			xLow = x - radius; 
+		}
+		if (!((y - radius) < 0)) {
+			yLow = y - radius; 
+		}
+		
+		ArrayList<Pair<Integer, Integer>> targets = new ArrayList<Pair<Integer,Integer>>();
+		Critter target = null;
+		for (int i = xLow; (i < sizeX) && (i <= x + radius); i++) {
+			for (int j = yLow; (j < sizeY) && (j <= y + radius); j++) {
+				if (x == i && y == j) {
+					continue;
+				}
+				target = get(new Pair<Integer, Integer> (i,j));
+				if (target == null && prototype == null && templateUuid == null) {
+					targets.add(new Pair<Integer, Integer> (i,j));
+					continue;
+				}
+				if (prototype != null && prototype.equals(target.getPrototype())) {
+					targets.add(new Pair<Integer, Integer> (i,j));
+					continue;
+				}
+				if (templateUuid != null && target != null && templateUuid.equals(target.getTemplateUuid())) {
+					targets.add(new Pair<Integer, Integer> (i,j));
+					continue;
+				}
+			}
+		}
+
+		if (targets.size() > 0) {
+			return targets.get(RandomNumbers.getInstance().getInt(targets.size()));
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Sets the world size to x by y coordinates.  This initializes
 	 * the size of the Critter map.
@@ -305,9 +358,10 @@ public class World {
 
 	@Override
 	public String toString() {
-		return "World [map=" + Arrays.toString(map) + ", sizeX=" + sizeX
-				+ ", sizeY=" + sizeY + ", turns=" + turns + ", currPos="
-				+ currentPos + ", isNext=" + isNext + "]";
+		return "World [map=" + Arrays.deepToString(map) + ", sizeX=" + sizeX
+				+ ", sizeY=" + sizeY + ", turns=" + turns + ", currentTurn="
+				+ currentTurn + ", currentPos=" + currentPos + ", isNext="
+				+ isNext + "]";
 	}
 	
 
