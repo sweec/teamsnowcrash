@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.state.Searching;
 import org.snowcrash.state.StateContext;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.utilities.RandomNumbers;
@@ -42,13 +43,17 @@ import org.snowcrash.utilities.RandomNumbers;
  * 11/09/10	DE	Added UUID
  * 11/10/10	DE	Added getMyStateContext()
  * 11/19/10	DE	Updated constructors
+ * 11/20/10	DE	Sets the initial StateContext in constructors.
+ * 11/21/10	DE	Extracted size data constants and added them to the Size enum. 
+ * 				Sets initial health to half maxHealth.
  * 
  */
 
-public class Critter {
+public class Critter implements Cloneable {
 
 	private HashMap<Trait, Pair<Integer, Integer>> traits;
 	private boolean acted = false;
+	private boolean isAlive = true;
 	private int actionCost;
 	private int health;
 	private int maxHealth;
@@ -61,18 +66,22 @@ public class Critter {
 
 	// add no-arguments constructor as required by gson
 	public Critter() {
+		this.uuid = UUID.randomUUID().toString();
 	}
 	
 	public Critter(Critter critter1, Critter critter2) {
 		this.uuid = UUID.randomUUID().toString();
+		setSizeData(critter1.getSize());
+		setPrototype(critter1.getPrototype());
+		setTemplateUuid(critter1.getTemplateUuid());
 		RandomNumbers rn = RandomNumbers.getInstance();
-		traits = new HashMap<Trait, Pair<Integer, Integer>>();
+		traits = new HashMap<Trait, Pair<Integer,Integer>>();
 		traits.put(Trait.CAMO, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.CAMO)), rn.getInteger(critter2.traits.get(Trait.CAMO))));
 		traits.put(Trait.COMBAT, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.COMBAT)), rn.getInteger(critter2.traits.get(Trait.COMBAT))));
 		traits.put(Trait.ENDURANCE, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.ENDURANCE)), rn.getInteger(critter2.traits.get(Trait.ENDURANCE))));
 		traits.put(Trait.SPEED, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.SPEED)), rn.getInteger(critter2.traits.get(Trait.SPEED))));
 		traits.put(Trait.VISION, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.VISION)), rn.getInteger(critter2.traits.get(Trait.VISION))));
-		this.size = critter1.getSize();
+		myStateContext = new StateContext(new Searching());
 	}
 	
 	public Critter(CritterTemplate template) {
@@ -80,18 +89,29 @@ public class Critter {
 		setSizeData(template.getSize());
 		setPrototype(template.getPrototype());
 		setTemplateUuid(template.getUuid());
+		traits = new HashMap<Trait, Pair<Integer,Integer>>();
 		RandomNumbers rn = RandomNumbers.getInstance();
-		traits = new HashMap<Trait, Pair<Integer, Integer>>();
-		traits.put(Trait.CAMO, rn.getIntegerPair(template.getTraitRange(Trait.CAMO)));
-		traits.put(Trait.COMBAT, rn.getIntegerPair(template.getTraitRange(Trait.COMBAT)));
-		traits.put(Trait.ENDURANCE, rn.getIntegerPair(template.getTraitRange(Trait.ENDURANCE)));
-		traits.put(Trait.SPEED, rn.getIntegerPair(template.getTraitRange(Trait.SPEED)));
-		traits.put(Trait.VISION, rn.getIntegerPair(template.getTraitRange(Trait.VISION)));
-		template.setSize(template.getSize());
+		traits.put(Trait.CAMO, rn.getIntegerPair(template.getTraitRange(Trait.CAMO) != null ? template.getTraitRange(Trait.CAMO) : new Pair<Integer,Integer> (1,1)));
+		traits.put(Trait.COMBAT, rn.getIntegerPair(template.getTraitRange(Trait.COMBAT) != null ? template.getTraitRange(Trait.COMBAT): new Pair<Integer,Integer> (1,1)));
+		traits.put(Trait.ENDURANCE, rn.getIntegerPair(template.getTraitRange(Trait.ENDURANCE) != null ? template.getTraitRange(Trait.ENDURANCE): new Pair<Integer,Integer> (1,1)));
+		traits.put(Trait.SPEED, rn.getIntegerPair(template.getTraitRange(Trait.SPEED) != null ? template.getTraitRange(Trait.SPEED): new Pair<Integer,Integer> (1,1)));
+		traits.put(Trait.VISION, rn.getIntegerPair(template.getTraitRange(Trait.VISION) != null ? template.getTraitRange(Trait.VISION): new Pair<Integer,Integer> (1,1)));
+		myStateContext = new StateContext(new Searching());
+	}
+	
+	public Critter clone() throws CloneNotSupportedException {
+		Critter copy = (Critter) super.clone();
+		copy.getMyStateContext().setState(new Searching());
+		copy.age = 0;
+		return copy;
+	}
+	
+	public void act() {
+		this.myStateContext.act(this);
 	}
 	
 	public void die() {
-		
+		this.isAlive = false;
 	}
 	
 	public int getActionCost() {
@@ -142,7 +162,6 @@ public class Critter {
 	
 	public void setActed(boolean acted) {
 		this.acted = acted;
-		this.age++;
 	}
 
 	public void setHealth(int health) {
@@ -151,20 +170,9 @@ public class Critter {
 
 	private void setSizeData(Size trait) {
 		size = trait;
-		switch (trait) {
-			case SMALL:
-				maxHealth = 30;
-				actionCost = 2;
-				break;
-			case MEDIUM:
-				maxHealth = 60;
-				actionCost = 4;
-				break;
-			case LARGE:
-				maxHealth = 90;
-				actionCost = 6;
-				break;
-		}
+		maxHealth = trait.getMaxHealth();
+		actionCost = trait.getActionCost();
+		health = trait.getInitialHealth();
 	}
 
 	private void setPrototype(CritterPrototype type) {
@@ -182,6 +190,14 @@ public class Critter {
 				+ ", myStateContext=" + myStateContext + ", age=" + age
 				+ ", prototype=" + prototype + ", templateUuid=" + templateUuid
 				+ ", uuid=" + uuid + "]";
+	}
+
+	public void incrementAge() {
+		this.age = age + 1;
+	}
+
+	public boolean isAlive() {
+		return isAlive;
 	}
 
 }

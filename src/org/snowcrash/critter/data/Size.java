@@ -26,9 +26,40 @@ package org.snowcrash.critter.data;
  * @author dearnest
  * Enumerates the sizes critters come in.
  * 10/24/10	DE	Created.
+ * 11/21/10	DE	Added size data constant information. Moved from Critter.
  * 
  */
 
 public enum Size {
-	SMALL, MEDIUM, LARGE;
+	SMALL(30,2,15,-1,-1), MEDIUM(60,4,30,0,0), LARGE(90,6,45,1,1);
+	
+	private int maxHealth;
+	private int actionCost;
+	private int initialHealth;
+	private int visionMod;
+	private int	combatMod;
+		
+	private Size(int maxHealth, int actionCost, int initialHealth, int visionMod, int combatMod) {
+		this.maxHealth = maxHealth;
+		this.actionCost = actionCost;
+		this.initialHealth = initialHealth;
+		this.visionMod = visionMod;
+		this.combatMod = combatMod;
+	}
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+	public int getActionCost() {
+		return actionCost;
+	}
+	public int getInitialHealth() {
+		return initialHealth;
+	}
+	public int getVisionMod() {
+		return visionMod;
+	}
+	public int getCombatMod() {
+		return combatMod;
+	}
+	
 }
