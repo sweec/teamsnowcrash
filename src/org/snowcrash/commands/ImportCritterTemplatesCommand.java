@@ -38,4 +38,13 @@ public class ImportCritterTemplatesCommand extends FileCommand
 	{
 		super(filename);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.commands.Command#execute()
+	 */
+	public void execute()
+	{
+		CommandMediator.loadCritterTemplates( super.getFilename() );
+	}
 }

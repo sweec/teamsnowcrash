@@ -16,6 +16,7 @@ abstract class AbstractCommand implements Command
 	 * (non-Javadoc)
 	 * @see org.snowcrash.commands.Command#execute()
 	 */
+	@Deprecated
 	public final void execute()
 	{
 		CommandMediator.handleCommand(this);

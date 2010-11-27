@@ -12,7 +12,7 @@ import org.snowcrash.utilities.Callback;
  * @author Mike
  *
  */
-abstract class CallbackCommand extends AbstractCommand
+abstract class CallbackCommand implements Command
 {
 	/*
 	 * The callback method to be executed with the results of the command.
@@ -33,13 +33,21 @@ abstract class CallbackCommand extends AbstractCommand
 	
 	/**
 	 * 
-	 * Executes the callback method of this command.
+	 * Does the basic command logic defined by the subclass.
 	 * 
-	 * @param results the results from executing the command
+	 * @return the results of the command logic
 	 * 
 	 */
-	public void executeCallback( Object results )
+	protected abstract Object[] executeCommandLogic();
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.commands.Command#execute()
+	 */
+	public final void execute()
 	{
+		Object[] results = executeCommandLogic();
+		
 		callback.callback( results );
 	}
 }

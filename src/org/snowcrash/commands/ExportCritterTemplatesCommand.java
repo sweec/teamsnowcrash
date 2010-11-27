@@ -64,4 +64,13 @@ public class ExportCritterTemplatesCommand extends FileCommand
 	{
 		return critters;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.commands.Command#execute()
+	 */
+	public void execute()
+	{
+		CommandMediator.saveCritterTemplate( super.getFilename() );
+	}
 }

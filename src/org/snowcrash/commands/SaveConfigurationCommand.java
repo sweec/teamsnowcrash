@@ -38,4 +38,13 @@ class SaveConfigurationCommand extends FileCommand
 	{
 		super( filename );
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.commands.Command#execute()
+	 */
+	public void execute()
+	{
+		CommandMediator.saveConfiguration( super.getFilename() );
+	}
 }
