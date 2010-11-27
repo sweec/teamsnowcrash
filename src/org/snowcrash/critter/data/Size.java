@@ -31,16 +31,20 @@ package org.snowcrash.critter.data;
  */
 
 public enum Size {
-	SMALL(30,2,15), MEDIUM(60,4,30), LARGE(90,6,45);
+	SMALL(30,2,15,-1,-1), MEDIUM(60,4,30,0,0), LARGE(90,6,45,1,1);
 	
 	private int maxHealth;
 	private int actionCost;
 	private int initialHealth;
+	private int visionMod;
+	private int	combatMod;
 		
-	private Size(int maxHealth, int actionCost, int initialHealth) {
+	private Size(int maxHealth, int actionCost, int initialHealth, int visionMod, int combatMod) {
 		this.maxHealth = maxHealth;
 		this.actionCost = actionCost;
 		this.initialHealth = initialHealth;
+		this.visionMod = visionMod;
+		this.combatMod = combatMod;
 	}
 	public int getMaxHealth() {
 		return maxHealth;
@@ -50,6 +54,12 @@ public enum Size {
 	}
 	public int getInitialHealth() {
 		return initialHealth;
+	}
+	public int getVisionMod() {
+		return visionMod;
+	}
+	public int getCombatMod() {
+		return combatMod;
 	}
 	
 }

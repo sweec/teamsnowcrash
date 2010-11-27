@@ -9,7 +9,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-public class ConfigScreen extends BaseGUI
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.gui.widgets.CritterTemplateWidget;
+import org.snowcrash.utilities.Callback;
+import org.snowcrash.utilities.SelectionEvent;
+import org.snowcrash.utilities.SelectionListener;
+
+public class ConfigScreen extends BaseGUI implements SelectionListener
 {
 	public ConfigScreen()
 	{
@@ -68,6 +76,31 @@ public class ConfigScreen extends BaseGUI
 		content.add(configPanel);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
+	}
+	
+	public void selectionOccurred( SelectionEvent e )
+	{
+		if ( e.getSource() instanceof CritterTemplateWidget )
+		{
+			CritterTemplateWidget ctw = (CritterTemplateWidget) e.getSource();
+			String critterTemplateName = ctw.getCritterTemplateName();
+			
+			Command command = CommandFactory.getRetrieveTemplateCommand( critterTemplateName, new Callback()
+			{
+				public void callback( Object ... results )
+				{
+					if ( results.length == 1  && results[0] instanceof CritterTemplate )
+					{
+						CritterTemplate template = (CritterTemplate) results[0];
+						
+						// -- Call the appropriate method on the traits panel to display 
+						// TODO
+					}
+				}
+			});
+			
+			command.execute();
+		}
 	}
 	
 	public static void main(String[] args)

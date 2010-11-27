@@ -23,6 +23,7 @@ package org.snowcrash.world;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.data.CritterPrototype;
@@ -48,7 +49,7 @@ public class World {
 
 	private static World instance;
 
-	public static World getInstance() {
+	public static synchronized World getInstance() {
 		if (instance == null) {
 			instance = new World();
 		}
@@ -67,6 +68,8 @@ public class World {
 	private int currentTurn;
 	private Pair<Integer, Integer> currentPos;
 	private boolean isNext = false;
+	// For the Console Log
+	private LinkedList<String> ll = null;
 	
 	private World() {
 		this.currentTurn = 0;
@@ -141,12 +144,17 @@ public class World {
 	/**
 	 * Resets all the map Critter's isActed flag to false. 
 	 */
-	public void clearCritterActedFlags() {
+	public void turnCleanUp() {
 		for (int i = 0; i < sizeX; i++ ) {
 			for (int j = 0; j < sizeY; j++) {
 				if (map[i][j] != null) {
-					map[i][j].setActed(false);
-					map[i][j].getMyStateContext().setState(new Searching());
+					if (map[i][j].isAlive()) {
+						map[i][j].setActed(false);
+						map[i][j].getMyStateContext().setState(new Searching());
+						map[i][j].incrementAge();
+					} else {
+						map[i][j] = null;
+					}
 				}
 			}
 		}
@@ -252,7 +260,7 @@ public class World {
 			Pair<Integer, Integer> next = next();
 			Critter critter = get(next);
 			if (!critter.isActed()) {
-				critter.getMyStateContext().act(critter);
+				critter.act();
 			}
 		}
 		//clearCritterActedFlags();

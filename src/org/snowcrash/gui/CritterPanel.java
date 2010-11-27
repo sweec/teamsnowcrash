@@ -3,7 +3,9 @@ package org.snowcrash.gui;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,6 +39,8 @@ public class CritterPanel extends JPanel implements SelectionListener
 	
 	private MultiPanelList list = new MultiPanelList( PLANTS_TITLE, PREY_TITLE, PREDATORS_TITLE );
 	
+	private List<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
+	
 	public CritterPanel()
 	{
 		Box buttonPanel = createButtonPanel();
@@ -50,6 +54,16 @@ public class CritterPanel extends JPanel implements SelectionListener
 		add( buttonPanel );
 		
 		list.addSelectionListener( this );
+	}
+	
+	public void addSelectionListener( SelectionListener listener )
+	{
+		selectionListeners.add( listener );
+	}
+	
+	public void removeSelectionListener( SelectionListener listener )
+	{
+		selectionListeners.remove( listener );
 	}
 	
 	public String getSelectedCritterName()
@@ -93,7 +107,11 @@ public class CritterPanel extends JPanel implements SelectionListener
 	
 	public void selectionOccurred( SelectionEvent e )
 	{
-		
+		// -- Pass the event to listeners.
+		for ( SelectionListener selectionListener : selectionListeners )
+		{
+			selectionListener.selectionOccurred( e );
+		}
 	}
 	
 	private Box createButtonPanel()

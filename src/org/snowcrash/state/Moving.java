@@ -1,5 +1,5 @@
 /*  
- * Searching: Initial state all critters start in to determine what action to pursue. 
+ * Moving: Critter attempts to move to an empty spot within range. 
  * Copyright (C) 2010  Team Snow Crash
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,39 +18,39 @@
  * <http://www.gnu.org/licenses/>.
  * 
  */
-
 package org.snowcrash.state;
 
 import org.snowcrash.critter.Critter;
-import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.utilities.Pair;
+import org.snowcrash.world.World;
 
 /**
  * 
  * @author dearnest
- * Initial state all critters start in to determine what action to pursue.
- * 11/20/10	DE 	Implemented
- * 
+ * Critter attempts to move to an empty spot within range.
+ * 10/21/10	DE	Created.
+ *
  */
 
-public class Searching implements State {
-
-	private static final double REPRODUCE_MIN_HEALTH = .75;
+public class Moving implements State {
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
-		if ((double)myCritter.getHealth() /(double)myCritter.getMaxHealth() >= REPRODUCE_MIN_HEALTH) {
-			stateContext.setState(new Reproducing());
-			stateContext.act(myCritter);
-		} else {
-			if (myCritter.getPrototype().equals(CritterPrototype.PLANT)) {
-				stateContext.setState(new Growing());
-				stateContext.act(myCritter);
+		Pair<Integer,Integer> target = World.getInstance().search(myCritter, true);
+		myCritter.setHealth(myCritter.getHealth() - myCritter.getActionCost());
+		if (target != null) {
+			if (myCritter.getHealth() > 0) {
+				myCritter.setActed(true);
+				myCritter.getMyStateContext().setState(new Searching());
+				World.getInstance().move(World.getInstance().getCurrentPos(), target);
 			} else {
-				stateContext.setState(new Hunting());
-				stateContext.act(myCritter);
+				// TODO Register death.
+				// TODO Add to LinkedList log
+				// TODO Implement die()
+				myCritter.setActed(true);
+				myCritter.die();
 			}
 		}
-		
 	}
 
 }

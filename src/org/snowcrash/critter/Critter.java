@@ -53,6 +53,7 @@ public class Critter implements Cloneable {
 
 	private HashMap<Trait, Pair<Integer, Integer>> traits;
 	private boolean acted = false;
+	private boolean isAlive = true;
 	private int actionCost;
 	private int health;
 	private int maxHealth;
@@ -105,8 +106,12 @@ public class Critter implements Cloneable {
 		return copy;
 	}
 	
+	public void act() {
+		this.myStateContext.act(this);
+	}
+	
 	public void die() {
-		
+		this.isAlive = false;
 	}
 	
 	public int getActionCost() {
@@ -157,9 +162,6 @@ public class Critter implements Cloneable {
 	
 	public void setActed(boolean acted) {
 		this.acted = acted;
-		if (acted) {
-			this.age++;
-		}
 	}
 
 	public void setHealth(int health) {
@@ -188,6 +190,14 @@ public class Critter implements Cloneable {
 				+ ", myStateContext=" + myStateContext + ", age=" + age
 				+ ", prototype=" + prototype + ", templateUuid=" + templateUuid
 				+ ", uuid=" + uuid + "]";
+	}
+
+	public void incrementAge() {
+		this.age = age + 1;
+	}
+
+	public boolean isAlive() {
+		return isAlive;
 	}
 
 }

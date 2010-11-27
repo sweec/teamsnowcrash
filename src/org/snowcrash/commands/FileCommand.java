@@ -10,7 +10,7 @@ package org.snowcrash.commands;
  * 18 Nov - Updated to reflect that the entire filename is captured via a file's filepath.
  *
  */
-abstract class FileCommand extends AbstractCommand
+abstract class FileCommand implements Command
 {
 	/*
 	 * The file path of the file.

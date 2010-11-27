@@ -178,4 +178,81 @@ public class CommandFactory
 		
 		return command;
 	}
+	
+	public static Command getSaveSimulationCommand( String filename )
+	{
+		Command command = new SaveSimulationCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getLoadSimulationCommand( String filename )
+	{
+		Command command = new LoadSimulationCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getSaveResultsCommand( String filename )
+	{
+		Command command = new SaveResultsCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getLoadResultsCommand( String filename )
+	{
+		Command command = new LoadResultsCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getSetWorldSizeCommand( int size )
+	{
+		Command command = new SetWorldSizeCommand(size);
+		
+		return command;
+	}
+	
+	public static Command getSetNumberOfTurnsCommand( int turns )
+	{
+		Command command = new SetNumberOfTurnsCommand( turns );
+		
+		return command;
+	}
+	
+	public static Command getStartSimulationCommand()
+	{
+		Command command = new StartSimulationCommand();
+		
+		return command;
+	}
+	
+	public static Command getPauseSimulationCommand()
+	{
+		Command command = new PauseSimulationCommand();
+		
+		return command;
+	}
+	
+	public static Command getResumeSimulationCommand()
+	{
+		Command command = new ResumeSimulationCommand();
+		
+		return command;
+	}
+	
+	public static Command getStopSimulationCommand()
+	{
+		Command command = new StopSimulationCommand();
+		
+		return command;
+	}
+	
+	public static Command getFinishSimulationCommand()
+	{
+		Command command = new FinishSimulationCommand();
+		
+		return command;
+	}
 }
