@@ -42,4 +42,13 @@ class GetCritterTemplateCommand extends CallbackCommand
 	{
 		return name;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.commands.CallbackCommand#executeCommandLogic()
+	 */
+	protected Object[] executeCommandLogic()
+	{
+		return new Object[] { CommandMediator.getCritterTemplate(name) };
+	}
 }

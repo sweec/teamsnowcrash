@@ -38,4 +38,13 @@ class LoadConfigurationCommand extends FileCommand
 	{
 		super( filename );
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.snowcrash.commands.Command#execute()
+	 */
+	public void execute()
+	{
+		CommandMediator.loadConfiguration( super.getFilename() );
+	}
 }
