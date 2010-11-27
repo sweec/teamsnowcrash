@@ -179,6 +179,34 @@ public class CommandFactory
 		return command;
 	}
 	
+	public static Command getSaveSimulationCommand( String filename )
+	{
+		Command command = new SaveSimulationCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getLoadSimulationCommand( String filename )
+	{
+		Command command = new LoadSimulationCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getSaveResultsCommand( String filename )
+	{
+		Command command = new SaveResultsCommand( filename );
+		
+		return command;
+	}
+	
+	public static Command getLoadResultsCommand( String filename )
+	{
+		Command command = new LoadResultsCommand( filename );
+		
+		return command;
+	}
+	
 	public static Command getSetWorldSizeCommand( int size )
 	{
 		Command command = new SetWorldSizeCommand(size);
