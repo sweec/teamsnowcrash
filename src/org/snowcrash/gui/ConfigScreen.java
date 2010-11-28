@@ -10,7 +10,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-public class ConfigScreen extends BaseGUI
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.gui.widgets.CritterTemplateWidget;
+import org.snowcrash.utilities.Callback;
+import org.snowcrash.utilities.SelectionEvent;
+import org.snowcrash.utilities.SelectionListener;
+
+public class ConfigScreen extends BaseGUI implements SelectionListener
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
@@ -31,6 +39,7 @@ public class ConfigScreen extends BaseGUI
 		ffButton.setEnabled(false);
 		
 		Container content = getContentPane();
+		int contentWidth = content.getWidth();
 
 		JPanel configPanel = new JPanel();
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
@@ -38,6 +47,7 @@ public class ConfigScreen extends BaseGUI
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		// get the critter panel and add a tab
+		//JTabbedPane tabPane;
 		JPanel cPanel = new CritterPanel();
 		tabPane1 = new JTabbedPane();
 		tabPane1.addTab("Critters", cPanel);
@@ -73,6 +83,31 @@ public class ConfigScreen extends BaseGUI
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		content.add(configPanel);
+	}
+	
+	public void selectionOccurred( SelectionEvent e )
+	{
+		if ( e.getSource() instanceof CritterTemplateWidget )
+		{
+			CritterTemplateWidget ctw = (CritterTemplateWidget) e.getSource();
+			String critterTemplateName = ctw.getCritterTemplateName();
+			
+			Command command = CommandFactory.getRetrieveTemplateCommand( critterTemplateName, new Callback()
+			{
+				public void callback( Object ... results )
+				{
+					if ( results.length == 1  && results[0] instanceof CritterTemplate )
+					{
+						CritterTemplate template = (CritterTemplate) results[0];
+						
+						// -- Call the appropriate method on the traits panel to display 
+						// TODO
+					}
+				}
+			});
+			
+			command.execute();
+		}
 	}
 	
 	public void componentResized(ComponentEvent e) 
@@ -112,7 +147,7 @@ public class ConfigScreen extends BaseGUI
     			   ((currentWidth - 20) / 3, Short.MAX_VALUE));
        }
     }
-	
+
 	public static void main(String[] args)
 	{
 		ConfigScreen scconfig = new ConfigScreen();
