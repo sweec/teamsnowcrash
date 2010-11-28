@@ -56,7 +56,12 @@ public class StateContext {
 	 * This tells the state to act.
 	 */
 	public void act(Critter myCritter) {
-		this.myState.act(this, myCritter);
+		try {
+			this.myState.act(this, myCritter);
+		} catch (NullPointerException e) {
+			setState(new Searching());
+			this.myState.act(this, myCritter);
+		}
 	}
 
 }

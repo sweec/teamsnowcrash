@@ -119,7 +119,7 @@ public class testSimuScreen extends BaseGUI {
 	
 	private void testResultsPanel() {
 		FileManager mgr = new FileManager();
-		mgr.loadCritterTemplates("testCritterTemplates.Json");
+		mgr.loadCritterTemplates("testCritterTemplates.Json", "test");
 		DAO dao = DAOFactory.getDAO();
 		
 	}

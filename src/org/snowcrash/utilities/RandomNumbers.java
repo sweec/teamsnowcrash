@@ -27,15 +27,16 @@ import java.util.Random;
  * 
  * @author dearnest
  * Instantiates a random number generator and uses the same seed throughout
+ * 11/21/10	DE	Synchronizes the singleton.
  * 
  */
 
-public class RandomNumbers {
+public final class RandomNumbers {
 
 	private static RandomNumbers instance = null;
 	private static Random generator = null;
 	
-	public static RandomNumbers getInstance() {
+	public static synchronized RandomNumbers getInstance() {
 		if (instance == null) {
 			instance = new RandomNumbers();
 		}
@@ -52,7 +53,7 @@ public class RandomNumbers {
 	 * @param range
 	 * @return
 	 */
-	public Integer getInteger(Pair<Integer, Integer> range) {
+	public Integer getInteger(final Pair<Integer, Integer> range) {
 		return generator.nextInt(range != null ? range.getRight().intValue() - range.getLeft().intValue() + 1 : 1) + (range != null ? range.getLeft().intValue() : 1);
 	}
 
@@ -61,7 +62,7 @@ public class RandomNumbers {
 	 * @param range
 	 * @return
 	 */
-	public Pair<Integer, Integer> getIntegerPair(Pair<Integer, Integer> range) {
+	public Pair<Integer, Integer> getIntegerPair(final Pair<Integer, Integer> range) {
 		return new Pair<Integer, Integer>(getInteger(range), getInteger(range));
 	}
 	
@@ -70,7 +71,7 @@ public class RandomNumbers {
 	 * @param pair
 	 * @return
 	 */
-	public Integer selectOne(Pair<Integer, Integer> pair) {
+	public Integer selectOne(final Pair<Integer, Integer> pair) {
 		boolean select = generator.nextBoolean();
 		if (select) {
 			return pair.getLeft();
@@ -84,7 +85,7 @@ public class RandomNumbers {
 	 * @param range
 	 * @return
 	 */
-	public int getInt(int range) {
+	public int getInt(final int range) {
 		return generator.nextInt(range);
 	}
 }
