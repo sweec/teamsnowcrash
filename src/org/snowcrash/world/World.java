@@ -330,7 +330,7 @@ public class World {
 					targets.add(new Pair<Integer, Integer> (i,j));
 					continue;
 				}
-				if (prototype != null && prototype.equals(target.getPrototype())) {
+				if (prototype != null && target != null && prototype.equals(target.getPrototype())) {
 					targets.add(new Pair<Integer, Integer> (i,j));
 					continue;
 				}

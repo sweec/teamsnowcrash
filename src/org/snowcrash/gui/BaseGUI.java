@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.File;
 
 import javax.swing.Box;
@@ -23,7 +25,7 @@ import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
 
-public class BaseGUI extends JFrame implements ActionListener
+public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
@@ -62,7 +64,8 @@ public class BaseGUI extends JFrame implements ActionListener
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("SnowCrash");
-		setVisible(true);
+		
+		addComponentListener(this);
 	}
 	
 	JMenu fileMenu() // file menu
@@ -511,5 +514,40 @@ public class BaseGUI extends JFrame implements ActionListener
     		// Do Something
     	}
 	}
-		
+	
+	public void componentResized(ComponentEvent e) 
+    {
+       int currentWidth = getWidth();
+       int currentHeight = getHeight();
+     //we check if either the currentWidth
+     //or the currentHeight are below minimum
+     boolean resize = false;
+       if (currentWidth < WIDTH) 
+       {
+            resize = true;
+            currentWidth = WIDTH;
+       }
+       if (currentHeight < HEIGHT) 
+       {
+            resize = true;
+            currentHeight = HEIGHT;
+       }
+       if (resize) 
+       {
+           setSize(currentWidth, currentHeight);
+       }
+    }
+	
+	public void componentMoved(ComponentEvent e) 
+    {
+    }
+    
+    public void componentShown(ComponentEvent e) 
+    {
+    }
+    
+    public void componentHidden(ComponentEvent e) 
+    {
+    }	
+    
 }

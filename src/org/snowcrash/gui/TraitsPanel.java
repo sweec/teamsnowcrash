@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,6 +22,12 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.critter.data.Size;
+import org.snowcrash.critter.data.Trait;
+import org.snowcrash.utilities.Pair;
+
 public class TraitsPanel extends JPanel implements ChangeListener, ActionListener
 {
 	private static final int SLIDEMIN = 1;		// minimum value for each slider
@@ -35,28 +42,52 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	// radioButtons for specifying critter size
 	JSlider upCamoSlider, lowCamoSlider, upSpeedSlider, lowSpeedSlider;
 	JSlider upVisionSlider, lowVisionSlider, upCombatSlider, lowCombatSlider;
-	JSlider upEndurSlider, lowEndurSlider, upAgeSlider, lowAgeSlider;
+	JSlider upEndurSlider, lowEndurSlider; 
 	JRadioButton smallRButton, medRButton, lrgRButton;
 	JLabel remainingPoints;
 	
 	JTextField nameField; // indicates and changes the critter name
 	
 	// determinants that store values for the command factory
-	private static String size, name;
 	private static int points = critterPoints;
-	private static int visionUpper = 1, visionLower = 1, speedUpper = 1, speedLower = 1;
-	private static int camoUpper = 1, camoLower = 1, combatUpper = 1, combatLower = 1;
-	private static int endurUpper = 1, endurLower = 1, ageUpper = 1, ageLower = 1;
+	private static int visionUpper, visionLower, speedUpper, speedLower;
+	private static int camoUpper, camoLower, combatUpper, combatLower;
+	private static int endurUpper, endurLower; 
 	
-	public JPanel TraitsPanel()
+	private CritterTemplate cTemplate;
+	private Size tempSize;
+	private String tempName;
+	private String tempUuid;
+	private CritterPrototype tempPrototype;
+	private HashMap<Trait, Pair<Integer, Integer>> tempTraitRange;
+	private Pair<Integer, Integer> tempSliderVal;
+	
+	public JPanel TraitsPanel() // empty traits panel, used when critter isn't selected
 	{
+		JPanel cPanel = new JPanel();
+		JLabel noCritter = new JLabel("No critter is currently selected.");
+		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
+		cPanel.setAlignmentX(CENTER_ALIGNMENT);
+		cPanel.setAlignmentY(CENTER_ALIGNMENT);
+		noCritter.setAlignmentX(CENTER_ALIGNMENT);
+		noCritter.setAlignmentY(CENTER_ALIGNMENT);
+		cPanel.add(Box.createVerticalGlue());
+		cPanel.add(noCritter);
+		cPanel.add(Box.createVerticalGlue());
+		return cPanel;
+	}
+	
+	public JPanel TraitsPanel(CritterTemplate template)
+	{
+		this.loadTemplate(template);
+		
 		JPanel cPanelInner = new JPanel();
 		cPanelInner.setLayout(new BoxLayout(cPanelInner, BoxLayout.Y_AXIS));
 		
 		cPanelInner.add(Box.createRigidArea(new Dimension(0,10)));
 		
 		JPanel namePanel = new JPanel();
-		namePanel = this.namePanel("predator", "Barney");
+		namePanel = this.namePanel(tempPrototype, tempName);
 		
 		JPanel sizePanel = new JPanel();
 		sizePanel = this.sizePanel();
@@ -113,15 +144,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		cPanelInner.add(endurancePanel);
 		this.traitSeparator(cPanelInner);
 		
-		// create the age trait sliders
-		upAgeSlider = this.traitsSlider();
-		upAgeSlider.addChangeListener(this);
-		lowAgeSlider = this.traitsSlider();
-		lowAgeSlider.addChangeListener(this);
-		JPanel agePanel = new JPanel();
-		agePanel = this.sliderPanel(upAgeSlider, lowAgeSlider, "Age");
-		cPanelInner.add(agePanel);
-		
 		cPanelInner.add(Box.createRigidArea(new Dimension(0,10)));	
 		cPanelInner.setPreferredSize(new Dimension(Short.MIN_VALUE, 900));
 		
@@ -144,7 +166,34 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		cPanelOuter.add(cScroll);
 		cPanelOuter.add(buttonPanel);
 		
+		this.initSliders();
+		
 		return cPanelOuter;
+	}
+	
+	private void loadTemplate(CritterTemplate template)
+	{
+		cTemplate = new CritterTemplate();
+		cTemplate = template; 
+		tempUuid = cTemplate.getUuid();
+		tempPrototype = cTemplate.getPrototype();
+		tempName = cTemplate.getName();
+		tempSize = cTemplate.getSize();
+		tempSliderVal = cTemplate.getTraitRange(Trait.VISION);
+		visionUpper = tempSliderVal.getRight();
+		visionLower = tempSliderVal.getLeft();
+		tempSliderVal = cTemplate.getTraitRange(Trait.SPEED);
+		speedUpper = tempSliderVal.getRight();
+		speedLower = tempSliderVal.getLeft();
+		tempSliderVal = cTemplate.getTraitRange(Trait.CAMO);
+		camoUpper = tempSliderVal.getRight();
+		camoLower = tempSliderVal.getLeft();
+		tempSliderVal = cTemplate.getTraitRange(Trait.COMBAT);
+		combatUpper = tempSliderVal.getRight();
+		combatLower = tempSliderVal.getLeft();
+		tempSliderVal = cTemplate.getTraitRange(Trait.ENDURANCE);
+		endurUpper = tempSliderVal.getRight();
+		endurLower = tempSliderVal.getLeft();
 	}
 	
 	private void traitSeparator(JPanel cPanel) // a custom separator between traits
@@ -163,18 +212,18 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		return newIcon;
 	}
 	
-	private JPanel namePanel(String crittertype, String critterName) // show critter name
+	private JPanel namePanel(CritterPrototype critterType, String critterName) // show critter name
 	{
 		String imageFile; 
-		if (crittertype == "plant")
+		if (critterType.equals(CritterPrototype.PLANT))
 		{
 			imageFile = "images/plant.png";	
 		}
-		else if (crittertype == "prey")
+		else if (critterType.equals(CritterPrototype.PREY))
 		{
 			imageFile = "images/prey-right.png";
 		}
-		else if (crittertype == "predator")
+		else if (critterType.equals(CritterPrototype.PREDATOR))
 		{
 			imageFile = "images/predator-right.png";
 		}
@@ -204,7 +253,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		namePointBox.add(nameField);
 		
 		namePointBox.add(Box.createVerticalStrut(10));
-		remainingPoints = new JLabel("Points Remaining: " + critterPoints);
+		remainingPoints = new JLabel();
 		namePointBox.add(remainingPoints);
 		
 		cPanel.add(namePointBox);
@@ -223,7 +272,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		
 		// small, medium and large radiobuttons
 		Box sizeBox = new Box(BoxLayout.X_AXIS);
-		JRadioButton smallRButton = new JRadioButton("Small", true);
+		JRadioButton smallRButton = new JRadioButton("Small", false);
 		JRadioButton medRButton = new JRadioButton("Medium", false);
 		JRadioButton lrgRButton = new JRadioButton("Large", false);
 		
@@ -232,6 +281,23 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		sizeButtonGrp.add(smallRButton);
 		sizeButtonGrp.add(medRButton);
 		sizeButtonGrp.add(lrgRButton);
+		
+		if (tempSize.equals(Size.SMALL))
+		{
+			smallRButton.setSelected(true);
+		}
+		else if (tempSize.equals(Size.MEDIUM))
+		{
+			medRButton.setSelected(true);
+		}
+		else if (tempSize.equals(Size.LARGE))
+		{
+			lrgRButton.setSelected(true);
+		}
+		else
+		{
+			System.out.println("Error on RadioButton enumeration");
+		}
 		
 		smallRButton.addActionListener(this);
 		medRButton.addActionListener(this);
@@ -259,7 +325,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		someSlider.setSnapToTicks(true);
 		someSlider.setPaintLabels(true);
 		someSlider.setPreferredSize(new Dimension(120, 40));
-		//someSlider.setMaximumSize(new Dimension(120, 40));
 		someSlider.setAlignmentY(CENTER_ALIGNMENT);
 		return someSlider;
 	}
@@ -271,9 +336,13 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 		cPanel.setAlignmentX(CENTER_ALIGNMENT);
 		
+		Box labelBox = new Box(BoxLayout.X_AXIS);
 		JLabel sliderPairLabel = new JLabel(critterTrait);
-		sliderPairLabel.setAlignmentX(LEFT_ALIGNMENT);
-		cPanel.add(sliderPairLabel);
+		sliderPairLabel.setAlignmentX(BOTTOM_ALIGNMENT);
+		labelBox.add(Box.createHorizontalStrut(10));
+		labelBox.add(sliderPairLabel);
+		labelBox.add(Box.createHorizontalGlue());
+		cPanel.add(labelBox);
 		
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
@@ -289,8 +358,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		upperBox.add(Box.createHorizontalStrut(10));
 		cPanel.add(upperBox);
 		
-		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
-		
 		Box lowerBox = new Box(BoxLayout.X_AXIS);
 		JLabel lowerLabel = new JLabel("Lower");
 		lowerLabel.setAlignmentY(BOTTOM_ALIGNMENT);
@@ -304,6 +371,26 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		cPanel.add(lowerBox);
 		
 		return cPanel;
+	}
+	
+	private void initSliders() // initialize slider values
+	{
+		upVisionSlider.setValue(visionUpper);
+		lowVisionSlider.setValue(visionLower);
+		upSpeedSlider.setValue(speedUpper);
+		lowSpeedSlider.setValue(speedLower);
+		upCamoSlider.setValue(camoUpper);
+		lowCamoSlider.setValue(camoLower);
+		upCombatSlider.setValue(combatUpper);
+		lowCombatSlider.setValue(combatLower);
+		upEndurSlider.setValue(endurUpper);
+		lowEndurSlider.setValue(endurLower);
+		
+		int sNum = 10; // the total number of sliders
+		points = points + sNum - (visionUpper + visionLower + speedUpper + speedLower +
+					camoUpper + camoLower + combatUpper + combatLower + endurUpper +
+					endurLower);
+		remainingPoints.setText("Points Remaining:  " + points);
 	}
 	
 	public void stateChanged(ChangeEvent e) // slider event handler
@@ -336,7 +423,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// vision trait lower slider
 		if ( e.getSource().equals( this.lowVisionSlider ) 
 				&& !lowVisionSlider.getValueIsAdjusting() )
@@ -365,7 +451,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// speed trait upper slider
 		if (e.getSource().equals(this.upSpeedSlider) 
 				&& !upSpeedSlider.getValueIsAdjusting())
@@ -394,7 +479,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// speed trait lower slider
 		if ( e.getSource().equals( this.lowSpeedSlider ) 
 				&& !lowSpeedSlider.getValueIsAdjusting() )
@@ -423,7 +507,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// camouflage trait upper slider
 		if (e.getSource().equals(this.upCamoSlider) 
 				&& !upCamoSlider.getValueIsAdjusting())
@@ -452,7 +535,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// camouflage trait lower slider
 		if ( e.getSource().equals( this.lowCamoSlider ) 
 				&& !lowCamoSlider.getValueIsAdjusting() )
@@ -481,7 +563,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// combat trait upper slider
 		if (e.getSource().equals(this.upCombatSlider) 
 				&& !upCombatSlider.getValueIsAdjusting())
@@ -510,7 +591,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// combat trait lower slider
 		if ( e.getSource().equals( this.lowCombatSlider ) 
 				&& !lowCombatSlider.getValueIsAdjusting() )
@@ -539,7 +619,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// endurance trait upper slider
 		if (e.getSource().equals(this.upEndurSlider) 
 				&& !upEndurSlider.getValueIsAdjusting())
@@ -568,7 +647,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
 		// endurance trait lower slider
 		if ( e.getSource().equals( this.lowEndurSlider ) 
 				&& !lowEndurSlider.getValueIsAdjusting() )
@@ -597,65 +675,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
 	    }
-		
-		// age trait upper slider
-		if (e.getSource().equals(this.upAgeSlider) 
-				&& !upAgeSlider.getValueIsAdjusting())
-	    {
-	        // prevents upper slider from being less than lower slider
-			if (upAgeSlider.getValue() < lowAgeSlider.getValue())
-	        {
-	        	upAgeSlider.setValue(lowAgeSlider.getValue());
-	        	points = points - (upAgeSlider.getValue() - ageUpper);
-	        	ageUpper = upAgeSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
-	        // prevents slider from using more than remaining points
-			else if (upAgeSlider.getValue() > ageUpper 
-	        		&& upAgeSlider.getValue() - ageUpper > points)
-	        {
-	        	upAgeSlider.setValue(ageUpper + points);
-	        	points = points - (upAgeSlider.getValue() - ageUpper);
-	        	ageUpper = upAgeSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
-	        }
-	        else
-	        {
-	        	points = points - (upAgeSlider.getValue() - ageUpper);
-	        	ageUpper = upAgeSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
-	    }
-		
-		// age trait lower slider
-		if ( e.getSource().equals( this.lowAgeSlider ) 
-				&& !lowAgeSlider.getValueIsAdjusting() )
-	    {
-			// prevents upper slider from being less than lower slider
-			if (upAgeSlider.getValue() < lowAgeSlider.getValue())
-	        {
-	        	lowAgeSlider.setValue(upAgeSlider.getValue());
-	        	points = points - (lowAgeSlider.getValue() - ageLower);
-	        	ageLower = lowAgeSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
-			// prevents slider from using more than remaining points
-			else if (lowAgeSlider.getValue() > ageLower 
-	        		&& lowAgeSlider.getValue() - ageLower > points)
-	        {
-	        	lowAgeSlider.setValue(ageLower + points);
-	        	points = points - (lowAgeSlider.getValue() - ageLower);
-	        	ageLower = lowAgeSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
-	        }
-	        else
-	        {
-	        	points = points - (lowAgeSlider.getValue() - ageLower);
-	        	ageLower = lowAgeSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
-	    }
-		
 		else
 		{
 			// do something
@@ -666,23 +685,51 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	{
 		if (e.getActionCommand().equals("Small")) // for critter size
 		{
-			size = "small";
+			tempSize.equals(Size.SMALL);
 		}
 		else if (e.getActionCommand().equals("Medium"))
 		{
-			size = "medium";
+			tempSize.equals(Size.MEDIUM);
 		}
 		else if (e.getActionCommand().equals("large"))
 		{
-			size = "large";
+			tempSize.equals(Size.LARGE);
 		}
 		else if (e.getActionCommand().equals("jtextname")) // for critter name field
 		{
-			// do something
+			tempName = nameField.getText();
+			// do something to notify CritterPanel of namechange
+		}
+		else if (e.getActionCommand().equals("Apply"))
+		{
+			CritterTemplate cTemplate = new CritterTemplate();
+			// call some method to set the uuid in CritterTemplate
+			cTemplate.setPrototype(tempPrototype);
+			cTemplate.setName(tempName);
+			cTemplate.setSize(tempSize);
+			
+			tempSliderVal = new Pair<Integer, Integer>(visionLower, visionUpper);
+			cTemplate.setTraitRange(Trait.VISION, tempSliderVal);
+			
+			tempSliderVal = new Pair<Integer, Integer>(speedLower, speedUpper);
+			cTemplate.setTraitRange(Trait.SPEED, tempSliderVal);
+			
+			tempSliderVal = new Pair<Integer, Integer>(camoLower, camoUpper);
+			cTemplate.setTraitRange(Trait.CAMO, tempSliderVal);
+			
+			tempSliderVal = new Pair<Integer, Integer>(combatLower, combatUpper);
+			cTemplate.setTraitRange(Trait.COMBAT, tempSliderVal);
+			
+			tempSliderVal = new Pair<Integer, Integer>(endurLower, endurUpper);
+			cTemplate.setTraitRange(Trait.ENDURANCE, tempSliderVal);	
+		}
+		else if (e.getActionCommand().equals("Cancel"))
+		{
+			
 		}
 		else
 		{
-			
+			// do something
 		}
 	}
 }
