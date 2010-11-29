@@ -15,8 +15,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.Timer;
 
 import org.snowcrash.critter.Critter;
-import org.snowcrash.dataaccess.DAO;
-import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.world.World;
 
@@ -117,21 +115,16 @@ public class testSimuScreen extends BaseGUI {
         timer.start(); 
 	}
 	
-	private void testResultsPanel() {
-		FileManager mgr = new FileManager();
-		mgr.loadCritterTemplates("testCritterTemplates.Json", "test");
-		DAO dao = DAOFactory.getDAO();
-		
-	}
-	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		FileManager mgr = new FileManager();
+		mgr.loadTestCritterTemplates("testCritterTemplates.Json");
 		testSimuScreen sScreen = new testSimuScreen(20,20);
 		simuResultPane.setEnabledAt(simuResultPane.indexOfTab("Results"), true);
+		sScreen.setVisible(true);
 		sScreen.testSimuPanel();
-		sScreen.testResultsPanel();
 	}
 
 }
