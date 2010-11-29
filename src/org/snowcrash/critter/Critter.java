@@ -31,6 +31,7 @@ import org.snowcrash.state.Searching;
 import org.snowcrash.state.StateContext;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.utilities.RandomNumbers;
+import org.snowcrash.world.World;
 
 /**
  * 
@@ -76,11 +77,11 @@ public class Critter implements Cloneable {
 		setTemplateUuid(critter1.getTemplateUuid());
 		RandomNumbers rn = RandomNumbers.getInstance();
 		traits = new HashMap<Trait, Pair<Integer,Integer>>();
-		traits.put(Trait.CAMO, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.CAMO)), rn.getInteger(critter2.traits.get(Trait.CAMO))));
-		traits.put(Trait.COMBAT, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.COMBAT)), rn.getInteger(critter2.traits.get(Trait.COMBAT))));
-		traits.put(Trait.ENDURANCE, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.ENDURANCE)), rn.getInteger(critter2.traits.get(Trait.ENDURANCE))));
-		traits.put(Trait.SPEED, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.SPEED)), rn.getInteger(critter2.traits.get(Trait.SPEED))));
-		traits.put(Trait.VISION, new Pair<Integer, Integer>(rn.getInteger(critter1.traits.get(Trait.VISION)), rn.getInteger(critter2.traits.get(Trait.VISION))));
+		traits.put(Trait.CAMO, new Pair<Integer, Integer>(rn.selectOne(critter1.traits.get(Trait.CAMO)), rn.selectOne(critter2.traits.get(Trait.CAMO))));
+		traits.put(Trait.COMBAT, new Pair<Integer, Integer>(rn.selectOne(critter1.traits.get(Trait.COMBAT)), rn.selectOne(critter2.traits.get(Trait.COMBAT))));
+		traits.put(Trait.ENDURANCE, new Pair<Integer, Integer>(rn.selectOne(critter1.traits.get(Trait.ENDURANCE)), rn.selectOne(critter2.traits.get(Trait.ENDURANCE))));
+		traits.put(Trait.SPEED, new Pair<Integer, Integer>(rn.selectOne(critter1.traits.get(Trait.SPEED)), rn.selectOne(critter2.traits.get(Trait.SPEED))));
+		traits.put(Trait.VISION, new Pair<Integer, Integer>(rn.selectOne(critter1.traits.get(Trait.VISION)), rn.selectOne(critter2.traits.get(Trait.VISION))));
 		myStateContext = new StateContext(new Searching());
 	}
 	
@@ -106,12 +107,28 @@ public class Critter implements Cloneable {
 		return copy;
 	}
 	
+	/**
+	 * Tells this critter to act, calling the StateContext's act method.
+	 */
 	public void act() {
+		System.out.println(this.uuid + " is acting.");
 		this.myStateContext.act(this);
 	}
 	
+	/**
+	 * Default death by starvation.
+	 */
 	public void die() {
+		die("starvation");
+	}
+	
+	/**
+	 * Death by a killer besides starvation.
+	 * @param killer
+	 */
+	public void die(String killer) {
 		this.isAlive = false;
+		World.getInstance().addTurnLogEntry(this.uuid + " was killed by " + killer + ".");
 	}
 	
 	public int getActionCost() {

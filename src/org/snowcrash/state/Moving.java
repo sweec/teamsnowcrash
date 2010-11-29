@@ -36,6 +36,7 @@ public class Moving implements State {
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
+		System.out.println(myCritter.getPrototype() + " entered Moving.");
 		Pair<Integer,Integer> target = World.getInstance().search(myCritter, true);
 		myCritter.setHealth(myCritter.getHealth() - myCritter.getActionCost());
 		if (target != null) {

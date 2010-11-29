@@ -68,8 +68,7 @@ public class World {
 	private int currentTurn;
 	private Pair<Integer, Integer> currentPos;
 	private boolean isNext = false;
-	// For the Console Log
-	private LinkedList<String> ll = null;
+	private LinkedList<String> turnLog = null;
 	
 	private World() {
 		this.currentTurn = 0;
@@ -77,8 +76,21 @@ public class World {
 		this.sizeY = 50;
 		this.turns = 1;
 		this.currentPos = new Pair<Integer, Integer> (0,0);
+		this.turnLog = new LinkedList<String>();
 	}
 	
+	public void resetTurnLog() {
+		this.turnLog = new LinkedList<String>();
+	}
+	
+	public void addTurnLogEntry(String entry) {
+		this.turnLog.add(entry);
+	}
+	
+	public void printTurnLogContents() {
+		System.out.println("Turn Log: ");
+		System.out.println(Arrays.toString(this.turnLog.toArray()));
+	}
 	/**
 	 * Adds a critter to a specific x,y location.
 	 * @param pair 
@@ -158,6 +170,7 @@ public class World {
 				}
 			}
 		}
+		resetTurnLog();
 	}
 	
 	/**
@@ -201,7 +214,7 @@ public class World {
 	private boolean hasNext() {
 		if (isNext) {
 			isNext = false;
-			if (currentPos.getRight() + 1 < sizeY) {
+			if (currentPos.getRight() + 1 >= sizeY) {
 				currentPos = new Pair<Integer, Integer> (currentPos.getLeft() + 1, 0);
 			} else {
 				currentPos = new Pair<Integer, Integer> (currentPos.getLeft(), currentPos.getRight() + 1);
@@ -211,6 +224,7 @@ public class World {
 		int currY = currentPos.getRight();
 		for (;currX < sizeX; currX++) {
 			for (;currY < sizeY; currY++) {
+				System.out.println("Map At: " + currX + "," + currY);
 				if (map[currX][currY] != null) {
 					isNext = true;
 					currentPos = new Pair<Integer, Integer>(currX, currY);
@@ -263,7 +277,7 @@ public class World {
 				critter.act();
 			}
 		}
-		//clearCritterActedFlags();
+		printTurnLogContents();
 		currentPos = new Pair<Integer, Integer> (0,0);
 		currentTurn++;
 	}
