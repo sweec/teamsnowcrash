@@ -63,41 +63,45 @@ public class CritterTemplate implements DatabaseObject {
 		this.uuid = UUID.randomUUID().toString();
 	}
 	
+	public Object getId()
+	{
+		return uuid;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
 	public CritterPrototype getPrototype() {
 		return prototype;
+	}
+	
+	public Size getSize() {
+		return size;
+	}
+
+	public Pair<Integer,Integer> getTraitRange(Trait trait) {
+		return traitRange.get(trait);
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setPrototype(CritterPrototype prototype) {
 		this.prototype = prototype;
 	}
 	
-	public void setTraitRange(Trait trait, Pair<Integer,Integer> range) {
-		traitRange.put(trait, range);
-	}
-	
-	public Pair<Integer,Integer> getTraitRange(Trait trait) {
-		return traitRange.get(trait);
-	}
-
-	public Size getSize() {
-		return size;
-	}
-
 	public void setSize(Size size) {
 		this.size = size;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-	
-	public Object getId()
-	{
-		return uuid;
+	public void setTraitRange(Trait trait, Pair<Integer,Integer> range) {
+		traitRange.put(trait, range);
 	}
 
 	@Override

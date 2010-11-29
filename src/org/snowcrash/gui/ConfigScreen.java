@@ -39,7 +39,6 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		ffButton.setEnabled(false);
 		
 		Container content = getContentPane();
-		int contentWidth = content.getWidth();
 
 		JPanel configPanel = new JPanel();
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
@@ -47,7 +46,6 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		// get the critter panel and add a tab
-		//JTabbedPane tabPane;
 		JPanel cPanel = new CritterPanel();
 		tabPane1 = new JTabbedPane();
 		tabPane1.addTab("Critters", cPanel);
@@ -83,31 +81,6 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		content.add(configPanel);
-	}
-	
-	public void selectionOccurred( SelectionEvent e )
-	{
-		if ( e.getSource() instanceof CritterTemplateWidget )
-		{
-			CritterTemplateWidget ctw = (CritterTemplateWidget) e.getSource();
-			String critterTemplateName = ctw.getCritterTemplateName();
-			
-			Command command = CommandFactory.getRetrieveTemplateCommand( critterTemplateName, new Callback()
-			{
-				public void callback( Object ... results )
-				{
-					if ( results.length == 1  && results[0] instanceof CritterTemplate )
-					{
-						CritterTemplate template = (CritterTemplate) results[0];
-						
-						// -- Call the appropriate method on the traits panel to display 
-						// TODO
-					}
-				}
-			});
-			
-			command.execute();
-		}
 	}
 	
 	public void componentResized(ComponentEvent e) 
@@ -147,7 +120,29 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
     			   ((currentWidth - 20) / 3, Short.MAX_VALUE));
        }
     }
-
+	
+	public void selectionOccurred( SelectionEvent e )
+	{
+		if ( e.getSource() instanceof CritterTemplateWidget )
+		{
+			CritterTemplateWidget ctw = (CritterTemplateWidget) e.getSource();
+			String critterTemplateName = ctw.getCritterTemplateName();
+			
+			Command command = CommandFactory.getRetrieveTemplateCommand(critterTemplateName, new Callback()
+			{
+				public void callback( Object ... results )
+				{
+					if ( results.length == 1 && results[0] instanceof CritterTemplate )
+					{
+						CritterTemplate template = (CritterTemplate) results[0];
+						
+						// -- TODO update traits panel
+					}
+				}
+			});
+		}
+	}
+	
 	public static void main(String[] args)
 	{
 		ConfigScreen scconfig = new ConfigScreen();

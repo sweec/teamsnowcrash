@@ -22,7 +22,6 @@
 package org.snowcrash.state;
 
 import org.snowcrash.critter.Critter;
-import org.snowcrash.utilities.Constants;
 
 /**
  * @author dearnest
@@ -33,15 +32,19 @@ import org.snowcrash.utilities.Constants;
  */
 
 public class Growing implements State {
+	
+	private static final int PLANT_REGEN = 10;
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
-		if (myCritter.getHealth() + Constants.PLANT_REGEN < myCritter.getMaxHealth()) {
-			myCritter.setHealth(myCritter.getHealth() + Constants.PLANT_REGEN);
+		System.out.println(myCritter.getPrototype() + " entered Growing.");
+		if (myCritter.getHealth() + PLANT_REGEN < myCritter.getMaxHealth()) {
+			myCritter.setHealth(myCritter.getHealth() + PLANT_REGEN);
 		} else {
 			myCritter.setHealth(myCritter.getMaxHealth());
 		}
 		myCritter.setActed(true);
+		myCritter.getMyStateContext().setState(new Searching());
 	}
 	
 }

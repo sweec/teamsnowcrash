@@ -10,6 +10,7 @@ public class Reproducing implements State {
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
+		System.out.println(myCritter.getPrototype() + " entered Reproducing.");
 		World world = World.getInstance();
 		Pair<Integer,Integer> pair = world.search(myCritter, false);
 		if (pair != null) {
