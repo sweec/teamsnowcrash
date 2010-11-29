@@ -36,6 +36,13 @@ public class StateContext {
 	private State myState;
 	
 	/**
+	 * No-arguments constructor
+	 */
+	public StateContext() {
+		
+	}
+	
+	/**
 	 * All StateContexts are initialized with a state.  This prevents an issue
 	 * where the calling object attempts to act but there is no state to act upon.
 	 * @param state

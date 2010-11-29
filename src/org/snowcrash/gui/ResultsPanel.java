@@ -3,6 +3,7 @@
  */
 package org.snowcrash.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -45,9 +46,9 @@ public class ResultsPanel extends JPanel {
 	final private int SIZEX = 500, SIZEY = 1000;
 	
 	// critterTemplate Panel
-	final private ArrayList<testCritterTemplate> plantTemplates = new ArrayList<testCritterTemplate>();
-	final private ArrayList<testCritterTemplate> preyTemplates = new ArrayList<testCritterTemplate>();
-	final private ArrayList<testCritterTemplate> predatorTemplates = new ArrayList<testCritterTemplate>();
+	private ArrayList<testCritterTemplate> plantTemplates = new ArrayList<testCritterTemplate>();
+	private ArrayList<testCritterTemplate> preyTemplates = new ArrayList<testCritterTemplate>();
+	private ArrayList<testCritterTemplate> predatorTemplates = new ArrayList<testCritterTemplate>();
 	private JList plantList = null, preyList = null, predatorList = null;
 	
 	// statistics Panel
@@ -61,11 +62,17 @@ public class ResultsPanel extends JPanel {
 	private JLabel minAge, maxAge, averageAge;
 	private HashMap<Trait, JLabel> startTraitsLabel = new HashMap<Trait, JLabel>(), endTraitsLabel = new HashMap<Trait, JLabel>();
 	
+	static public ResultsPanel getInstance() {
+		if (instance == null) instance = new ResultsPanel();
+		return instance;
+	}
+	
 	public ResultsPanel() {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		JTabbedPane tabPane = new JTabbedPane();
 		tabPane.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane.addTab("Critters", critterTemplatePane());
+		tabPane.setPreferredSize(new Dimension(SIZEX / 3, SIZEY));
 		add(tabPane);
 		add(Box.createRigidArea(new Dimension(5,0)));
 		tabPane = new JTabbedPane();
@@ -75,7 +82,10 @@ public class ResultsPanel extends JPanel {
 		instance = this;
 	}
 
-	private void classifyTemplates() {
+	private void setupData() {
+		testCritterTemplate.initializeStatistics();
+		testCritterTemplate.calculateStatistics();
+		
 		DAO dao = DAOFactory.getDAO();
 		DatabaseObject[] object = null;
 		try {
@@ -107,13 +117,14 @@ public class ResultsPanel extends JPanel {
 	
 	private JScrollPane critterTemplatePane() {
 		// initialize data to be displayed
-		classifyTemplates();
+		setupData();
 		
 		JPanel cPanel = new JPanel();
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 		
 		// add plant scroll list
 		JPanel plants = this.borderPanel("Plants");
+		plants.setLayout(new BorderLayout());
 		ListModel plantModel = new AbstractListModel() {
 		    public int getSize() { return plantTemplates.size(); }
 		    public Object getElementAt(int index) { return ((testCritterTemplate)plantTemplates.get(index)).getName(); }
@@ -123,18 +134,18 @@ public class ResultsPanel extends JPanel {
 		plantList.addListSelectionListener(
 			new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
-					if (preyList != null) preyList.clearSelection();
-					if (predatorList != null) predatorList.clearSelection();
-					if (instance != null) instance.updateStatistics((testCritterTemplate)plantTemplates.get(plantList.getSelectedIndex()));
+					ResultsPanel.getInstance().updateSelection(CritterPrototype.PLANT);
 				}
 			}
 		);
-		plantList.setSelectedIndex(0);
-		plants.add(new JScrollPane(plantList));
+		//plantList.setFixedCellWidth(listWidth);
+		// do not call setSelectedIndex() here, cause ResultsPanel is not available yet
+		plants.add(new JScrollPane(plantList), BorderLayout.CENTER);
 		cPanel.add(plants);
 		
 		// add prey scroll list
-		JPanel prey = this.borderPanel("Prey");
+		JPanel preys = this.borderPanel("Prey");
+		preys.setLayout(new BorderLayout());
 		ListModel preyModel = new AbstractListModel() {
 		    public int getSize() { return preyTemplates.size(); }
 		    public Object getElementAt(int index) { return ((testCritterTemplate)preyTemplates.get(index)).getName(); }
@@ -144,17 +155,16 @@ public class ResultsPanel extends JPanel {
 		preyList.addListSelectionListener(
 			new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
-					if (plantList != null) plantList.clearSelection();
-					if (predatorList != null) predatorList.clearSelection();
-					if (instance != null) instance.updateStatistics((testCritterTemplate)preyTemplates.get(preyList.getSelectedIndex()));
+					ResultsPanel.getInstance().updateSelection(CritterPrototype.PREY);
 				}
 			}
 		);
-		prey.add(new JScrollPane(preyList));
-		cPanel.add(prey);
+		preys.add(new JScrollPane(preyList), BorderLayout.CENTER);
+		cPanel.add(preys);
 		
 		// add predator scroll list
-		JPanel predator = this.borderPanel("Predator");
+		JPanel predators = this.borderPanel("Predator");
+		predators.setLayout(new BorderLayout());
 		ListModel predatorModel = new AbstractListModel() {
 		    public int getSize() { return predatorTemplates.size(); }
 		    public Object getElementAt(int index) { return ((testCritterTemplate)predatorTemplates.get(index)).getName(); }
@@ -164,14 +174,13 @@ public class ResultsPanel extends JPanel {
 		predatorList.addListSelectionListener(
 			new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
-					if (plantList != null) plantList.clearSelection();
-					if (preyList != null) preyList.clearSelection();
-					if (instance != null) instance.updateStatistics((testCritterTemplate)predatorTemplates.get(predatorList.getSelectedIndex()));
+					ResultsPanel.getInstance().updateSelection(CritterPrototype.PREDATOR);
 				}
 			}
 		);
-		predator.add(new JScrollPane(predatorList));
-		cPanel.add(predator);
+		predators.add(new JScrollPane(predatorList), BorderLayout.CENTER);
+		cPanel.add(predators);
+		
 		JScrollPane cScroll = new JScrollPane(cPanel);
 		cScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		cScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -233,17 +242,30 @@ public class ResultsPanel extends JPanel {
 		return oPanel;
 	}
 	
-	private void updateStatistics(testCritterTemplate template) {
-		CritterPrototype type = template.getPrototype();
+	private void updateSelection(CritterPrototype type) {
+		testCritterTemplate template = null;
+		
 		switch (type) {
 		case PLANT:
+			if (plantList.isSelectionEmpty()) return;
+			if (preyList != null) preyList.clearSelection();
+			if (predatorList != null) predatorList.clearSelection();
 			critterImage.setIcon(plant);
+			template = plantTemplates.get(plantList.getSelectedIndex());
 			break;
 		case PREY:
+			if (preyList.isSelectionEmpty()) return;
+			if (plantList != null) plantList.clearSelection();
+			if (predatorList != null) predatorList.clearSelection();
 			critterImage.setIcon(prey);
+			template = preyTemplates.get(preyList.getSelectedIndex());
 			break;
 		case PREDATOR:
+			if (predatorList.isSelectionEmpty()) return;
+			if (plantList != null) plantList.clearSelection();
+			if (preyList != null) preyList.clearSelection();
 			critterImage.setIcon(predator);
+			template = predatorTemplates.get(predatorList.getSelectedIndex());
 			break;
 		}
 		
@@ -262,23 +284,23 @@ public class ResultsPanel extends JPanel {
 		
 		critterName.setText("Name: " + template.getName());
 		
-		startPopulation.setText(Integer.toString(template.getStartPopulation()));
-		endPopulation.setText(Integer.toString(template.getEndPopulation()));
-		totalPopulation.setText(Integer.toString(template.getTotalPopulation()));
-		minAge.setText(Integer.toString(template.getMinAge()));
-		maxAge.setText(Integer.toString(template.getMaxAge()));
-		averageAge.setText(Integer.toString(template.getAverageAge()));
+		startPopulation.setText("Start: " + template.getStartPopulation());
+		endPopulation.setText("End: " + template.getEndPopulation());
+		totalPopulation.setText("Total: " + template.getTotalPopulation());
+		minAge.setText("Min age: " + template.getMinAge());
+		maxAge.setText("Max age: " + template.getMaxAge());
+		averageAge.setText("Average age: " + template.getAverageAge());
 		
-		startTraitsLabel.get(Trait.CAMO).setText("Start: " + template.getStartTrait(Trait.CAMO));
-		endTraitsLabel.get(Trait.CAMO).setText("End: " + template.getStartTrait(Trait.CAMO));
-		startTraitsLabel.get(Trait.COMBAT).setText("Start: " + template.getStartTrait(Trait.COMBAT));
-		endTraitsLabel.get(Trait.COMBAT).setText("End: " + template.getStartTrait(Trait.COMBAT));
-		startTraitsLabel.get(Trait.ENDURANCE).setText("Start: " + template.getStartTrait(Trait.ENDURANCE));
-		endTraitsLabel.get(Trait.ENDURANCE).setText("End: " + template.getStartTrait(Trait.ENDURANCE));
-		startTraitsLabel.get(Trait.SPEED).setText("Start: " + template.getStartTrait(Trait.SPEED));
-		endTraitsLabel.get(Trait.SPEED).setText("End: " + template.getStartTrait(Trait.SPEED));
-		startTraitsLabel.get(Trait.VISION).setText("Start: " + template.getStartTrait(Trait.SPEED));
-		endTraitsLabel.get(Trait.SPEED).setText("End: " + template.getStartTrait(Trait.SPEED));
+		startTraitsLabel.get(Trait.CAMO).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.CAMO)));
+		endTraitsLabel.get(Trait.CAMO).setText(String.format("End: %1.1f", template.getStartTrait(Trait.CAMO)));
+		startTraitsLabel.get(Trait.COMBAT).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.COMBAT)));
+		endTraitsLabel.get(Trait.COMBAT).setText(String.format("End: %1.1f", template.getStartTrait(Trait.COMBAT)));
+		startTraitsLabel.get(Trait.ENDURANCE).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.ENDURANCE)));
+		endTraitsLabel.get(Trait.ENDURANCE).setText(String.format("End: %1.1f", template.getStartTrait(Trait.ENDURANCE)));
+		startTraitsLabel.get(Trait.SPEED).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.SPEED)));
+		endTraitsLabel.get(Trait.SPEED).setText(String.format("End: %1.1f", template.getStartTrait(Trait.SPEED)));
+		startTraitsLabel.get(Trait.VISION).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.SPEED)));
+		endTraitsLabel.get(Trait.VISION).setText(String.format("End: %1.1f", template.getStartTrait(Trait.VISION)));
 	}
 	
 	private ImageIcon resizeIcon(ImageIcon origIcon) // resizes the critter icon
@@ -296,15 +318,15 @@ public class ResultsPanel extends JPanel {
 		JPanel cPanel = new JPanel();
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.X_AXIS));
 
-		critterImage = new JLabel(predator);
+		critterImage = new JLabel();
 		cPanel.add(critterImage);
 		cPanel.add(Box.createRigidArea(new Dimension(10,0)));
 		
 		Box box = new Box(BoxLayout.Y_AXIS);
-		critterName = new JLabel("Name: Barney");
+		critterName = new JLabel("Name: ------");
 		box.add(critterName);
 		box.add(Box.createVerticalStrut(10));
-		critterSize = new JLabel("Size: Small");
+		critterSize = new JLabel("Size: ------");
 		box.add(critterSize);
 		cPanel.add(box);
 		
@@ -318,17 +340,19 @@ public class ResultsPanel extends JPanel {
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 		cPanel.setAlignmentX(CENTER_ALIGNMENT);
 
-		cPanel.add(new JLabel("Population"));
+		JLabel population = new JLabel("Population");
+		population.setAlignmentX(CENTER_ALIGNMENT);
+		cPanel.add(population);
 		cPanel.add(Box.createVerticalStrut(10));
 		
 		Box box = new Box(BoxLayout.X_AXIS);
-		startPopulation = new JLabel("Start: " + 0);
+		startPopulation = new JLabel("Start: -----");
 		box.add(startPopulation);
 		box.add(Box.createHorizontalStrut(10));
-		endPopulation = new JLabel("End: " + 100);
+		endPopulation = new JLabel("End: -----");
 		box.add(endPopulation);
 		box.add(Box.createHorizontalStrut(10));
-		totalPopulation = new JLabel("Total: " + 100);
+		totalPopulation = new JLabel("Total: -----");
 		box.add(totalPopulation);
 		cPanel.add(box);
 		
@@ -342,17 +366,19 @@ public class ResultsPanel extends JPanel {
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 		cPanel.setAlignmentX(CENTER_ALIGNMENT);
 
-		cPanel.add(new JLabel("Age"));
+		JLabel age = new JLabel("Age");
+		age.setAlignmentX(CENTER_ALIGNMENT);
+		cPanel.add(age);
 		cPanel.add(Box.createVerticalStrut(10));
 		
 		Box box = new Box(BoxLayout.X_AXIS);
-		minAge = new JLabel("Min age: " + 0);
+		minAge = new JLabel("Min age: -----");
 		box.add(minAge);
 		box.add(Box.createHorizontalStrut(10));
-		maxAge = new JLabel("Max age: " + 0);
+		maxAge = new JLabel("Max age: -----");
 		box.add(maxAge);
 		box.add(Box.createHorizontalStrut(10));
-		averageAge = new JLabel("Average age: " + 0);
+		averageAge = new JLabel("Average age: -----");
 		box.add(averageAge);
 		cPanel.add(box);
 		
@@ -390,18 +416,18 @@ public class ResultsPanel extends JPanel {
 			critterTrait = new String("Vision");
 			break;
 		}
-		JLabel sliderPairLabel = new JLabel(critterTrait);
-		sliderPairLabel.setAlignmentX(LEFT_ALIGNMENT);
+		JLabel sliderPairLabel = new JLabel(/*"Average " + */critterTrait);
+		sliderPairLabel.setAlignmentX(CENTER_ALIGNMENT);
 		cPanel.add(sliderPairLabel);
 		
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
 		Box box = new Box(BoxLayout.X_AXIS);
 		box.add(Box.createHorizontalStrut(10));
-		startTraitsLabel.put(trait, new JLabel("Start: " + 1));
+		startTraitsLabel.put(trait, new JLabel("Start: --"));
 		box.add(startTraitsLabel.get(trait));
 		box.add(Box.createHorizontalStrut(10));
-		endTraitsLabel.put(trait, new JLabel("End: " + 2));
+		endTraitsLabel.put(trait, new JLabel("End: --"));
 		box.add(endTraitsLabel.get(trait));
 		box.add(Box.createHorizontalStrut(10));
 		cPanel.add(box);
