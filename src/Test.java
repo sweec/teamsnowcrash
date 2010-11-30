@@ -21,7 +21,7 @@ public class Test {
 		 * Insert your own test code here. If you want to check-in changes,
 		 * please split your added code into a different method.
 		 */
-		testDatabase();
+		
 	}
 
 	private static void testCommands() {
@@ -29,7 +29,7 @@ public class Test {
 		command2.execute();
 	}
 
-	private static void testTimer() {
+	private static void testTimer() throws InterruptedException {
 		TimeEngine.addTimeListener(new TimeListener() {
 			private int counter = 0;
 
@@ -56,6 +56,12 @@ public class Test {
 		TimeEngine.setTimeLimit(10);
 
 		TimeEngine.startTimer();
+		
+		Thread.sleep( 5000 );
+		TimeEngine.pauseTimer();
+		
+		Thread.sleep( 3000 );
+		TimeEngine.resumeTimer();
 	}
 	
 	private static void testCritterTemplateWidget()
