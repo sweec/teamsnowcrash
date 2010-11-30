@@ -22,10 +22,15 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.utilities.Pair;
 
 public class TraitsPanel extends JPanel implements ChangeListener, ActionListener
@@ -702,10 +707,10 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		}
 		else if (e.getActionCommand().equals("Apply"))
 		{
-			CritterTemplate cTemplate = new CritterTemplate();
+			//CritterTemplate cTemplate = new CritterTemplate();
 			// call some method to set the uuid in CritterTemplate
-			cTemplate.setPrototype(tempPrototype);
-			cTemplate.setName(tempName);
+			//cTemplate.setPrototype(tempPrototype);
+			//cTemplate.setName(tempName);
 			cTemplate.setSize(tempSize);
 			
 			tempSliderVal = new Pair<Integer, Integer>(visionLower, visionUpper);
@@ -721,11 +726,15 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			cTemplate.setTraitRange(Trait.COMBAT, tempSliderVal);
 			
 			tempSliderVal = new Pair<Integer, Integer>(endurLower, endurUpper);
-			cTemplate.setTraitRange(Trait.ENDURANCE, tempSliderVal);	
+			cTemplate.setTraitRange(Trait.ENDURANCE, tempSliderVal);
+			
+			Command mod = CommandFactory.getModifyTemplateCommand(cTemplate);
+			mod.execute();
+			
 		}
 		else if (e.getActionCommand().equals("Cancel"))
 		{
-			
+			// TODO Needs to be implemented
 		}
 		else
 		{
