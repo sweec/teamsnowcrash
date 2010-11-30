@@ -136,10 +136,14 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 					{
 						CritterTemplate template = (CritterTemplate) results[0];
 						
-						// -- TODO update traits panel
+						// -- Update traits panel.
+						TraitsPanel tp = new TraitsPanel();
+						tabPane2.add( tp.TraitsPanel( template ) );
 					}
 				}
 			});
+			
+			command.execute();
 		}
 	}
 	
