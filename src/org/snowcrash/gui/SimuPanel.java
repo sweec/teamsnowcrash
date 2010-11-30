@@ -18,12 +18,14 @@ import javax.swing.JScrollPane;
 
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.world.World;
+import org.snowcrash.world.WorldObserver;
 
 /**
  * @author dong
  *
  */
-public class SimuPanel extends JPanel {
+public class SimuPanel extends JPanel implements WorldObserver {
 	final private int line_width = 2;
 	final private int offset = line_width;
     final private BasicStroke stroke = new BasicStroke(line_width);
@@ -170,6 +172,11 @@ public class SimuPanel extends JPanel {
         	}
         
     } 
+    
+    public void updateWorld( World world )
+    {
+    	updateworld( world.getMap() );
+    }
 
     /**
 	 * @param args
