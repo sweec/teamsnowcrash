@@ -8,7 +8,7 @@ import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.filemanagement.IFileManager2;
-import org.snowcrash.gui.ConfigScreen;
+import org.snowcrash.gui.BaseGUI;
 
 
 public class Main
@@ -35,7 +35,9 @@ public class Main
 			}
 		});
 		
+		FileManager mgr = new FileManager();
+		mgr.loadTestCritterTemplates("testCritterTemplates.Json");
 		// -- Run GUI.
-		new ConfigScreen();
+		BaseGUI screenManager = new BaseGUI();
 	}
 }

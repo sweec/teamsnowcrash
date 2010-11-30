@@ -18,7 +18,7 @@ import org.snowcrash.utilities.Callback;
 import org.snowcrash.utilities.SelectionEvent;
 import org.snowcrash.utilities.SelectionListener;
 
-public class ConfigScreen extends BaseGUI implements SelectionListener
+public class ConfigScreen extends JPanel implements SelectionListener
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
@@ -27,20 +27,7 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 	
 	public ConfigScreen()
 	{
-		rewind.setEnabled(false);
-		play.setEnabled(true);
-		stop.setEnabled(false);
-		ff.setEnabled(false);
-		saveSim.setEnabled(true);
-		
-		rewindButton.setEnabled(false);
-		playButton.setEnabled(true);
-		stopButton.setEnabled(false);
-		ffButton.setEnabled(false);
-		
-		Container content = getContentPane();
-
-		JPanel configPanel = new JPanel();
+		JPanel configPanel = this;
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -80,7 +67,6 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		configPanel.add(tabPane3);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
-		content.add(configPanel);
 	}
 	
 	public void componentResized(ComponentEvent e) 

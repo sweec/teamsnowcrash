@@ -42,6 +42,7 @@ import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
+import org.snowcrash.prototype.ProtoCritter;
 import org.snowcrash.state.Growing;
 import org.snowcrash.state.Hunting;
 import org.snowcrash.state.Moving;
@@ -60,6 +61,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonStreamParser;
 
 /**
  * @author dong
@@ -75,6 +77,11 @@ public class FileManager implements IFileManager2 {
 	private static Logger logger = null;
 	private static FileHandler fh = null;
 
+	/**
+	 * save the simulation as well as required critter templates to a file
+	 * in the case of saveConfiguration, assume all the settings are already within world instance
+	 * that means critters need to be populated first
+	 */
 	public boolean saveWorld(World world, String filepath, String filename) {
 		if (world == null) {
 			DatabaseObject[] objects = null;
@@ -87,8 +94,13 @@ public class FileManager implements IFileManager2 {
 			if (objects == null) return false;
 			world = (World)objects[0];
 		}
+		// save templates first
+		//saveCritterTemplates(null, filepath + filename);
+		saveTestCritterTemplates(null, filepath + filename);
+		// followed by simulation world
 		try { 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
+			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename, true));
+			
 			Gson gson = new GsonBuilder()
 			.registerTypeAdapter(State.class, new StateSerializer())
 			.create();
@@ -105,27 +117,52 @@ public class FileManager implements IFileManager2 {
 		return saveWorld(world, "", filename);
 	}
 	
+	/**
+	 * load simulation from file
+	 */
 	public World loadWorld(String filepath, String filename) {
 		World world = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
+			JsonStreamParser parser = new JsonStreamParser(in);
+			JsonElement element;
 			Gson gson = new GsonBuilder()
 			.registerTypeAdapter(State.class, new StateDeserializer())
 			.create();
-			world = gson.fromJson(in, World.class);
+			if (parser.hasNext()) {
+				element = parser.next();
+				//CritterTemplate[] templates = gson.fromJson(element, CritterTemplate[].class);
+				testCritterTemplate[] templates = gson.fromJson(element, testCritterTemplate[].class);
+				if (templates == null) return null;
+				// TODO
+				// clear database first
+				DAO dao = DAOFactory.getDAO();
+				int i;
+				for (i = 0;i < templates.length;i++) {
+					try {
+						dao.create( templates[i] );
+					} catch (DAOException e) {
+						//throw new RuntimeException( e );
+					}
+				}
+			}
+			if (parser.hasNext()) {
+				element = parser.next();
+				world = gson.fromJson(element, World.class);
+				/* World is not implementing DatabaseObject yet
+				DAO dao = DAOFactory.getDAO();
+				try {
+					dao.create( world );
+				} catch (DAOException e) {
+					throw new RuntimeException( e );
+				}
+				*/
+			}
 			in.close(); 
 		} catch (IOException e) { 
 			e.printStackTrace();
 		}
 		if (world == null) return null;
-		/* World is not implementing DatabaseObject yet
-		DAO dao = DAOFactory.getDAO();
-		try {
-			dao.create( world );
-		} catch (DAOException e) {
-			throw new RuntimeException( e );
-		}
-		*/
 		return world;
 	}
 	
@@ -165,27 +202,27 @@ public class FileManager implements IFileManager2 {
 	}
 
 	public CritterTemplate[] loadCritterTemplates(String filepath, String filename) {
-		CritterTemplate[] critterTemplate = null;
+		CritterTemplate[] templates = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
 			
 			Gson gson = new Gson();
-			critterTemplate = gson.fromJson(in, CritterTemplate[].class);
+			templates = gson.fromJson(in, CritterTemplate[].class);
 			in.close(); 
 		} catch (IOException e) { 
 			e.printStackTrace();
 		}
-		if (critterTemplate == null) return null;
+		if (templates == null) return null;
 		DAO dao = DAOFactory.getDAO();
 		int i;
-		for (i = 0;i < critterTemplate.length;i++) {
+		for (i = 0;i < templates.length;i++) {
 			try {
-				dao.create( critterTemplate[i] );
+				dao.create( templates[i] );
 			} catch (DAOException e) {
 				throw new RuntimeException( e );
 			}
 		}
-		return critterTemplate;
+		return templates;
 	}
 
 	public CritterTemplate[] loadCritterTemplates(String filename) {
