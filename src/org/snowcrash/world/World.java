@@ -29,6 +29,7 @@ import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.state.Searching;
+import org.snowcrash.timeengine.TimeListener;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.utilities.RandomNumbers;
 
@@ -45,7 +46,7 @@ import org.snowcrash.utilities.RandomNumbers;
  * 
  */
 
-public class World {
+public class World implements TimeListener {
 
 	private static World instance;
 
@@ -384,6 +385,24 @@ public class World {
 				+ ", sizeY=" + sizeY + ", turns=" + turns + ", currentTurn="
 				+ currentTurn + ", currentPos=" + currentPos + ", isNext="
 				+ isNext + "]";
+	}
+
+	@Override
+	public void tickOccurred() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void timeExpired() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void timerStopped() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 
