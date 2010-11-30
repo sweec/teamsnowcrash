@@ -255,4 +255,11 @@ public class CommandFactory
 		
 		return command;
 	}
+
+	public static Command getOpenLogCommand()
+	{
+		Command command = new OpenLogCommand();
+		
+		return command;
+	}
 }
