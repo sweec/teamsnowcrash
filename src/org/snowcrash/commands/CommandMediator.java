@@ -253,4 +253,8 @@ public class CommandMediator
 	{
 		CommandMediator.configManager = configurationManager;
 	}
+	
+	static void openLog() {
+		fileManager.viewLogFile();
+	}
 }

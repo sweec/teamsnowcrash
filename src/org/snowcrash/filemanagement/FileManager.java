@@ -42,7 +42,6 @@ import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
-import org.snowcrash.prototype.ProtoCritter;
 import org.snowcrash.state.Growing;
 import org.snowcrash.state.Hunting;
 import org.snowcrash.state.Moving;
@@ -94,10 +93,17 @@ public class FileManager implements IFileManager2 {
 			if (objects == null) return false;
 			world = (World)objects[0];
 		}
+		
 		// save templates first
+		// followed by simulation world
+
 		//saveCritterTemplates(null, filepath + filename);
 		saveTestCritterTemplates(null, filepath + filename);
-		// followed by simulation world
+		
+		// world instance need to be complete to be saved
+		// needed by saveConfiguration
+		//World.getInstance().Populate();	// Populate() creates all critters if not yet
+		
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename, true));
 			
@@ -294,11 +300,11 @@ public class FileManager implements IFileManager2 {
 	    		file.delete();
 	    	}
 	    	boolean append = true;
-	    	fh = new FileHandler(filepath, append);
+	    	fh = new FileHandler(filepath + filename, append);
 	    	//fh.setFormatter(new XMLFormatter());
 	    	//fh.setFormatter(new SimpleFormatter());
 	    	fh.setFormatter(new LogFormatter());
-	    	logger = Logger.getLogger(filepath);	// arg is just a name here
+	    	logger = Logger.getLogger(filename);	// arg is just a name here
 	    	logger.addHandler(fh);
 	    }
 	    catch (IOException e) {
@@ -318,15 +324,16 @@ public class FileManager implements IFileManager2 {
 	
 	public void viewLogFile(String filepath, String filename, int w, int h, int r) {
         LogViewer v = new LogViewer(r);
-        v.display(filepath, w, h);
+        v.display(filepath + filename, w, h);
 	}
 
 	public void viewLogFile(String filepath, String filename) {
-		viewLogFile(filepath, filename, 40, 500, 570);
+		viewLogFile(filepath, filename, 40, 500, 500);
 	}
 
 	public void viewLogFile() {
-		viewLogFile("", logFile, 40, 500, 570);
+        LogViewer v = new LogViewer(40);
+        v.display(logFile, 500, 500);
 	}
 
 	public static void main(String[] args) {
@@ -417,13 +424,13 @@ public class FileManager implements IFileManager2 {
 					System.out.println(critters[i][j]);
 			}
 		// test viewLogFile
-		/*
+		
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("This is line "+i);
 		}
 		mgr.viewLogFile();
-		
+		/*
 		// test erase log file
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
