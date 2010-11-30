@@ -25,20 +25,37 @@ import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
 
+/**
+ * 
+ * TODO
+ * create a method addListener so that others can register for interested Actions happened in GUI
+ * Add listener to turns and end of simulation so that GUI can be updated
+ */
 public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
 	
 	// objects for the menus and media panel
-	JMenuItem rewind, play, stop, ff, saveSim;
-	JButton rewindButton, playButton, stopButton, ffButton;
+	private JMenuItem rewind, play, stop, ff, saveSim;
+	private JButton rewindButton, playButton, stopButton, ffButton;
+	private ConfigScreen configScreen = null;
+	private SimResScreen simResScreen = null;
+	private boolean isInConfiguration, isInSimulation;
 	
 	// universal cross-platform newline
 	public static String newline = System.getProperty("line.separator");
 
+	static private BaseGUI instance = null;
+	static public BaseGUI getInstance() {
+		if (instance == null) instance = new BaseGUI();
+		return instance;
+	}
+	
 	public BaseGUI()
 	{	
+		instance = this;
+		
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
 		
@@ -66,6 +83,88 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		setTitle("SnowCrash");
 		
 		addComponentListener(this);
+		goConfiguration();
+		setVisible(true);
+	}
+
+	public void goConfiguration() {
+		if ((simResScreen != null)
+				&& isAncestorOf(simResScreen))
+			remove(simResScreen);
+		if (configScreen == null)
+			configScreen = new ConfigScreen();
+		add(configScreen);
+
+		rewind.setEnabled(false);
+		play.setEnabled(true);
+		stop.setEnabled(false);
+		ff.setEnabled(false);
+		saveSim.setEnabled(true);
+		
+		rewindButton.setEnabled(false);
+		playButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		ffButton.setEnabled(false);
+		
+		isInConfiguration = true;
+		isInSimulation = false;
+		
+		// repaint works here cause nothing is run behind scene
+		repaint();
+	}
+	
+	public void goSimulation() {
+		if ((configScreen != null)
+				&& isAncestorOf(configScreen))
+		remove(configScreen);
+		simResScreen = new SimResScreen();
+		add(simResScreen);
+
+		rewind.setEnabled(true);
+		play.setEnabled(true);
+		stop.setEnabled(true);
+		ff.setEnabled(true);
+		saveSim.setEnabled(true);
+		
+		rewindButton.setEnabled(true);
+		playButton.setEnabled(true);
+		stopButton.setEnabled(true);
+		ffButton.setEnabled(true);
+		
+		isInConfiguration = false;
+		isInSimulation = true;
+		
+		// repaint will not work here, something is going on
+		simResScreen.revalidate();
+	}
+	
+	public void goResults() {
+		if ((simResScreen != null)
+				&& isAncestorOf(simResScreen))
+			simResScreen.goResults();
+		else return;
+		
+		rewind.setEnabled(true);
+		play.setEnabled(false);
+		stop.setEnabled(false);
+		ff.setEnabled(false);
+		saveSim.setEnabled(true);
+		
+		rewindButton.setEnabled(true);
+		playButton.setEnabled(false);
+		stopButton.setEnabled(false);
+		ffButton.setEnabled(false);
+		
+		isInConfiguration = false;
+		isInSimulation = false;
+	}
+
+	public boolean isInConfiguration() {
+		return isInConfiguration;
+	}
+	
+	public boolean isInSimulation() {
+		return isInSimulation;
 	}
 	
 	JMenu fileMenu() // file menu
@@ -251,7 +350,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	}
             	else if (e.getActionCommand().equals("Start Simulation"))
             	{
-            		// Do Something
+            		BaseGUI.getInstance().goSimulation();
             	}
             	else
             	{
@@ -495,19 +594,27 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		if (e.getActionCommand().equals("Back to Configuration")) // rewind
     	{
-			// Do Something
+			if (!isInConfiguration) goConfiguration();
     	}
     	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
-			// Do Something
+    		if (isInConfiguration) {
+      			goSimulation();
+      		}
+    		else if (isInSimulation) {
+    			// pause simulation, nothing need to be done here
+    			// some behind gui should have listened to this event
+    		}
     	}
     	else if (e.getActionCommand().equals("Abort to Results")) // stop
     	{
-			// Do Something
+			if (isInSimulation) goResults();
     	}
     	else if (e.getActionCommand().equals("Simulate to End")) // fast forward
     	{
-			// Do Something
+			// TODO
+    		// remove SimResScreen's listener to the turns
+    		// but keep the listener to the finish of simulation
     	}
     	else
     	{

@@ -1,6 +1,5 @@
 package org.snowcrash.gui;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.util.LinkedList;
@@ -8,33 +7,36 @@ import java.util.Queue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-public class SimResScreen extends BaseGUI
+import org.snowcrash.world.World;
+
+public class SimResScreen extends JPanel
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
 	
-	JTabbedPane tabPane;
-	private static int worldWidth = 20;
-	private static int worldHeight = 20;
+	private JTabbedPane sRTabPane, cTabPane;
 	
-	JTabbedPane sRTabPane, cTabPane;
+	private SimuPanel simuPanel = null;
+	private ResultsPanel resultsPanel = null;
+	private JPanel dummyPanel = null;
 	
 	public SimResScreen()
 	{
-		Container content = getContentPane();
-
-		JPanel cPanel = new JPanel();
+		JPanel cPanel = this;
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.X_AXIS));
 		
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		sRTabPane = new JTabbedPane();
-		SimuPanel simuPanel = new SimuPanel(worldWidth, worldHeight);
+		World world = World.getInstance();
+		simuPanel = new SimuPanel(world.getSizeX(), world.getSizeY());
 		sRTabPane.addTab("Simulation", simuPanel.getScrollPane());
-		sRTabPane.addTab("Results", new ResultsPanel());
+		dummyPanel = new JPanel();
+		sRTabPane.addTab("Results", dummyPanel);
 		sRTabPane.setSelectedIndex(sRTabPane.indexOfTab("Simulation"));
 		sRTabPane.setEnabledAt(sRTabPane.indexOfTab("Results"), false);
 		sRTabPane.setPreferredSize(new Dimension((WIDTH - 15) * 2 / 3, Short.MAX_VALUE));
@@ -49,9 +51,7 @@ public class SimResScreen extends BaseGUI
 		
 		cPanel.add(cTabPane);
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		
-		content.add(cPanel);
-		
+				
 		/* Console Test code */
 		/*******************/
 		ConsolePanel console2 = new ConsolePanel();
@@ -71,32 +71,14 @@ public class SimResScreen extends BaseGUI
 		
 	}
 	
-	private void showSimulation()
+	public void goResults()
 	{
-		rewind.setEnabled(true);
-		play.setEnabled(true);
-		stop.setEnabled(true);
-		ff.setEnabled(true);
-		saveSim.setEnabled(true);
-		
-		rewindButton.setEnabled(true);
-		playButton.setEnabled(true);
-		stopButton.setEnabled(true);
-		ffButton.setEnabled(true);
-	}
-	
-	private void showResults()
-	{
-		rewind.setEnabled(false);
-		play.setEnabled(false);
-		stop.setEnabled(false);
-		ff.setEnabled(false);
-		saveSim.setEnabled(true);
-		
-		rewindButton.setEnabled(false);
-		playButton.setEnabled(false);
-		stopButton.setEnabled(false);
-		ffButton.setEnabled(false);
+		if (resultsPanel == null) {
+			resultsPanel = new ResultsPanel();
+			sRTabPane.setComponentAt(sRTabPane.indexOfTab("Results"), resultsPanel);
+			sRTabPane.setEnabledAt(sRTabPane.indexOfTab("Results"), true);
+		}
+		sRTabPane.setSelectedIndex(sRTabPane.indexOfTab("Results"));
 	}
 	
 	public void componentResized(ComponentEvent e) 
@@ -135,8 +117,15 @@ public class SimResScreen extends BaseGUI
 	
 	public static void main(String[] args)
 	{
-		SimResScreen simRes = new SimResScreen();
-		simRes.setVisible(true);
+		//FileManager mgr = new FileManager();
+		//mgr.loadTestCritterTemplates("testCritterTemplates.Json");
+		SimResScreen sScreen = new SimResScreen();
+		JFrame f = new JFrame();
+		f.setSize(WIDTH, HEIGHT);
+		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);
+		f.setTitle("SnowCrash");
+		f.add(sScreen);
+		f.setVisible(true);
 	}
 }
 
