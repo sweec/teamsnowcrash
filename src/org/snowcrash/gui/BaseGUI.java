@@ -86,6 +86,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		setTitle("SnowCrash");
 		
 		addComponentListener(this);
+		World.addObserver(this);
 		goConfiguration();
 		setVisible(true);
 	}
