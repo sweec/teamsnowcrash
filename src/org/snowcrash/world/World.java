@@ -87,13 +87,14 @@ public class World implements DatabaseObject, TimeListener {
 		observers.clear();
 	}
 	
-	private World() {
+	public World() {
 		this.currentTurn = 0;
 		this.sizeX = 50;
 		this.sizeY = 50;
 		this.turns = 1;
 		this.currentPos = new Pair<Integer, Integer> (0,0);
 		this.turnLog = new LinkedList<String>();
+		instance = this;	// needed for load simulation since instance is not saved
 	}
 	
 	public void resetTurnLog() {

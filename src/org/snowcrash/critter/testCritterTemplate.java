@@ -210,27 +210,23 @@ public class testCritterTemplate extends CritterTemplate {
 		}
 		
 		// now set start data from Critters
-		/*
 		DatabaseObject[] object = null;
 		try {
 			// get Critters
-			object = dao.read(Critter.class);
+			object = dao.read(World.class);
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		/*
-		 * world should be read from database lately
-		 */
-		FileManager mgr = new FileManager();
-		World world = mgr.loadWorld("testWorld.Json");
-		Critter[][] object = world.getMap();
+		}
 		if (object == null) return;
-		//for (i = 0;i < object.length;i++) {
-			//Critter critter = (Critter) (object[i]);
-		for (i = 0;i < object.length;i++)
-		for (int j = 0;j < object[0].length;j++) {
-			Critter critter = (Critter) (object[i][j]);
+		//FileManager mgr = new FileManager();
+		//World world = mgr.loadWorld("testWorld.Json");
+		World world = (World)object[0];
+		Critter[][] map = world.getMap();
+		if (map == null) return;
+		for (i = 0;i < map.length;i++)
+		for (int j = 0;j < map[0].length;j++) {
+			Critter critter = (Critter) (map[i][j]);
 			if (critter == null) continue;
 			testCritterTemplate template = null;
 			try {
@@ -293,29 +289,24 @@ public class testCritterTemplate extends CritterTemplate {
 	// call this when simulation end
 	public static void calculateStatistics() {
 		DAO dao = DAOFactory.getDAO();
-		/*
 		DatabaseObject[] object = null;
 		try {
-			// get latest version of Critters
-			object = dao.read(Critter.class);
+			// get Critters
+			object = dao.read(World.class);
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
-		/*
-		 * world should be read from database lately
-		 */
-		FileManager mgr = new FileManager();
-		World world = mgr.loadWorld("testWorld.Json");
-		Critter[][] object = world.getMap();
 		if (object == null) return;
+		//FileManager mgr = new FileManager();
+		//World world = mgr.loadWorld("testWorld.Json");
+		World world = (World)object[0];
+		Critter[][] map = world.getMap();
+		if (map == null) return;
 		int i;
-		//for (i = 0;i < object.length;i++) {
-		//Critter critter = (Critter) (object[i]);
-		for (i = 0;i < object.length;i++)
-		for (int j = 0;j < object[0].length;j++) {
-			Critter critter = (Critter) (object[i][j]);
+		for (i = 0;i < map.length;i++)
+		for (int j = 0;j < map[0].length;j++) {
+			Critter critter = (Critter) (map[i][j]);
 			if (critter == null) continue;
 			testCritterTemplate template = null;
 			try {

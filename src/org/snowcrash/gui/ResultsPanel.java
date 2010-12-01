@@ -83,8 +83,9 @@ public class ResultsPanel extends JPanel {
 	}
 
 	private void setupData() {
-		testCritterTemplate.initializeStatistics();
-		testCritterTemplate.calculateStatistics();
+		// below two should be moved to World class
+		testCritterTemplate.initializeStatistics();	// this should be called by World when start the simulation
+		testCritterTemplate.calculateStatistics();	// this should be called by World when simulation is finished
 		
 		DAO dao = DAOFactory.getDAO();
 		DatabaseObject[] object = null;

@@ -153,18 +153,25 @@ public class FileManager implements IFileManager2 {
 						//throw new RuntimeException( e );
 					}
 				}
+				dao.notifyChanged();	// notify critterPanel of the changes
 			}
 			if (parser.hasNext()) {
 				element = parser.next();
 				world = gson.fromJson(element, World.class);
-				/* World is not implementing DatabaseObject yet
+				
 				DAO dao = DAOFactory.getDAO();
 				try {
 					dao.create( world );
 				} catch (DAOException e) {
-					throw new RuntimeException( e );
+					if (e.getMessage().contentEquals("Data already exists in the database.")) {
+						try {
+							dao.update( world );
+						} catch (DAOException e2) {
+							throw new RuntimeException( e2 );
+						}
+					} else throw new RuntimeException( e );
 				}
-				*/
+				
 			}
 			in.close(); 
 		} catch (IOException e) { 

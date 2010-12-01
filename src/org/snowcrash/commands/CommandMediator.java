@@ -3,6 +3,7 @@ package org.snowcrash.commands;
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.IFileManager2;
 import org.snowcrash.timeengine.TimeEngine;
@@ -268,13 +269,17 @@ public class CommandMediator
 		// DAO need a reset() method to clear the database
 		//dao.reset();
 		
-		// update the version in database
-		/* 
+		// save World to database
 		try {
 			dao.create( world );
 		} catch (DAOException e) {
-			throw new RuntimeException( e );
+			if (e.getMessage().contentEquals("Data already exists in the database.")) {
+				try {
+					dao.update( world );
+				} catch (DAOException e2) {
+					throw new RuntimeException( e2 );
+				}
+			} else throw new RuntimeException( e );
 		}
-		*/
 	}
 }
