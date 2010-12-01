@@ -23,11 +23,14 @@ package org.snowcrash.world;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.state.Searching;
 import org.snowcrash.timeengine.TimeListener;
 import org.snowcrash.utilities.Pair;
@@ -46,7 +49,7 @@ import org.snowcrash.utilities.RandomNumbers;
  * 
  */
 
-public class World implements TimeListener {
+public class World implements DatabaseObject, TimeListener {
 
 	private static World instance;
 
@@ -70,6 +73,19 @@ public class World implements TimeListener {
 	private Pair<Integer, Integer> currentPos;
 	private boolean isNext = false;
 	private LinkedList<String> turnLog = null;
+	private static Set<WorldObserver> observers = new HashSet<WorldObserver>();
+	
+	public static void addObserver(WorldObserver observer) {
+		observers.add(observer);
+	}
+
+	public static void removeObserver(WorldObserver observer) {
+		observers.remove(observer);
+	}
+
+	public static void clearObservers() {
+		observers.clear();
+	}
 	
 	private World() {
 		this.currentTurn = 0;
@@ -389,8 +405,12 @@ public class World implements TimeListener {
 
 	@Override
 	public void tickOccurred() {
-		// TODO Auto-generated method stub
-		
+		this.processTurn();
+		this.turnCleanUp();
+		for (WorldObserver observer : observers) {
+			observer.updateWorld(this);
+		}
+
 	}
 
 	@Override
@@ -403,6 +423,12 @@ public class World implements TimeListener {
 	public void timerStopped() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Object getId() {
+		// Always a constant as it is a singleton.
+		return 0;
 	}
 	
 
