@@ -28,11 +28,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import org.snowcrash.critter.Critter;
-import org.snowcrash.critter.CritterFactory;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.testCritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
@@ -61,6 +62,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonStreamParser;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author dong
@@ -134,6 +136,7 @@ public class FileManager implements IFileManager2 {
 			JsonElement element;
 			Gson gson = new GsonBuilder()
 			.registerTypeAdapter(State.class, new StateDeserializer())
+			.registerTypeAdapter(ArrayList.class, new ArrayListDeserializer())
 			.create();
 			if (parser.hasNext()) {
 				element = parser.next();
@@ -234,7 +237,16 @@ public class FileManager implements IFileManager2 {
 			try {
 				dao.create( templates[i] );
 			} catch (DAOException e) {
-				throw new RuntimeException( e );
+				/*
+				if (e.getMessage().contentEquals("Data already exists in the database.")) {
+					try {
+						CritterTemplate copy = new CritterTemplate(templates[i]);
+						dao.create( copy );
+					} catch (DAOException e2) {
+						throw new RuntimeException( e2 );
+					}
+				} else */
+					throw new RuntimeException( e );
 			}
 		}
 		dao.notifyChanged();
@@ -242,7 +254,8 @@ public class FileManager implements IFileManager2 {
 	}
 
 	public CritterTemplate[] loadCritterTemplates(String filename) {
-		return loadCritterTemplates("", filename);
+		return loadTestCritterTemplates(filename);
+		//return loadCritterTemplates("", filename);
 	}
 	
 	public boolean saveTestCritterTemplates(testCritterTemplate[] critterTemplates, String filename) {
@@ -272,28 +285,36 @@ public class FileManager implements IFileManager2 {
 	}
 
 	public testCritterTemplate[] loadTestCritterTemplates(String filename) {
-		testCritterTemplate[] critterTemplate = null;
+		testCritterTemplate[] templates = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filename)); 
 			
 			Gson gson = new Gson();
-			critterTemplate = gson.fromJson(in, testCritterTemplate[].class);
+			templates = gson.fromJson(in, testCritterTemplate[].class);
 			in.close(); 
 		} catch (IOException e) { 
 			e.printStackTrace();
 		}
-		if (critterTemplate == null) return null;
+		if (templates == null) return null;
 		DAO dao = DAOFactory.getDAO();
 		int i;
-		for (i = 0;i < critterTemplate.length;i++) {
+		for (i = 0;i < templates.length;i++) {
 			try {
-				dao.create( critterTemplate[i] );
+				dao.create( templates[i] );
 			} catch (DAOException e) {
-				throw new RuntimeException( e );
+				if (e.getMessage().contentEquals("Data already exists in the database.")) {
+					try {
+						CritterTemplate copy = new testCritterTemplate(templates[i]);
+						dao.create( copy );
+					} catch (DAOException e2) {
+						throw new RuntimeException( e2 );
+					}
+				} else
+					throw new RuntimeException( e );
 			}
 		}
 		dao.notifyChanged();
-		return critterTemplate;
+		return templates;
 	}
 
 	public void setLogger(String filepath, String filename) {
@@ -398,19 +419,6 @@ public class FileManager implements IFileManager2 {
 		templates[5].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
 		templates[5].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
 
-		Critter[] critter = new Critter[12];
-		critter[0] = CritterFactory.getCritter(templates[0]);
-		critter[1] = CritterFactory.getCritter(templates[1]);
-		critter[2] = CritterFactory.getCritter(templates[2]);
-		critter[3] = CritterFactory.getCritter(templates[0]);
-		critter[4] = CritterFactory.getCritter(templates[1]);
-		critter[5] = CritterFactory.getCritter(templates[2]);
-		critter[6] = CritterFactory.getCritter(templates[3]);
-		critter[7] = CritterFactory.getCritter(templates[4]);
-		critter[8] = CritterFactory.getCritter(templates[5]);
-		critter[9] = CritterFactory.getCritter(templates[3]);
-		critter[10] = CritterFactory.getCritter(templates[4]);
-		critter[11] = CritterFactory.getCritter(templates[5]);
 		FileManager mgr = new FileManager();
 		//mgr.saveCritterTemplates(templates, "testCritterTemplates.Json", "");
 		//CritterTemplate[] template2 = mgr.loadCritterTemplates("testCritterTemplates.Json", "");
@@ -423,9 +431,11 @@ public class FileManager implements IFileManager2 {
 		
 		// test saveWorld/loadWorld
 		World world = World.getInstance();
-		world.setSize(20, 20);
-		for (i = 0;i < critter.length;i++)
-			world.add(new Pair<Integer, Integer>(i, i), critter[i]);
+		world.setSize(50, 50);	// map only initiated here
+		ArrayList<Pair<CritterTemplate,Integer>> list = new ArrayList<Pair<CritterTemplate,Integer>>();
+		for (i = 0;i < templates.length;i++)
+			list.add(new Pair<CritterTemplate, Integer>(templates[i], 2));
+		world.randomPopulate(list);
 		mgr.saveWorld(world, "testWorld.Json", "");
 		World world2 = mgr.loadWorld("testWorld.Json", "");
 		Critter[][] critters = world2.getMap();
@@ -475,6 +485,17 @@ public class FileManager implements IFileManager2 {
 			 if (state.contentEquals("Reproducing")) return new Reproducing();
 			 if (state.contentEquals("Searching")) return new Searching();
 			 return null;
+		}
+	}
+
+	private class ArrayListDeserializer implements JsonDeserializer<ArrayList<Pair<CritterTemplate,Integer>>> {
+		@Override
+		public ArrayList<Pair<CritterTemplate,Integer>> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+		     	throws JsonParseException {
+			 if (json.isJsonNull()) return null;
+			 Type type = new TypeToken<ArrayList<Pair<CritterTemplate,Integer>>>(){}.getType();
+			 LinkedList data = (new Gson()).fromJson(json, type);
+			 return new ArrayList<Pair<CritterTemplate,Integer>>(data);
 		}
 	}
 }

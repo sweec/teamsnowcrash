@@ -1,6 +1,7 @@
 package org.snowcrash.critter;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
@@ -12,7 +13,7 @@ import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.world.World;
 
 public class testCritterTemplate extends CritterTemplate {
-	//private String uuid;
+	private String uuid;	// test use, since uuid in super class is not writable
 
 	private int startPopulation = 0, endPopulation = 0, totalPopulation = 0;
 	private int minAge = 0, maxAge = 0, totalAge = 0;
@@ -22,14 +23,37 @@ public class testCritterTemplate extends CritterTemplate {
 	public testCritterTemplate() {
 		startTraits = new HashMap<Trait, Float>();
 		endTraits = new HashMap<Trait, Float>();
+		this.uuid = UUID.randomUUID().toString();
 	}
 
 	public testCritterTemplate(CritterPrototype prototype, String name) {
 		super(prototype, name);
 		startTraits = new HashMap<Trait, Float>();
 		endTraits = new HashMap<Trait, Float>();
+		this.uuid = UUID.randomUUID().toString();
 	}
 	
+	// make a copy, but with different uuid
+	public testCritterTemplate(testCritterTemplate source) {
+		super(source.getPrototype(), source.getName());
+		super.setSize(source.getSize());
+		super.setTraitRange(Trait.CAMO, source.getTraitRange(Trait.CAMO));
+		super.setTraitRange(Trait.COMBAT, source.getTraitRange(Trait.COMBAT));
+		super.setTraitRange(Trait.ENDURANCE, source.getTraitRange(Trait.ENDURANCE));
+		super.setTraitRange(Trait.SPEED, source.getTraitRange(Trait.SPEED));
+		super.setTraitRange(Trait.VISION, source.getTraitRange(Trait.VISION));
+		
+		startTraits = new HashMap<Trait, Float>();
+		endTraits = new HashMap<Trait, Float>();
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	@Override
+	public Object getId()
+	{
+		return uuid;
+	}
+
 	public int getStartPopulation() {
 		return startPopulation;
 	}
@@ -270,11 +294,13 @@ public class testCritterTemplate extends CritterTemplate {
 		for (i = 0;i < templatesObject.length;i++) {
 			testCritterTemplate template = (testCritterTemplate) (templatesObject[i]);
 			
-			template.setStartTrait(Trait.CAMO, template.getStartTrait(Trait.CAMO)/template.getStartPopulation());
-			template.setStartTrait(Trait.COMBAT, template.getStartTrait(Trait.COMBAT)/template.getStartPopulation());
-			template.setStartTrait(Trait.ENDURANCE,template.getStartTrait(Trait.ENDURANCE)/template.getStartPopulation());
-			template.setStartTrait(Trait.SPEED,template.getStartTrait(Trait.SPEED)/template.getStartPopulation());
-			template.setStartTrait(Trait.VISION, template.getStartTrait(Trait.VISION)/template.getStartPopulation());
+			int population = template.getStartPopulation();
+			if (population == 0) continue;	// this template is not used in the simulation
+			template.setStartTrait(Trait.CAMO, template.getStartTrait(Trait.CAMO)/population);
+			template.setStartTrait(Trait.COMBAT, template.getStartTrait(Trait.COMBAT)/population);
+			template.setStartTrait(Trait.ENDURANCE,template.getStartTrait(Trait.ENDURANCE)/population);
+			template.setStartTrait(Trait.SPEED,template.getStartTrait(Trait.SPEED)/population);
+			template.setStartTrait(Trait.VISION, template.getStartTrait(Trait.VISION)/population);
 			
 			System.out.println(template);
 			try {
@@ -353,11 +379,13 @@ public class testCritterTemplate extends CritterTemplate {
 		for (i = 0;i < templatesObject.length;i++) {
 			testCritterTemplate template = (testCritterTemplate) (templatesObject[i]);
 			
-			template.setEndTrait(Trait.CAMO, template.getEndTrait(Trait.CAMO)/template.getEndPopulation());
-			template.setEndTrait(Trait.COMBAT, template.getEndTrait(Trait.COMBAT)/template.getEndPopulation());
-			template.setEndTrait(Trait.ENDURANCE,template.getEndTrait(Trait.ENDURANCE)/template.getEndPopulation());
-			template.setEndTrait(Trait.SPEED,template.getEndTrait(Trait.SPEED)/template.getEndPopulation());
-			template.setEndTrait(Trait.VISION, template.getEndTrait(Trait.VISION)/template.getEndPopulation());
+			int population = template.getEndPopulation();
+			if (population == 0) continue;	// critters from this template die out before simulation finished
+			template.setEndTrait(Trait.CAMO, template.getEndTrait(Trait.CAMO)/population);
+			template.setEndTrait(Trait.COMBAT, template.getEndTrait(Trait.COMBAT)/population);
+			template.setEndTrait(Trait.ENDURANCE,template.getEndTrait(Trait.ENDURANCE)/population);
+			template.setEndTrait(Trait.SPEED,template.getEndTrait(Trait.SPEED)/population);
+			template.setEndTrait(Trait.VISION, template.getEndTrait(Trait.VISION)/population);
 			
 			System.out.println(template);
 			try {
