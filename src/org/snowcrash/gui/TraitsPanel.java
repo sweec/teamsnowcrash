@@ -408,26 +408,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upVisionSlider.getValue() < lowVisionSlider.getValue())
 	        {
 	        	upVisionSlider.setValue(lowVisionSlider.getValue());
-	        	points = points - (upVisionSlider.getValue() - visionUpper);
-	        	visionUpper = upVisionSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        
 	        // prevents slider from using more than remaining points
 			else if (upVisionSlider.getValue() > visionUpper 
 	        		&& upVisionSlider.getValue() - visionUpper > points)
 	        {
 	        	upVisionSlider.setValue(visionUpper + points);
-	        	points = points - (upVisionSlider.getValue() - visionUpper);
-	        	visionUpper = upVisionSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (upVisionSlider.getValue() - visionUpper);
-	        	visionUpper = upVisionSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        
+	        points = points - (upVisionSlider.getValue() - visionUpper);
+	        visionUpper = upVisionSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// vision trait lower slider
 		if ( e.getSource().equals( this.lowVisionSlider ) 
 				&& !lowVisionSlider.getValueIsAdjusting() )
@@ -436,26 +430,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upVisionSlider.getValue() < lowVisionSlider.getValue())
 	        {
 	        	lowVisionSlider.setValue(upVisionSlider.getValue());
-	        	points = points - (lowVisionSlider.getValue() - visionLower);
-	        	visionLower = lowVisionSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 			// prevents slider from using more than remaining points
 			else if (lowVisionSlider.getValue() > visionLower 
 	        		&& lowVisionSlider.getValue() - visionLower > points)
 	        {
 	        	lowVisionSlider.setValue(visionLower + points);
-	        	points = points - (lowVisionSlider.getValue() - visionLower);
-	        	visionLower = lowVisionSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (lowVisionSlider.getValue() - visionLower);
-	        	visionLower = lowVisionSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (lowVisionSlider.getValue() - visionLower);
+	        visionLower = lowVisionSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// speed trait upper slider
 		if (e.getSource().equals(this.upSpeedSlider) 
 				&& !upSpeedSlider.getValueIsAdjusting())
@@ -464,26 +452,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upSpeedSlider.getValue() < lowSpeedSlider.getValue())
 	        {
 	        	upSpeedSlider.setValue(lowSpeedSlider.getValue());
-	        	points = points - (upSpeedSlider.getValue() - speedUpper);
-	        	speedUpper = upSpeedSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	      
 	        // prevents slider from using more than remaining points
 			else if (upSpeedSlider.getValue() > speedUpper 
 	        		&& upSpeedSlider.getValue() - speedUpper > points)
 	        {
 	        	upSpeedSlider.setValue(speedUpper + points);
-	        	points = points - (upSpeedSlider.getValue() - speedUpper);
-	        	speedUpper = upSpeedSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (upSpeedSlider.getValue() - speedUpper);
-	        	speedUpper = upSpeedSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (upSpeedSlider.getValue() - speedUpper);
+	        speedUpper = upSpeedSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// speed trait lower slider
 		if ( e.getSource().equals( this.lowSpeedSlider ) 
 				&& !lowSpeedSlider.getValueIsAdjusting() )
@@ -492,26 +474,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upSpeedSlider.getValue() < lowSpeedSlider.getValue())
 	        {
 	        	lowSpeedSlider.setValue(upSpeedSlider.getValue());
-	        	points = points - (lowSpeedSlider.getValue() - speedLower);
-	        	speedLower = lowSpeedSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 			// prevents slider from using more than remaining points
 			else if (lowSpeedSlider.getValue() > speedLower 
 	        		&& lowSpeedSlider.getValue() - speedLower > points)
 	        {
 	        	lowSpeedSlider.setValue(speedLower + points);
-	        	points = points - (lowSpeedSlider.getValue() - speedLower);
-	        	speedLower = lowSpeedSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (lowSpeedSlider.getValue() - speedLower);
-	        	speedLower = lowSpeedSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (lowSpeedSlider.getValue() - speedLower);
+	        speedLower = lowSpeedSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// camouflage trait upper slider
 		if (e.getSource().equals(this.upCamoSlider) 
 				&& !upCamoSlider.getValueIsAdjusting())
@@ -520,26 +496,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upCamoSlider.getValue() < lowCamoSlider.getValue())
 	        {
 	        	upCamoSlider.setValue(lowCamoSlider.getValue());
-	        	points = points - (upCamoSlider.getValue() - camoUpper);
-	        	camoUpper = upCamoSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 	        // prevents slider from using more than remaining points
 			else if (upCamoSlider.getValue() > camoUpper 
 	        		&& upCamoSlider.getValue() - camoUpper > points)
 	        {
 	        	upCamoSlider.setValue(camoUpper + points);
-	        	points = points - (upCamoSlider.getValue() - camoUpper);
-	        	camoUpper = upCamoSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (upCamoSlider.getValue() - camoUpper);
-	        	camoUpper = upCamoSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (upCamoSlider.getValue() - camoUpper);
+	        camoUpper = upCamoSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// camouflage trait lower slider
 		if ( e.getSource().equals( this.lowCamoSlider ) 
 				&& !lowCamoSlider.getValueIsAdjusting() )
@@ -548,26 +518,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upCamoSlider.getValue() < lowCamoSlider.getValue())
 	        {
 	        	lowCamoSlider.setValue(upCamoSlider.getValue());
-	        	points = points - (lowCamoSlider.getValue() - camoLower);
-	        	camoLower = lowCamoSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 			// prevents slider from using more than remaining points
 			else if (lowCamoSlider.getValue() > camoLower 
 	        		&& lowCamoSlider.getValue() - camoLower > points)
 	        {
 	        	lowCamoSlider.setValue(camoLower + points);
-	        	points = points - (lowCamoSlider.getValue() - camoLower);
-	        	camoLower = lowCamoSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (lowCamoSlider.getValue() - camoLower);
-	        	camoLower = lowCamoSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (lowCamoSlider.getValue() - camoLower);
+	        camoLower = lowCamoSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// combat trait upper slider
 		if (e.getSource().equals(this.upCombatSlider) 
 				&& !upCombatSlider.getValueIsAdjusting())
@@ -576,26 +540,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upCombatSlider.getValue() < lowCombatSlider.getValue())
 	        {
 	        	upCombatSlider.setValue(lowCombatSlider.getValue());
-	        	points = points - (upCombatSlider.getValue() - combatUpper);
-	        	combatUpper = upCombatSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 	        // prevents slider from using more than remaining points
 			else if (upCombatSlider.getValue() > combatUpper 
 	        		&& upCombatSlider.getValue() - combatUpper > points)
 	        {
 	        	upCombatSlider.setValue(combatUpper + points);
-	        	points = points - (upCombatSlider.getValue() - combatUpper);
-	        	combatUpper = upCombatSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (upCombatSlider.getValue() - combatUpper);
-	        	combatUpper = upCombatSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (upCombatSlider.getValue() - combatUpper);
+	        combatUpper = upCombatSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// combat trait lower slider
 		if ( e.getSource().equals( this.lowCombatSlider ) 
 				&& !lowCombatSlider.getValueIsAdjusting() )
@@ -604,26 +562,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upCombatSlider.getValue() < lowCombatSlider.getValue())
 	        {
 	        	lowCombatSlider.setValue(upCombatSlider.getValue());
-	        	points = points - (lowCombatSlider.getValue() - combatLower);
-	        	combatLower = lowCombatSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 			// prevents slider from using more than remaining points
 			else if (lowCombatSlider.getValue() > combatLower 
 	        		&& lowCombatSlider.getValue() - combatLower > points)
 	        {
 	        	lowCombatSlider.setValue(combatLower + points);
-	        	points = points - (lowCombatSlider.getValue() - combatLower);
-	        	combatLower = lowCombatSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (lowCombatSlider.getValue() - combatLower);
-	        	combatLower = lowCombatSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (lowCombatSlider.getValue() - combatLower);
+	        combatLower = lowCombatSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// endurance trait upper slider
 		if (e.getSource().equals(this.upEndurSlider) 
 				&& !upEndurSlider.getValueIsAdjusting())
@@ -632,26 +584,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upEndurSlider.getValue() < lowEndurSlider.getValue())
 	        {
 	        	upEndurSlider.setValue(lowEndurSlider.getValue());
-	        	points = points - (upEndurSlider.getValue() - endurUpper);
-	        	endurUpper = upEndurSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 	        // prevents slider from using more than remaining points
 			else if (upEndurSlider.getValue() > endurUpper 
 	        		&& upEndurSlider.getValue() - endurUpper > points)
 	        {
 	        	upEndurSlider.setValue(endurUpper + points);
-	        	points = points - (upEndurSlider.getValue() - endurUpper);
-	        	endurUpper = upEndurSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (upEndurSlider.getValue() - endurUpper);
-	        	endurUpper = upEndurSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (upEndurSlider.getValue() - endurUpper);
+	        endurUpper = upEndurSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		// endurance trait lower slider
 		if ( e.getSource().equals( this.lowEndurSlider ) 
 				&& !lowEndurSlider.getValueIsAdjusting() )
@@ -660,26 +606,20 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			if (upEndurSlider.getValue() < lowEndurSlider.getValue())
 	        {
 	        	lowEndurSlider.setValue(upEndurSlider.getValue());
-	        	points = points - (lowEndurSlider.getValue() - endurLower);
-	        	endurLower = lowEndurSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
 	        }
+	        	
 			// prevents slider from using more than remaining points
 			else if (lowEndurSlider.getValue() > endurLower 
 	        		&& lowEndurSlider.getValue() - endurLower > points)
 	        {
 	        	lowEndurSlider.setValue(endurLower + points);
-	        	points = points - (lowEndurSlider.getValue() - endurLower);
-	        	endurLower = lowEndurSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);	
 	        }
-	        else
-	        {
-	        	points = points - (lowEndurSlider.getValue() - endurLower);
-	        	endurLower = lowEndurSlider.getValue();
-	        	remainingPoints.setText("Points Remaining: " + points);
-	        }
+	        	
+	        points = points - (lowEndurSlider.getValue() - endurLower);
+	        endurLower = lowEndurSlider.getValue();
+	        remainingPoints.setText("Points Remaining: " + points);
 	    }
+		
 		else
 		{
 			// do something

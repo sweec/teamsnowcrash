@@ -2,8 +2,6 @@ package org.snowcrash.gui;
 
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -22,6 +20,7 @@ public class SimResScreen extends JPanel
 	
 	private SimuPanel simuPanel = null;
 	private ResultsPanel resultsPanel = null;
+	private ConsolePanel consolePanel = null;
 	private JPanel dummyPanel = null;
 	
 	public SimResScreen()
@@ -45,15 +44,15 @@ public class SimResScreen extends JPanel
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		cTabPane = new JTabbedPane();
-		ConsolePanel console = new ConsolePanel();
-		cTabPane.addTab("Console", console.ConsolePanel());
+		consolePanel = new ConsolePanel();
+		cTabPane.addTab("Console", consolePanel.getConsolePanel());
 		cTabPane.setPreferredSize(new Dimension((WIDTH - 15) / 3, Short.MAX_VALUE));
 		
 		cPanel.add(cTabPane);
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 				
 		/* Console Test code */
-		/*******************/
+		/*
 		ConsolePanel console2 = new ConsolePanel();
 		String mishmash;
 		Queue<String> testQueue = new LinkedList<String>();
@@ -67,7 +66,7 @@ public class SimResScreen extends JPanel
 			console2.addMessage(testQueue);
 			testQueue = new LinkedList<String>();
 		}
-		/*********************/
+		************************/
 		
 	}
 	
@@ -84,6 +83,7 @@ public class SimResScreen extends JPanel
 	public void updateWorld( World world ) {
 		if ((world != null) && (simuPanel != null))
 			simuPanel.updateworld(world.getMap());
+			consolePanel.addMessage(world.getTurnLog());
 	}
 	
 	public void componentResized(ComponentEvent e) 

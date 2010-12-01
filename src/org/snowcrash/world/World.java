@@ -114,6 +114,11 @@ public class World implements DatabaseObject, TimeListener {
 		System.out.println("Turn Log: ");
 		System.out.println(Arrays.toString(this.turnLog.toArray()));
 	}
+	
+	public LinkedList<String> getTurnLog()
+	{
+		return this.turnLog;
+	}
 	/**
 	 * Adds a critter to a specific x,y location.
 	 * @param pair 
