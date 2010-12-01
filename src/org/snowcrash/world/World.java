@@ -407,11 +407,10 @@ public class World implements DatabaseObject, TimeListener {
 	@Override
 	public void tickOccurred() {
 		this.processTurn();
-		this.turnCleanUp();
 		for (WorldObserver observer : observers) {
 			observer.updateWorld(this);
 		}
-
+		this.turnCleanUp();
 	}
 
 	@Override
