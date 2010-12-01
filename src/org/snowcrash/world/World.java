@@ -24,10 +24,13 @@ package org.snowcrash.world;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
 import org.snowcrash.critter.Critter;
+import org.snowcrash.critter.CritterFactory;
+import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DatabaseObject;
@@ -46,6 +49,7 @@ import org.snowcrash.utilities.RandomNumbers;
  * 11/20/10	DE	Added clearCritterActedFlags
  * 11/21/10	DE	Set initial currentPos.
  * 11/22/10	DE	Fixed iterating bugs with search and processTurn
+ * 12/01/10	DE	Added randomPopulate()
  * 
  */
 
@@ -298,6 +302,42 @@ public class World implements DatabaseObject, TimeListener {
 		printTurnLogContents();
 		currentPos = new Pair<Integer, Integer> (0,0);
 		currentTurn++;
+	}
+
+	/**
+	 * Randomly initializes the map from a list of critters
+	 * @param list
+	 */
+	private void randomPopulate(Iterator<Critter> list) {
+		while (list.hasNext()) {
+			boolean isPlaced = false;
+			Critter critter = list.next();
+			while(!isPlaced) {
+				int randomX = RandomNumbers.getInstance().getInt(sizeX);
+				int randomY = RandomNumbers.getInstance().getInt(sizeY);
+				if (map[randomX][randomY] == null) {
+					map[randomX][randomY] = critter;
+					isPlaced = true;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Populates the world.  Accepts an ArrayList of Pair containing the critter template
+	 * and the number of critters of that template to put in the world.
+	 * @param list
+	 */
+	public void randomPopulate(ArrayList<Pair<CritterTemplate,Integer>> list) {
+		Iterator<Pair<CritterTemplate,Integer>> iter = list.iterator();
+		ArrayList<Critter> critterList = new ArrayList<Critter>();
+		while (iter.hasNext()) {
+			Pair<CritterTemplate,Integer> nextPair = iter.next();
+			for (int i = 0; i < nextPair.getRight(); i++) {
+				critterList.add(CritterFactory.getCritter(nextPair.getLeft()));
+			}
+		}
+		randomPopulate(critterList.iterator());
 	}
 
 	/**
