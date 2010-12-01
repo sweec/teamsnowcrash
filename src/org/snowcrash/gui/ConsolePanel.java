@@ -31,6 +31,7 @@ import javax.swing.JTextArea;
 
 public class ConsolePanel extends JPanel
 {
+	private JScrollPane consoleScroll = null;
 	private JTextArea consoleArea = new JTextArea(80, 20);
 	private Queue<String> messageQueue = new LinkedList<String>();
 	private int turnNum = 0;
@@ -38,20 +39,24 @@ public class ConsolePanel extends JPanel
 	// universal cross-platform newline
 	public static String newline = System.getProperty("line.separator");
 	
+	public ConsolePanel()
+	{
+		
+	}
+	
 	/**
 	 * Places a JTextArea into a JScrollPane.
 	 * @return
 	 */
-	public JScrollPane ConsolePanel()
+	public JScrollPane getConsolePanel()
 	{
 		//consoleArea = new JTextArea(80, 20);
 		consoleArea.setEditable(false);
-		JScrollPane cScroll = new JScrollPane(consoleArea);
-		cScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		cScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		consoleScroll = new JScrollPane(consoleArea);
+		consoleScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		consoleScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		consoleArea.setText("test123");
-		return cScroll;
+		return consoleScroll;
 	}
 	
 	/**
@@ -59,27 +64,35 @@ public class ConsolePanel extends JPanel
 	 */
 	public void addMessage(Queue<String> mQueue)
 	{
-		messageQueue = mQueue;
 		turnNum++;
+		if (turnNum == 11)
+		{
+			this.wipeConsole();
+		}
+		messageQueue = mQueue;
 		this.dumpToConsole();
 	}	
 	
 	/**
-	 * Wipe the console if ten turns have been dequeued.  
+	 * Wipe the console and reset the turn counter to 1.
+	 */
+	private void wipeConsole()
+	{
+		consoleArea.setText("");
+		turnNum = 1;
+	}
+	
+	/**
 	 * Dequeue messages and append to the Console.
 	 */
 	private void dumpToConsole()
-	{
-		if (turnNum == 11)
-		{
-			consoleArea.setText("");
-			turnNum = 0;
-		}
-		
+	{	
 		while (messageQueue.peek() != null)
 		{
-			String a = messageQueue.poll();
-			consoleArea.setText(a + newline);
+			String mtext = messageQueue.poll();
+			consoleArea.append(mtext + newline);
+			consoleArea.repaint();
+			consoleScroll.repaint();
 		}
 		
 	}
