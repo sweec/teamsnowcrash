@@ -262,4 +262,11 @@ public class CommandFactory
 		
 		return command;
 	}
+
+	public static Command getResetCommand()
+	{
+		Command command = new ResetCommand();
+		
+		return command;
+	}
 }

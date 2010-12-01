@@ -2,6 +2,8 @@ package org.snowcrash.commands;
 
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.IFileManager2;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.world.World;
@@ -140,7 +142,7 @@ public class CommandMediator
 	 */
 	static void loadConfiguration( String filename )
 	{
-		fileManager.loadWorld(filename);
+		world = fileManager.loadWorld(filename);
 	}
 	
 	static void saveSimulation( String filename )
@@ -150,7 +152,7 @@ public class CommandMediator
 	
 	static void loadSimulation( String filename )
 	{
-		fileManager.loadWorld(filename);
+		world = fileManager.loadWorld(filename);
 	}
 	
 	static void saveResults( String filename )
@@ -160,7 +162,7 @@ public class CommandMediator
 	
 	static void loadResults( String filename )
 	{
-		fileManager.loadWorld(filename);
+		world = fileManager.loadWorld(filename);
 	}
 	
 	static void startSimulation()
@@ -256,5 +258,23 @@ public class CommandMediator
 	
 	static void openLog() {
 		fileManager.viewLogFile();
+	}
+	
+	static void reset() {
+		TimeEngine.removeAllTimeListeners();
+		TimeEngine.stopTimer();
+		world = World.reset();
+		DAO dao = DAOFactory.getDAO();
+		// DAO need a reset() method to clear the database
+		//dao.reset();
+		
+		// update the version in database
+		/* 
+		try {
+			dao.create( world );
+		} catch (DAOException e) {
+			throw new RuntimeException( e );
+		}
+		*/
 	}
 }

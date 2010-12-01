@@ -1,8 +1,9 @@
 package org.snowcrash.gui;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -13,6 +14,11 @@ import javax.swing.JTabbedPane;
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.testCritterTemplate;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.dataaccess.DAOFactory;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
 import org.snowcrash.utilities.Callback;
 import org.snowcrash.utilities.SelectionEvent;
@@ -67,6 +73,29 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		configPanel.add(tabPane3);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
+	}
+	
+	// DAO changed, update critterPanel
+	// here replaced by new critterPanel
+	public void update() {
+		DatabaseObject[] objects;
+		DAO dao = DAOFactory.getDAO();
+		try {
+			//objects = dao.read( CritterTemplate.class );
+			objects = dao.read( testCritterTemplate.class );
+		} catch (DAOException e) {
+			throw new RuntimeException( e );
+		}
+		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>(objects.length);
+		int i;
+		for (i = 0;i < objects.length;i++)
+			critterTemplates.add((CritterTemplate) (objects[i]));
+		CritterPanel cPanel = new CritterPanel();
+		cPanel.addData(critterTemplates);
+		tabPane1.setComponentAt(tabPane1.indexOfTab("Critters"), cPanel);
+		// shall we replace traitsPanel?
+		//JPanel tPanel = (new TraitsPanel()).TraitsPanel();
+		//tabPane1.setComponentAt(tabPane1.indexOfTab("Traits"), tPanel);
 	}
 	
 	public void componentResized(ComponentEvent e) 

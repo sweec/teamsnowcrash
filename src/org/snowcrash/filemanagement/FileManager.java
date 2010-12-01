@@ -140,9 +140,11 @@ public class FileManager implements IFileManager2 {
 				//CritterTemplate[] templates = gson.fromJson(element, CritterTemplate[].class);
 				testCritterTemplate[] templates = gson.fromJson(element, testCritterTemplate[].class);
 				if (templates == null) return null;
+				
+				DAO dao = DAOFactory.getDAO();
 				// TODO
 				// clear database first
-				DAO dao = DAOFactory.getDAO();
+				//dao.reset();
 				int i;
 				for (i = 0;i < templates.length;i++) {
 					try {
@@ -228,6 +230,7 @@ public class FileManager implements IFileManager2 {
 				throw new RuntimeException( e );
 			}
 		}
+		dao.notifyChanged();
 		return templates;
 	}
 
@@ -282,6 +285,7 @@ public class FileManager implements IFileManager2 {
 				throw new RuntimeException( e );
 			}
 		}
+		dao.notifyChanged();
 		return critterTemplate;
 	}
 
