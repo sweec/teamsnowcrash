@@ -7,12 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -25,6 +26,7 @@ import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
 import org.snowcrash.world.World;
+import org.snowcrash.world.WorldObserver;
 
 /**
  * 
@@ -32,7 +34,7 @@ import org.snowcrash.world.World;
  * create a method addListener so that others can register for interested Actions happened in GUI
  * Add listener to turns and end of simulation so that GUI can be updated
  */
-public class BaseGUI extends JFrame implements ActionListener, ComponentListener
+public class BaseGUI extends JFrame implements ActionListener, ComponentListener, WorldObserver, Observer
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
@@ -173,11 +175,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	}
 	
 	public void reset() {
-		World.reset();
-
-		// need a reset() method to clear the database
-		//DAOFactory.getDAO().reset();
-		
+		Command command = CommandFactory.getResetCommand();
+		command.execute();
 		// this clears configuration screen
 		if ((configScreen != null)
 				&& isAncestorOf(configScreen))
@@ -186,6 +185,21 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		goConfiguration();
 	}
 	
+	public void updateWorld( World world ) {
+		if (isInSimulation && (simResScreen != null))
+			simResScreen.updateWorld(world);	
+	}
+
+	public void update(Observable arg0, Object arg1)
+	{
+		System.out.println("DAO updated");
+		if (isInConfiguration && (configScreen != null)) {
+			configScreen.update();
+			repaint();
+			configScreen.revalidate();
+		}
+	}
+
 	JMenu fileMenu() // file menu
 	{
 		JMenu file = new JMenu("File");
@@ -604,6 +618,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     	{
     		if (isInConfiguration) {
       			goSimulation();
+     			Command command = CommandFactory.getStartSimulationCommand();
+    			command.execute();
       		}
     		else if (isInSimulation) {
     			if (isPaused) {

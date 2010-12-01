@@ -35,9 +35,12 @@ public class Main
 			}
 		});
 		
-		FileManager mgr = new FileManager();
-		mgr.loadTestCritterTemplates("testCritterTemplates.Json");
 		// -- Run GUI.
 		BaseGUI screenManager = new BaseGUI();
+		
+		dao.addObserver(screenManager);
+		//World.getInstance().addObserver(screenManager);
+		FileManager mgr = new FileManager();
+		mgr.loadTestCritterTemplates("testCritterTemplates.Json");
 	}
 }

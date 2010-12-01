@@ -75,4 +75,6 @@ public interface DAO extends Observable
 	 * 
 	 */
 	public void delete(Class<?> type, Object id) throws DAOException;
+	
+	public void notifyChanged();
 }

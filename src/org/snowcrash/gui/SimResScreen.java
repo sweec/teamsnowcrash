@@ -81,6 +81,11 @@ public class SimResScreen extends JPanel
 		sRTabPane.setSelectedIndex(sRTabPane.indexOfTab("Results"));
 	}
 	
+	public void updateWorld( World world ) {
+		if ((world != null) && (simuPanel != null))
+			simuPanel.updateworld(world.getMap());
+	}
+	
 	public void componentResized(ComponentEvent e) 
     {
        int currentWidth = getWidth();

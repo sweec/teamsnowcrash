@@ -162,4 +162,9 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
 		}
 	}
+	
+	public void notifyChanged() {
+		setChanged();
+		notifyObservers();
+	}
 }
