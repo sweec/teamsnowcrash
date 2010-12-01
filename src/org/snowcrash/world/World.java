@@ -49,7 +49,7 @@ import org.snowcrash.utilities.RandomNumbers;
  * 11/20/10	DE	Added clearCritterActedFlags
  * 11/21/10	DE	Set initial currentPos.
  * 11/22/10	DE	Fixed iterating bugs with search and processTurn
- * 12/01/10	DE	Added randomPopulate()
+ * 12/01/10	DE	Added randomPopulate(); saves initial template list
  * 
  */
 
@@ -78,6 +78,7 @@ public class World implements DatabaseObject, TimeListener {
 	private boolean isNext = false;
 	private LinkedList<String> turnLog = null;
 	private static Set<WorldObserver> observers = new HashSet<WorldObserver>();
+	private ArrayList<Pair<CritterTemplate,Integer>> initTemplateList = null;
 	
 	public static void addObserver(WorldObserver observer) {
 		observers.add(observer);
@@ -329,6 +330,7 @@ public class World implements DatabaseObject, TimeListener {
 	 * @param list
 	 */
 	public void randomPopulate(ArrayList<Pair<CritterTemplate,Integer>> list) {
+		initTemplateList = list;
 		Iterator<Pair<CritterTemplate,Integer>> iter = list.iterator();
 		ArrayList<Critter> critterList = new ArrayList<Critter>();
 		while (iter.hasNext()) {
@@ -469,6 +471,10 @@ public class World implements DatabaseObject, TimeListener {
 	public Object getId() {
 		// Always a constant as it is a singleton.
 		return 0;
+	}
+
+	public ArrayList<Pair<CritterTemplate, Integer>> getInitTemplateList() {
+		return initTemplateList;
 	}
 	
 
