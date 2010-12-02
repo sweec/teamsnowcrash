@@ -60,7 +60,7 @@ public class ConsolePanel extends JPanel
 	}
 	
 	/**
-	 * Adds a message-queue.
+	 * Adds a message-queue and increment the turn counter.
 	 */
 	public void addMessage(Queue<String> mQueue)
 	{
@@ -74,7 +74,8 @@ public class ConsolePanel extends JPanel
 	}	
 	
 	/**
-	 * Wipe the console and reset the turn counter to 1.
+	 * If the console panel is full (eleven turns), wipe 
+	 * the console and reset the turn counter to 1.
 	 */
 	private void wipeConsole()
 	{

@@ -30,6 +30,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	public static final int HEIGHT = 600;	// minimum window height
 	
 	JTabbedPane tabPane1, tabPane2, tabPane3;
+	WorldPanel worldConfig;
 	
 	public ConfigScreen()
 	{
@@ -63,7 +64,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		
 		// get the world panel and add a tab
 		JScrollPane cScroll = new JScrollPane();
-		WorldPanel worldConfig = new WorldPanel();
+		worldConfig = new WorldPanel();
 		cScroll = worldConfig.WorldPanel();
 		tabPane3 = new JTabbedPane();
 		tabPane3.addTab("World Settings", cScroll);
@@ -73,6 +74,19 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		configPanel.add(tabPane3);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
+	}
+	
+	public void cancelTraits()
+	{
+		tabPane2.removeAll();
+		TraitsPanel traitsConfig = new TraitsPanel();
+		tabPane2.add(traitsConfig.TraitsPanel());
+		tabPane2.repaint();
+	}
+	
+	public int getTotalTurns()
+	{
+		return worldConfig.getTotalTurns();
 	}
 	
 	// DAO changed, update critterPanel

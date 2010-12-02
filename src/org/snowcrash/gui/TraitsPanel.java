@@ -28,9 +28,6 @@ import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
-import org.snowcrash.dataaccess.DAO;
-import org.snowcrash.dataaccess.DAOException;
-import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.utilities.Pair;
 
 public class TraitsPanel extends JPanel implements ChangeListener, ActionListener
@@ -674,7 +671,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		}
 		else if (e.getActionCommand().equals("Cancel"))
 		{
-			// TODO Needs to be implemented
+			//TODO something
 		}
 		else
 		{
