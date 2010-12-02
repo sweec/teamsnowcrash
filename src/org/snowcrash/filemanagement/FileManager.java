@@ -33,9 +33,10 @@ import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterTemplate;
-import org.snowcrash.critter.testCritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
@@ -43,6 +44,7 @@ import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
+import org.snowcrash.gui.BaseGUI;
 import org.snowcrash.state.Growing;
 import org.snowcrash.state.Hunting;
 import org.snowcrash.state.Moving;
@@ -73,17 +75,23 @@ import com.google.gson.reflect.TypeToken;
  * check test case for example.
  */
 
-public class FileManager implements IFileManager2 {
-	private static String  logFile = "EvolutionSim.log";
+public class FileManager implements IFileManager {
+	private final String defaultCritterTemplatesFile = "defaultCritterTemplates.Json";
+	private final String defaultLogFile = "EvolutionSim.log";
 	private static Logger logger = null;
 	private static FileHandler fh = null;
+	private final int defaultLogLinePerPage = 40;
+	private final int defaultLogPageWidth = 500;
+	private final int defaultLogPageHeight = 500;
+	
 
 	/**
 	 * save the simulation as well as required critter templates to a file
 	 * in the case of saveConfiguration, assume all the settings are already within world instance
 	 * that means critters need to be populated first
 	 */
-	public boolean saveWorld(World world, String filepath, String filename) {
+	public boolean saveWorld(World world, String filename) {
+		// get world instance from the database
 		if (world == null) {
 			DatabaseObject[] objects = null;
 			DAO dao = DAOFactory.getDAO();
@@ -97,17 +105,14 @@ public class FileManager implements IFileManager2 {
 		}
 		
 		// save templates first
-		// followed by simulation world
-
-		//saveCritterTemplates(null, filepath + filename);
-		saveTestCritterTemplates(null, filepath + filename);
+		saveCritterTemplates(null,filename);
 		
 		// world instance need to be complete to be saved
 		// needed by saveConfiguration
 		//World.getInstance().Populate();	// Populate() creates all critters if not yet
 		
 		try { 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename, true));
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename, true));
 			
 			Gson gson = new GsonBuilder()
 			.registerTypeAdapter(State.class, new StateSerializer())
@@ -121,17 +126,13 @@ public class FileManager implements IFileManager2 {
 		return true;
 	}
 
-	public boolean saveWorld( World world, String filename ) {
-		return saveWorld(world, "", filename);
-	}
-	
 	/**
 	 * load simulation from file
 	 */
-	public World loadWorld(String filepath, String filename) {
+	public World loadWorld(String filename) {
 		World world = null;
 		try { 
-			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
+			BufferedReader in = new BufferedReader(new FileReader(filename)); 
 			JsonStreamParser parser = new JsonStreamParser(in);
 			JsonElement element;
 			Gson gson = new GsonBuilder()
@@ -141,7 +142,7 @@ public class FileManager implements IFileManager2 {
 			if (parser.hasNext()) {
 				element = parser.next();
 				//CritterTemplate[] templates = gson.fromJson(element, CritterTemplate[].class);
-				testCritterTemplate[] templates = gson.fromJson(element, testCritterTemplate[].class);
+				CritterTemplate[] templates = gson.fromJson(element, CritterTemplate[].class);
 				if (templates == null) return null;
 				
 				DAO dao = DAOFactory.getDAO();
@@ -184,12 +185,62 @@ public class FileManager implements IFileManager2 {
 		return world;
 	}
 	
-	public World loadWorld(String filename) {
-		return loadWorld("", filename);
+	public World resetWorld() {
+		// clear templates from database
+		DAO dao = DAOFactory.getDAO();
+		DatabaseObject[] objects = null;
+		try {
+			objects = dao.read( CritterTemplate.class );
+		} catch (DAOException e) {
+			// do nothing
+		}
+		if (objects != null) {
+			for (int i = 0;i < objects.length;i++) {
+				CritterTemplate template = (CritterTemplate) objects[i];
+				try {
+					dao.delete( template );
+				} catch (DAOException e) {
+					throw new RuntimeException( e );
+				}
+			}
+		}
+		
+		// clear world from database
+		World world = null;
+		try {
+			objects = dao.read( World.class );
+		} catch (DAOException e) {
+			// do nothing
+		}
+		if (objects != null) {
+			for (int i = 0;i < objects.length;i++) {
+				world = (World) objects[i];
+				try {
+					dao.delete( world );
+				} catch (DAOException e) {
+					throw new RuntimeException( e );
+				}
+			}
+		}
+		
+		// create and save new World to database
+		world = World.reset();
+		try {
+			dao.create( world );
+		} catch (DAOException e) {
+			if (e.getMessage().contentEquals("Data already exists in the database.")) {
+				try {
+					dao.update( world );
+				} catch (DAOException e2) {
+					throw new RuntimeException( e2 );
+				}
+			} else throw new RuntimeException( e );
+		}
+		loadCritterTemplates(defaultCritterTemplatesFile);
+		return world;
 	}
 	
-	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, 
-			String filepath, String filename) {
+	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, String filename) {
 		if (critterTemplates == null) {
 			DatabaseObject[] objects;
 			DAO dao = DAOFactory.getDAO();
@@ -204,7 +255,7 @@ public class FileManager implements IFileManager2 {
 				critterTemplates[i] = (CritterTemplate) (objects[i]);
 		}
 		try { 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filepath + filename)); 
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename)); 
 			Gson gson = new Gson();
 			gson.toJson(critterTemplates, out);
 			out.close(); 
@@ -215,14 +266,10 @@ public class FileManager implements IFileManager2 {
 		return true;
 	}
 
-	public boolean saveCritterTemplates(CritterTemplate[] critterTemplates, String filename) {
-		return saveCritterTemplates(critterTemplates, "", filename);
-	}
-
-	public CritterTemplate[] loadCritterTemplates(String filepath, String filename) {
+	public CritterTemplate[] loadCritterTemplates(String filename) {
 		CritterTemplate[] templates = null;
 		try { 
-			BufferedReader in = new BufferedReader(new FileReader(filepath + filename)); 
+			BufferedReader in = new BufferedReader(new FileReader(filename)); 
 			
 			Gson gson = new Gson();
 			templates = gson.fromJson(in, CritterTemplate[].class);
@@ -253,70 +300,33 @@ public class FileManager implements IFileManager2 {
 		return templates;
 	}
 
-	public CritterTemplate[] loadCritterTemplates(String filename) {
-		return loadTestCritterTemplates(filename);
-		//return loadCritterTemplates("", filename);
-	}
-	
-	public boolean saveTestCritterTemplates(testCritterTemplate[] critterTemplates, String filename) {
-		if (critterTemplates == null) {
-			DatabaseObject[] objects;
-			DAO dao = DAOFactory.getDAO();
-			try {
-				objects = dao.read( testCritterTemplate.class );
-			} catch (DAOException e) {
-				throw new RuntimeException( e );
-			}
-			critterTemplates = new testCritterTemplate[objects.length];
-			int i;
-			for (i = 0;i < objects.length;i++)
-				critterTemplates[i] = (testCritterTemplate) (objects[i]);
-		}
-		try { 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename)); 
-			Gson gson = new Gson();
-			gson.toJson(critterTemplates, out);
-			out.close(); 
-		} catch (IOException e) { 
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	public testCritterTemplate[] loadTestCritterTemplates(String filename) {
-		testCritterTemplate[] templates = null;
-		try { 
-			BufferedReader in = new BufferedReader(new FileReader(filename)); 
-			
-			Gson gson = new Gson();
-			templates = gson.fromJson(in, testCritterTemplate[].class);
-			in.close(); 
-		} catch (IOException e) { 
-			e.printStackTrace();
-		}
-		if (templates == null) return null;
+	// if already exists a same name template, save it with name as name#
+	private void saveCritterTemplateToDatabase(CritterTemplate template) {
 		DAO dao = DAOFactory.getDAO();
-		int i;
-		for (i = 0;i < templates.length;i++) {
+		String name = template.getName();
+		int i = 1;
+		boolean isSaved = false;
+		while (!isSaved) {
 			try {
-				dao.create( templates[i] );
+				dao.create( template );
 			} catch (DAOException e) {
 				if (e.getMessage().contentEquals("Data already exists in the database.")) {
-					try {
-						CritterTemplate copy = new testCritterTemplate(templates[i]);
-						dao.create( copy );
-					} catch (DAOException e2) {
-						throw new RuntimeException( e2 );
-					}
-				} else
+					i++;
+					template.setName(name + i);
+					continue;
+				} else {
 					throw new RuntimeException( e );
+				}
 			}
+			isSaved = true;
 		}
-		dao.notifyChanged();
-		return templates;
 	}
 
+	private void fileIOErrorWindow(String filename) {
+		String message = "Access" + filename + "failed.";
+		JOptionPane.showMessageDialog(BaseGUI.getInstance(), message);
+	}
+	
 	public void setLogger(String filepath, String filename) {
 	    try {
 	    	// clear old log
@@ -345,7 +355,7 @@ public class FileManager implements IFileManager2 {
 	}
 
 	public void setLogger() {
-		setLogger("", logFile);
+		setLogger("", defaultLogFile);
 	}
 
 	public void logMessage(String message) {
@@ -354,24 +364,24 @@ public class FileManager implements IFileManager2 {
 		}
 	}
 	
-	public void viewLogFile(String filepath, String filename, int w, int h, int r) {
+	public void viewLogFile(String filename, int w, int h, int r) {
         LogViewer v = new LogViewer(r);
-        v.display(filepath + filename, w, h);
+        v.display(filename, w, h);
 	}
 
-	public void viewLogFile(String filepath, String filename) {
-		viewLogFile(filepath, filename, 40, 500, 500);
+	public void viewLogFile(String filename) {
+		viewLogFile(filename, defaultLogLinePerPage, defaultLogPageWidth, defaultLogPageHeight);
 	}
 
 	public void viewLogFile() {
-        LogViewer v = new LogViewer(40);
-        v.display(logFile, 500, 500);
+        LogViewer v = new LogViewer(defaultLogLinePerPage);
+        v.display(defaultLogFile, defaultLogPageWidth, defaultLogPageHeight);
 	}
 
 	public static void main(String[] args) {
 		// test saveCritterTemplate/loadCritterTemplate
-		testCritterTemplate[] templates = new testCritterTemplate[6];
-		templates[0] = new testCritterTemplate(CritterPrototype.PLANT, "Plant1");
+		CritterTemplate[] templates = new CritterTemplate[6];
+		templates[0] = new CritterTemplate(CritterPrototype.PLANT, "Plant1");
 		templates[0].setSize(Size.MEDIUM);
 		templates[0].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
 		templates[0].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
@@ -379,7 +389,7 @@ public class FileManager implements IFileManager2 {
 		templates[0].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
 		templates[0].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
 
-		templates[1] = new testCritterTemplate(CritterPrototype.PREY, "Prey1");
+		templates[1] = new CritterTemplate(CritterPrototype.PREY, "Prey1");
 		templates[1].setSize(Size.SMALL);
 		templates[1].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(3), new Integer(5)));
 		templates[1].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(1), new Integer(3)));
@@ -387,7 +397,7 @@ public class FileManager implements IFileManager2 {
 		templates[1].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(1), new Integer(4)));
 		templates[1].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(1), new Integer(3)));
 
-		templates[2] = new testCritterTemplate(CritterPrototype.PREDATOR, "Predator1");
+		templates[2] = new CritterTemplate(CritterPrototype.PREDATOR, "Predator1");
 		templates[2].setSize(Size.LARGE);
 		templates[2].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
 		templates[2].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(3), new Integer(5)));
@@ -395,7 +405,7 @@ public class FileManager implements IFileManager2 {
 		templates[2].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
 		templates[2].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
 
-		templates[3] = new testCritterTemplate(CritterPrototype.PLANT, "Plant2");
+		templates[3] = new CritterTemplate(CritterPrototype.PLANT, "Plant2");
 		templates[3].setSize(Size.LARGE);
 		templates[3].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(2), new Integer(2)));
 		templates[3].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
@@ -403,7 +413,7 @@ public class FileManager implements IFileManager2 {
 		templates[3].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
 		templates[3].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(1), new Integer(1)));
 
-		templates[4] = new testCritterTemplate(CritterPrototype.PREY, "Prey2");
+		templates[4] = new CritterTemplate(CritterPrototype.PREY, "Prey2");
 		templates[4].setSize(Size.MEDIUM);
 		templates[4].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(3), new Integer(5)));
 		templates[4].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
@@ -411,7 +421,7 @@ public class FileManager implements IFileManager2 {
 		templates[4].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(1), new Integer(4)));
 		templates[4].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(1), new Integer(3)));
 
-		templates[5] = new testCritterTemplate(CritterPrototype.PREDATOR, "Predator2");
+		templates[5] = new CritterTemplate(CritterPrototype.PREDATOR, "Predator2");
 		templates[5].setSize(Size.SMALL);
 		templates[5].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
 		templates[5].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(3), new Integer(4)));
@@ -420,10 +430,8 @@ public class FileManager implements IFileManager2 {
 		templates[5].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
 
 		FileManager mgr = new FileManager();
-		//mgr.saveCritterTemplates(templates, "testCritterTemplates.Json", "");
-		//CritterTemplate[] template2 = mgr.loadCritterTemplates("testCritterTemplates.Json", "");
-		mgr.saveTestCritterTemplates(templates, "testCritterTemplates.Json");
-		testCritterTemplate[] template2 = mgr.loadTestCritterTemplates("testCritterTemplates.Json");
+		mgr.saveCritterTemplates(templates, "testCritterTemplates.Json");
+		CritterTemplate[] template2 = mgr.loadCritterTemplates("testCritterTemplates.Json");
 		int i;
 		for (i = 0;i < template2.length;i++) {
 			System.out.println(template2[i]);
@@ -436,8 +444,8 @@ public class FileManager implements IFileManager2 {
 		for (i = 0;i < templates.length;i++)
 			list.add(new Pair<CritterTemplate, Integer>(templates[i], 2));
 		world.randomPopulate(list);
-		mgr.saveWorld(world, "testWorld.Json", "");
-		World world2 = mgr.loadWorld("testWorld.Json", "");
+		mgr.saveWorld(world, "testWorld.Json");
+		World world2 = mgr.loadWorld("testWorld.Json");
 		Critter[][] critters = world2.getMap();
 		for (i = 0;i < critters.length;i++)
 			for (int j = 0;j < critters[0].length;j++) {

@@ -14,7 +14,6 @@ import javax.swing.JTabbedPane;
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.CritterTemplate;
-import org.snowcrash.critter.testCritterTemplate;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
@@ -102,18 +101,18 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	// DAO changed, update critterPanel
 	// here replaced by new critterPanel
 	public void update() {
-		DatabaseObject[] objects;
+		DatabaseObject[] objects = null;
 		DAO dao = DAOFactory.getDAO();
 		try {
-			//objects = dao.read( CritterTemplate.class );
-			objects = dao.read( testCritterTemplate.class );
+			objects = dao.read( CritterTemplate.class );
 		} catch (DAOException e) {
-			throw new RuntimeException( e );
+			//Do nothing
 		}
-		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>(objects.length);
-		int i;
-		for (i = 0;i < objects.length;i++)
-			critterTemplates.add((CritterTemplate) (objects[i]));
+		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>();
+		if (objects != null) {
+			for (int i = 0;i < objects.length;i++)
+				critterTemplates.add((CritterTemplate) (objects[i]));
+		}
 		CritterPanel cPanel = new CritterPanel();
 		cPanel.addData(critterTemplates);
 		tabPane1.setComponentAt(tabPane1.indexOfTab("Critters"), cPanel);

@@ -27,7 +27,8 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.snowcrash.critter.testCritterTemplate;
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
@@ -46,9 +47,9 @@ public class ResultsPanel extends JPanel {
 	final private int SIZEX = 500, SIZEY = 1000;
 	
 	// critterTemplate Panel
-	private ArrayList<testCritterTemplate> plantTemplates = new ArrayList<testCritterTemplate>();
-	private ArrayList<testCritterTemplate> preyTemplates = new ArrayList<testCritterTemplate>();
-	private ArrayList<testCritterTemplate> predatorTemplates = new ArrayList<testCritterTemplate>();
+	private ArrayList<CritterTemplate> plantTemplates = new ArrayList<CritterTemplate>();
+	private ArrayList<CritterTemplate> preyTemplates = new ArrayList<CritterTemplate>();
+	private ArrayList<CritterTemplate> predatorTemplates = new ArrayList<CritterTemplate>();
 	private JList plantList = null, preyList = null, predatorList = null;
 	
 	// statistics Panel
@@ -83,15 +84,14 @@ public class ResultsPanel extends JPanel {
 	}
 
 	private void setupData() {
-		// below two should be moved to World class
-		testCritterTemplate.initializeStatistics();	// this should be called by World when start the simulation
-		testCritterTemplate.calculateStatistics();	// this should be called by World when simulation is finished
+		StatisticsCollector.initializeStatistics();
+		StatisticsCollector.calculateStatistics();
 		
 		DAO dao = DAOFactory.getDAO();
 		DatabaseObject[] object = null;
 		try {
 			// get CritterTemplates
-			object = dao.read(testCritterTemplate.class);
+			object = dao.read(CritterTemplate.class);
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,7 +99,7 @@ public class ResultsPanel extends JPanel {
 		if (object == null) return;
 		int i;
 		for (i = 0;i < object.length;i++) {
-			testCritterTemplate template = (testCritterTemplate) (object[i]);
+			CritterTemplate template = (CritterTemplate) (object[i]);
 			if (template.getStartPopulation() == 0) continue;
 			CritterPrototype type = template.getPrototype();
 			switch (type) {
@@ -128,7 +128,7 @@ public class ResultsPanel extends JPanel {
 		plants.setLayout(new BorderLayout());
 		ListModel plantModel = new AbstractListModel() {
 		    public int getSize() { return plantTemplates.size(); }
-		    public Object getElementAt(int index) { return ((testCritterTemplate)plantTemplates.get(index)).getName(); }
+		    public Object getElementAt(int index) { return ((CritterTemplate)plantTemplates.get(index)).getName(); }
 		};
 		plantList = new JList(plantModel);
 		plantList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -149,7 +149,7 @@ public class ResultsPanel extends JPanel {
 		preys.setLayout(new BorderLayout());
 		ListModel preyModel = new AbstractListModel() {
 		    public int getSize() { return preyTemplates.size(); }
-		    public Object getElementAt(int index) { return ((testCritterTemplate)preyTemplates.get(index)).getName(); }
+		    public Object getElementAt(int index) { return ((CritterTemplate)preyTemplates.get(index)).getName(); }
 		};
 		preyList = new JList(preyModel);
 		preyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -168,7 +168,7 @@ public class ResultsPanel extends JPanel {
 		predators.setLayout(new BorderLayout());
 		ListModel predatorModel = new AbstractListModel() {
 		    public int getSize() { return predatorTemplates.size(); }
-		    public Object getElementAt(int index) { return ((testCritterTemplate)predatorTemplates.get(index)).getName(); }
+		    public Object getElementAt(int index) { return ((CritterTemplate)predatorTemplates.get(index)).getName(); }
 		};
 		predatorList = new JList(predatorModel);
 		predatorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -244,7 +244,7 @@ public class ResultsPanel extends JPanel {
 	}
 	
 	private void updateSelection(CritterPrototype type) {
-		testCritterTemplate template = null;
+		CritterTemplate template = null;
 		
 		switch (type) {
 		case PLANT:

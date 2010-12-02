@@ -2,10 +2,7 @@ package org.snowcrash.commands;
 
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
-import org.snowcrash.dataaccess.DAO;
-import org.snowcrash.dataaccess.DAOException;
-import org.snowcrash.dataaccess.DAOFactory;
-import org.snowcrash.filemanagement.IFileManager2;
+import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.world.World;
 
@@ -26,7 +23,7 @@ public class CommandMediator
 	/*
 	 * Reference to the file manager.
 	 */
-	private static IFileManager2 fileManager = null;
+	private static IFileManager fileManager = null;
 
 	/*
 	 * Reference to the configuration manager.
@@ -240,7 +237,7 @@ public class CommandMediator
 	 * @param fileManager the file manager to use
 	 * 
 	 */
-	public static void setFileManager( IFileManager2 fileManager )
+	public static void setFileManager( IFileManager fileManager )
 	{
 		CommandMediator.fileManager = fileManager;
 	}
@@ -262,24 +259,9 @@ public class CommandMediator
 	}
 	
 	static void reset() {
-		TimeEngine.removeAllTimeListeners();
+		TimeEngine.removeTimeListener(world);
 		TimeEngine.stopTimer();
-		world = World.reset();
-		DAO dao = DAOFactory.getDAO();
-		// DAO need a reset() method to clear the database
-		//dao.reset();
-		
-		// save World to database
-		try {
-			dao.create( world );
-		} catch (DAOException e) {
-			if (e.getMessage().contentEquals("Data already exists in the database.")) {
-				try {
-					dao.update( world );
-				} catch (DAOException e2) {
-					throw new RuntimeException( e2 );
-				}
-			} else throw new RuntimeException( e );
-		}
+		world = fileManager.resetWorld();
+		TimeEngine.addTimeListener(world);
 	}
 }
