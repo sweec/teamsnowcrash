@@ -24,7 +24,6 @@ package org.snowcrash.critter;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.state.Searching;
@@ -50,7 +49,7 @@ import org.snowcrash.world.World;
  * 
  */
 
-public class Critter implements Cloneable {
+public class Critter extends CritterTemplate implements Cloneable {
 
 	private HashMap<Trait, Pair<Integer, Integer>> traits;
 	private boolean acted = false;
@@ -58,12 +57,10 @@ public class Critter implements Cloneable {
 	private int actionCost;
 	private int health;
 	private int maxHealth;
-	private Size size;
 	private StateContext myStateContext;
 	private int age = 0;
-	private CritterPrototype prototype;
 	private String templateUuid;
-	private String uuid;
+	private String critterName;
 
 	// add no-arguments constructor as required by gson
 	public Critter() {
@@ -75,6 +72,8 @@ public class Critter implements Cloneable {
 		setSizeData(critter1.getSize());
 		setPrototype(critter1.getPrototype());
 		setTemplateUuid(critter1.getTemplateUuid());
+		this.name = critter1.getName();
+		critterName = NameGenerator.getName(name);
 		RandomNumbers rn = RandomNumbers.getInstance();
 		traits = new HashMap<Trait, Pair<Integer,Integer>>();
 		traits.put(Trait.CAMO, new Pair<Integer, Integer>(rn.selectOne(critter1.traits.get(Trait.CAMO)), rn.selectOne(critter2.traits.get(Trait.CAMO))));
@@ -90,6 +89,8 @@ public class Critter implements Cloneable {
 		setSizeData(template.getSize());
 		setPrototype(template.getPrototype());
 		setTemplateUuid(template.getUuid());
+		this.name = template.getName();
+		critterName = NameGenerator.getName(name);
 		traits = new HashMap<Trait, Pair<Integer,Integer>>();
 		RandomNumbers rn = RandomNumbers.getInstance();
 		traits.put(Trait.CAMO, rn.getIntegerPair(template.getTraitRange(Trait.CAMO) != null ? template.getTraitRange(Trait.CAMO) : new Pair<Integer,Integer> (1,1)));
@@ -100,19 +101,20 @@ public class Critter implements Cloneable {
 		myStateContext = new StateContext(new Searching());
 	}
 	
-	public Critter clone() throws CloneNotSupportedException {
-		Critter copy = (Critter) super.clone();
-		copy.getMyStateContext().setState(new Searching());
-		copy.age = 0;
-		return copy;
-	}
-	
 	/**
 	 * Tells this critter to act, calling the StateContext's act method.
 	 */
 	public void act() {
-		System.out.println(this.uuid + " is acting.");
+		System.out.println(this.critterName + " is acting.");
 		this.myStateContext.act(this);
+	}
+	
+	public Critter clone() throws CloneNotSupportedException {
+		Critter copy = (Critter) super.clone();
+		copy.getMyStateContext().setState(new Searching());
+		copy.age = 0;
+		copy.critterName = NameGenerator.getName(copy.name);
+		return copy;
 	}
 	
 	/**
@@ -128,7 +130,7 @@ public class Critter implements Cloneable {
 	 */
 	public void die(String killer) {
 		this.isAlive = false;
-		World.getInstance().addTurnLogEntry(this.uuid + " was killed by " + killer + ".");
+		World.getInstance().addTurnLogEntry(this.critterName + " was killed by " + killer + ".");
 	}
 	
 	public int getActionCost() {
@@ -139,10 +141,14 @@ public class Critter implements Cloneable {
 		return age;
 	}
 	
+	public String getCritterName() {
+		return critterName;
+	}
+	
 	public int getHealth() {
 		return health;
 	}
-	
+
 	public int getMaxHealth() {
 		return maxHealth;
 	}
@@ -150,39 +156,67 @@ public class Critter implements Cloneable {
 	public StateContext getMyStateContext() {
 		return myStateContext;
 	}
-
-	public CritterPrototype getPrototype() {
-		return prototype;
-	}
-	
-	public Size getSize() {
-		return size;
-	}
 	
 	public String getTemplateUuid() {
 		return templateUuid;
 	}
 	
+	
 	public int getTrait(Trait trait) {
 		Pair<Integer,Integer> pair = traits.get(trait);
 		return (pair.getLeft() + pair.getRight()) / 2;
 	}
-	
+
+	public HashMap<Trait, Pair<Integer, Integer>> getTraits() {
+		return traits;
+	}
 	
 	public String getUuid() {
 		return uuid;
 	}
 
+	public void incrementAge() {
+		this.age = age + 1;
+	}
+
 	public boolean isActed() {
 		return acted;
 	}
-	
+
+	public boolean isAlive() {
+		return isAlive;
+	}
+
 	public void setActed(boolean acted) {
 		this.acted = acted;
 	}
 
+	public void setActionCost(int actionCost) {
+		this.actionCost = actionCost;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
+	public void setCritterName(String critterName) {
+		this.critterName = critterName;
+	}
+
 	public void setHealth(int health) {
 		this.health = health;
+	}
+
+	public void setMaxHealth(int maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+
+	public void setMyStateContext(StateContext myStateContext) {
+		this.myStateContext = myStateContext;
 	}
 
 	private void setSizeData(Size trait) {
@@ -192,12 +226,12 @@ public class Critter implements Cloneable {
 		health = trait.getInitialHealth();
 	}
 
-	private void setPrototype(CritterPrototype type) {
-		this.prototype = type;
-	}
-	
 	public void setTemplateUuid(String templateUuid) {
 		this.templateUuid = templateUuid;
+	}
+
+	public void setTraits(HashMap<Trait, Pair<Integer, Integer>> traits) {
+		this.traits = traits;
 	}
 
 	public String toString() {
@@ -207,14 +241,6 @@ public class Critter implements Cloneable {
 				+ ", myStateContext=" + myStateContext + ", age=" + age
 				+ ", prototype=" + prototype + ", templateUuid=" + templateUuid
 				+ ", uuid=" + uuid + "]";
-	}
-
-	public void incrementAge() {
-		this.age = age + 1;
-	}
-
-	public boolean isAlive() {
-		return isAlive;
 	}
 
 }

@@ -33,11 +33,11 @@ import org.snowcrash.critter.Critter;
 
 public class Growing implements State {
 	
-	private static final int PLANT_REGEN = 10;
+	private static final int PLANT_REGEN = 8;
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
-		System.out.println(myCritter.getPrototype() + " entered Growing.");
+		System.out.println(myCritter.getCritterName() + " entered Growing.");
 		if (myCritter.getHealth() + PLANT_REGEN < myCritter.getMaxHealth()) {
 			myCritter.setHealth(myCritter.getHealth() + PLANT_REGEN);
 		} else {

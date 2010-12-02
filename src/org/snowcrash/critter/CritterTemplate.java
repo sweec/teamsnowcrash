@@ -43,10 +43,10 @@ import org.snowcrash.utilities.Pair;
 
 public class CritterTemplate implements DatabaseObject {
 
-	private Size size;
-	private String name;
-	private String uuid;
-	private CritterPrototype prototype;
+	protected Size size;
+	protected CritterPrototype prototype;
+	protected String name;
+	protected String uuid;
 	private HashMap<Trait, Pair<Integer,Integer>> traitRange;
 
 	/**
@@ -65,7 +65,7 @@ public class CritterTemplate implements DatabaseObject {
 	
 	public Object getId()
 	{
-		return uuid;
+		return name;
 	}
 
 	public String getName() {
