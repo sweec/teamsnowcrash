@@ -155,8 +155,7 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 		{
 			if ( table.containsKey( o.getId() ) )
 			{
-				DatabaseObject value = table.get( o.getId() );
-				table.remove( value );
+				table.remove( o.getId() );
 			}
 			else
 			{
@@ -182,8 +181,7 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 		{
 			if ( table.containsKey( id ) )
 			{
-				DatabaseObject value = table.get( id );
-				table.remove( value );
+				table.remove( id );
 			}
 			else
 			{
@@ -197,10 +195,5 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 			throw new InvalidInputDAOException( String.format(
 					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
 		}
-	}
-	
-	public void notifyChanged() {
-		setChanged();
-		notifyObservers();
 	}
 }
