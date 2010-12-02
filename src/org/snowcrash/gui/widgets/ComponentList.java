@@ -39,6 +39,8 @@ public class ComponentList<T extends JComponent & Selectable> extends Box
 		component.addSelectionListener( this );
 		
 		selectables.add( component );
+		
+		super.repaint();
 	}
 	
 	public void remove( T component )
@@ -48,6 +50,8 @@ public class ComponentList<T extends JComponent & Selectable> extends Box
 		component.removeSelectionListener( this );
 		
 		selectables.remove( component );
+		
+		super.repaint();
 	}
 	
 	public void addSelectionListener( SelectionListener listener )

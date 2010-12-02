@@ -3,13 +3,13 @@
  */
 package org.snowcrash.gui;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.Timer;
@@ -23,10 +23,10 @@ import org.snowcrash.world.World;
  * @author dong
  *
  */
-public class testSimuScreen extends BaseGUI {
-	/**
-	 * the world size should be set by configuration
-	 */
+public class testSimuScreen extends JPanel {
+	
+	public static final int WIDTH = 800;	// minimum window width
+	public static final int HEIGHT = 600;	// minimum window height
 	private static int worldWidth = 20;
 	private static int worldHeight = 20;
 	private static SimuPanel simuPanel = null;
@@ -40,24 +40,10 @@ public class testSimuScreen extends BaseGUI {
 	 */
 	public testSimuScreen(int w, int h)
 	{
-		rewind.setEnabled(true);
-		play.setEnabled(true);
-		stop.setEnabled(true);
-		ff.setEnabled(true);
-		saveSim.setEnabled(true);
-		
-		rewindButton.setEnabled(true);
-		playButton.setEnabled(true);
-		stopButton.setEnabled(true);
-		ffButton.setEnabled(true);
-
 		worldWidth = w;
 		worldHeight = h;
 		
-		Container content = getContentPane();
-		int contentWidth = content.getWidth();
-
-		JPanel cPanel = new JPanel();
+		JPanel cPanel = this;
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.X_AXIS));
 		
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -68,7 +54,7 @@ public class testSimuScreen extends BaseGUI {
 		tabPane.addTab("Results", new ResultsPanel());
 		tabPane.setSelectedIndex(tabPane.indexOfTab("Simulation"));
 		tabPane.setEnabledAt(tabPane.indexOfTab("Results"), false);
-		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 2, Short.MAX_VALUE));
+		tabPane.setPreferredSize(new Dimension((WIDTH - 15) * 2 / 3, Short.MAX_VALUE));;
 		simuResultPane = tabPane; 
 		
 		cPanel.add(tabPane);
@@ -76,13 +62,10 @@ public class testSimuScreen extends BaseGUI {
 		
 		tabPane = new JTabbedPane();
 		tabPane.addTab("Console", new JPanel());
-		tabPane.setPreferredSize(new Dimension((contentWidth - 20) / 2, Short.MAX_VALUE));
+		tabPane.setPreferredSize(new Dimension((WIDTH - 15) / 3, Short.MAX_VALUE));
 		
 		cPanel.add(tabPane);
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-
-		content.add(cPanel);
-		
 	}
 	
 	// translate critter icons in the map, for test purpose
@@ -123,8 +106,13 @@ public class testSimuScreen extends BaseGUI {
 		mgr.loadTestCritterTemplates("testCritterTemplates.Json");
 		testSimuScreen sScreen = new testSimuScreen(20,20);
 		simuResultPane.setEnabledAt(simuResultPane.indexOfTab("Results"), true);
-		sScreen.setVisible(true);
 		sScreen.testSimuPanel();
+		JFrame f = new JFrame();
+		f.setSize(WIDTH, HEIGHT);
+		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);
+		f.setTitle("SnowCrash");
+		f.add(sScreen);
+		f.setVisible(true);
 	}
 
 }

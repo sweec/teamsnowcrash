@@ -10,7 +10,7 @@ public class Reproducing implements State {
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
-		System.out.println(myCritter.getPrototype() + " entered Reproducing.");
+		System.out.println(myCritter.getCritterName() + " entered Reproducing.");
 		World world = World.getInstance();
 		Pair<Integer,Integer> pair = world.search(myCritter, false);
 		if (pair != null) {
@@ -26,6 +26,7 @@ public class Reproducing implements State {
 				child.setActed(true);
 				child.setHealth((world.get(pair).getHealth() + myCritter.getHealth()) * 3 / 4);
 				world.add(empty, child);
+				world.addTurnLogEntry(child.getCritterName() + " was born!");
 			} else {
 				stateContext.setState(new Moving());
 				stateContext.act(myCritter);

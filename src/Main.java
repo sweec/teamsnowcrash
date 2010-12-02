@@ -5,10 +5,12 @@ import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.filemanagement.IFileManager2;
-import org.snowcrash.gui.ConfigScreen;
+import org.snowcrash.gui.BaseGUI;
+import org.snowcrash.world.World;
 
 
 public class Main
@@ -23,19 +25,21 @@ public class Main
 		CommandMediator.setFileManager(fileManager);
 		CommandMediator.setConfigurationManager(configManager);
 		
-		// -- Get DAO reference.
+		// -- initialize World and save it to database
+		// -- since it's not done elsewhere
+		World world = new World();
 		DAO dao = DAOFactory.getDAO();
-		
-		// -- Add listeners to the DAO.
-		dao.addObserver( new Observer()
-		{
-			public void update(Observable arg0, Object arg1)
-			{
-				System.out.println( arg1 );
-			}
-		});
+		try {
+			dao.create( world );
+		} catch (DAOException e) {
+			throw new RuntimeException( e );
+		}
 		
 		// -- Run GUI.
-		new ConfigScreen();
+		BaseGUI screenManager = new BaseGUI();
+		
+		// -- Run GUI.
+		ConfigScreen cs = new ConfigScreen();
+		cs.setVisible( true );
 	}
 }
