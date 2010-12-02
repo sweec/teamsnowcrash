@@ -45,6 +45,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	private ConfigScreen configScreen = null;
 	private SimResScreen simResScreen = null;
 	private boolean isInConfiguration, isInSimulation, isPaused;
+	private SimulationProgressBar simPBar;
 	
 	// universal cross-platform newline
 	public static String newline = System.getProperty("line.separator");
@@ -188,7 +189,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	
 	public void updateWorld( World world ) {
 		if (isInSimulation && (simResScreen != null))
-			simResScreen.updateWorld(world);	
+			simResScreen.updateWorld(world);
+			simPBar.gotoNextTick();
 	}
 
 	public void update(Observable arg0, Object arg1)
@@ -579,7 +581,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		ffButton.setAlignmentY(TOP_ALIGNMENT);
 		
 		// simulation progress bar
-		SimulationProgressBar simPBar = new SimulationProgressBar();
+		simPBar = new SimulationProgressBar();
 		simPBar.setSize(100,20);
 		simPBar.setSize(WIDTH-300, 35);
 		simPBar.setAlignmentY(TOP_ALIGNMENT);
@@ -618,6 +620,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
     		if (isInConfiguration) {
+    			simPBar.setNumberOfTicks(configScreen.getTotalTurns());
       			goSimulation();
      			Command command = CommandFactory.getStartSimulationCommand();
     			command.execute();
