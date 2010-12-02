@@ -23,11 +23,18 @@ package org.snowcrash.world;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.snowcrash.critter.Critter;
+import org.snowcrash.critter.CritterFactory;
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.NameGenerator;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.state.Searching;
 import org.snowcrash.timeengine.TimeListener;
 import org.snowcrash.utilities.Pair;
@@ -43,10 +50,11 @@ import org.snowcrash.utilities.RandomNumbers;
  * 11/20/10	DE	Added clearCritterActedFlags
  * 11/21/10	DE	Set initial currentPos.
  * 11/22/10	DE	Fixed iterating bugs with search and processTurn
+ * 12/01/10	DE	Added randomPopulate(); saves initial template list
  * 
  */
 
-public class World implements TimeListener {
+public class World implements DatabaseObject, TimeListener {
 
 	private static World instance;
 
@@ -59,6 +67,7 @@ public class World implements TimeListener {
 	
 	public static World reset() {
 		instance = null;
+		NameGenerator.reset();
 		return getInstance();
 	}
 	
@@ -70,14 +79,29 @@ public class World implements TimeListener {
 	private Pair<Integer, Integer> currentPos;
 	private boolean isNext = false;
 	private LinkedList<String> turnLog = null;
+	private static Set<WorldObserver> observers = new HashSet<WorldObserver>();
+	private ArrayList<Pair<CritterTemplate,Integer>> initTemplateList = null;
 	
-	private World() {
+	public static void addObserver(WorldObserver observer) {
+		observers.add(observer);
+	}
+
+	public static void removeObserver(WorldObserver observer) {
+		observers.remove(observer);
+	}
+
+	public static void clearObservers() {
+		observers.clear();
+	}
+	
+	public World() {
 		this.currentTurn = 0;
 		this.sizeX = 50;
 		this.sizeY = 50;
 		this.turns = 1;
 		this.currentPos = new Pair<Integer, Integer> (0,0);
 		this.turnLog = new LinkedList<String>();
+		instance = this;	// needed for load simulation since instance is not saved
 	}
 	
 	public void resetTurnLog() {
@@ -91,6 +115,11 @@ public class World implements TimeListener {
 	public void printTurnLogContents() {
 		System.out.println("Turn Log: ");
 		System.out.println(Arrays.toString(this.turnLog.toArray()));
+	}
+	
+	public LinkedList<String> getTurnLog()
+	{
+		return this.turnLog;
 	}
 	/**
 	 * Adds a critter to a specific x,y location.
@@ -284,6 +313,43 @@ public class World implements TimeListener {
 	}
 
 	/**
+	 * Randomly initializes the map from a list of critters
+	 * @param list
+	 */
+	private void randomPopulate(Iterator<Critter> list) {
+		while (list.hasNext()) {
+			boolean isPlaced = false;
+			Critter critter = list.next();
+			while(!isPlaced) {
+				int randomX = RandomNumbers.getInstance().getInt(sizeX);
+				int randomY = RandomNumbers.getInstance().getInt(sizeY);
+				if (map[randomX][randomY] == null) {
+					map[randomX][randomY] = critter;
+					isPlaced = true;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Populates the world.  Accepts an ArrayList of Pair containing the critter template
+	 * and the number of critters of that template to put in the world.
+	 * @param list
+	 */
+	public void randomPopulate(ArrayList<Pair<CritterTemplate,Integer>> list) {
+		initTemplateList = list;
+		Iterator<Pair<CritterTemplate,Integer>> iter = list.iterator();
+		ArrayList<Critter> critterList = new ArrayList<Critter>();
+		while (iter.hasNext()) {
+			Pair<CritterTemplate,Integer> nextPair = iter.next();
+			for (int i = 0; i < nextPair.getRight(); i++) {
+				critterList.add(CritterFactory.getCritter(nextPair.getLeft()));
+			}
+		}
+		randomPopulate(critterList.iterator());
+	}
+
+	/**
 	 * Sets the coordinate to null.
 	 * @param coordinate
 	 */
@@ -389,8 +455,11 @@ public class World implements TimeListener {
 
 	@Override
 	public void tickOccurred() {
-		// TODO Auto-generated method stub
-		
+		this.processTurn();
+		for (WorldObserver observer : observers) {
+			observer.updateWorld(this);
+		}
+		this.turnCleanUp();
 	}
 
 	@Override
@@ -403,6 +472,16 @@ public class World implements TimeListener {
 	public void timerStopped() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Object getId() {
+		// Always a constant as it is a singleton.
+		return 0;
+	}
+
+	public ArrayList<Pair<CritterTemplate, Integer>> getInitTemplateList() {
+		return initTemplateList;
 	}
 	
 

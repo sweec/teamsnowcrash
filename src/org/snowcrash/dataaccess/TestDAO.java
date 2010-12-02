@@ -41,4 +41,7 @@ class TestDAO extends Observable implements DAO {
 		return null;
 	}
 
+	public void notifyChanged() {
+		setChanged();
+	}
 }

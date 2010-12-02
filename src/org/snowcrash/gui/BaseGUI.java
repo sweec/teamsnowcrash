@@ -7,7 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,21 +25,40 @@ import javax.swing.JPanel;
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
+import org.snowcrash.world.World;
+import org.snowcrash.world.WorldObserver;
 
-public class BaseGUI extends JFrame implements ActionListener, ComponentListener
+/**
+ * 
+ * TODO
+ * create a method addListener so that others can register for interested Actions happened in GUI
+ * Add listener to turns and end of simulation so that GUI can be updated
+ */
+public class BaseGUI extends JFrame implements ActionListener, ComponentListener, WorldObserver, Observer
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
 	
 	// objects for the menus and media panel
-	JMenuItem rewind, play, stop, ff, saveSim;
-	JButton rewindButton, playButton, stopButton, ffButton;
+	private JMenuItem rewind, play, stop, ff, saveSim;
+	private JButton rewindButton, playButton, stopButton, ffButton;
+	private ConfigScreen configScreen = null;
+	private SimResScreen simResScreen = null;
+	private boolean isInConfiguration, isInSimulation, isPaused;
 	
 	// universal cross-platform newline
 	public static String newline = System.getProperty("line.separator");
 
+	static private BaseGUI instance = null;
+	static public BaseGUI getInstance() {
+		if (instance == null) instance = new BaseGUI();
+		return instance;
+	}
+	
 	public BaseGUI()
 	{	
+		instance = this;
+		
 		Container content = getContentPane();
 		content.setLayout( new BorderLayout() );
 		
@@ -66,8 +86,121 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		setTitle("SnowCrash");
 		
 		addComponentListener(this);
+		//World.addObserver(this);	// move to Main.java
+		goConfiguration();
+		setVisible(true);
+	}
+
+	public void goConfiguration() {
+		if ((simResScreen != null)
+				&& isAncestorOf(simResScreen))
+			remove(simResScreen);
+		if (configScreen == null)
+			configScreen = new ConfigScreen();
+		add(configScreen);
+
+		rewind.setEnabled(false);
+		play.setEnabled(true);
+		stop.setEnabled(false);
+		ff.setEnabled(false);
+		saveSim.setEnabled(true);
+		
+		rewindButton.setEnabled(false);
+		playButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		ffButton.setEnabled(false);
+		
+		isInConfiguration = true;
+		isInSimulation = false;
+		
+		// For unknown reason, to correctly refresh the display upon window size changed before switch 
+		// Both repaint and revalidate are needed
+		repaint();
+		configScreen.revalidate();
 	}
 	
+	public void goSimulation() {
+		if ((configScreen != null)
+				&& isAncestorOf(configScreen))
+		remove(configScreen);
+		// always build a new SimResScreen
+		simResScreen = new SimResScreen();
+		add(simResScreen);
+
+		rewind.setEnabled(true);
+		play.setEnabled(true);
+		stop.setEnabled(true);
+		ff.setEnabled(true);
+		saveSim.setEnabled(true);
+		
+		rewindButton.setEnabled(true);
+		playButton.setEnabled(true);
+		stopButton.setEnabled(true);
+		ffButton.setEnabled(true);
+		
+		isInConfiguration = false;
+		isInSimulation = true;
+		isPaused = false;
+		
+		// repaint has no effect here
+		simResScreen.revalidate();
+	}
+	
+	public void goResults() {
+		if (simResScreen == null)
+			goSimulation();
+		if (simResScreen != null)
+			simResScreen.goResults();
+		
+		rewind.setEnabled(true);
+		play.setEnabled(false);
+		stop.setEnabled(false);
+		ff.setEnabled(false);
+		saveSim.setEnabled(true);
+		
+		rewindButton.setEnabled(true);
+		playButton.setEnabled(false);
+		stopButton.setEnabled(false);
+		ffButton.setEnabled(false);
+		
+		isInConfiguration = false;
+		isInSimulation = false;
+	}
+
+	public boolean isInConfiguration() {
+		return isInConfiguration;
+	}
+	
+	public boolean isInSimulation() {
+		return isInSimulation;
+	}
+	
+	public void reset() {
+		Command command = CommandFactory.getResetCommand();
+		command.execute();
+		// this clears configuration screen
+		if ((configScreen != null)
+				&& isAncestorOf(configScreen))
+		remove(configScreen);
+		configScreen = new ConfigScreen();
+		goConfiguration();
+	}
+	
+	public void updateWorld( World world ) {
+		if (isInSimulation && (simResScreen != null))
+			simResScreen.updateWorld(world);	
+	}
+
+	public void update(Observable arg0, Object arg1)
+	{
+		System.out.println("DAO updated");
+		if (isInConfiguration && (configScreen != null)) {
+			configScreen.update();
+			repaint();
+			configScreen.revalidate();
+		}
+	}
+
 	JMenu fileMenu() // file menu
 	{
 		JMenu file = new JMenu("File");
@@ -92,11 +225,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	}
             	else if (e.getActionCommand().equals("Reset"))
             	{
-            		// Do Something
+            		BaseGUI.getInstance().reset();
             	}
             	else
             	{
-            		// Do Something
+            		// Do nothing
             	}
             }
         };
@@ -111,6 +244,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	{
 		JMenu configuration = new JMenu("Configuration");
 		
+		/*
 		// menu item - "New Critter Template"
 		final JMenuItem newCritterTemp = new JMenuItem("New Critter Template");
 		configuration.add(newCritterTemp);
@@ -120,7 +254,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		configuration.add(delCritterTemp);
 		
 		configuration.addSeparator();
-		
+		*/
 		// menu item - "Import Critter Template"
 		final JMenuItem impCritterTemp = new JMenuItem("Import Critter Templates");
 		configuration.add(impCritterTemp);
@@ -161,8 +295,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
         {
             public void actionPerformed( ActionEvent e )
             {
-            	String filePath, fileName;
-            	int impCritTempVal, expCritTempVal, loadConfigVal, loadSimVal, lResVal, saveConfigVal;
+            	/*
             	if (e.getActionCommand().equals("New Critter Template"))
             	{
         			// Do Something
@@ -171,97 +304,89 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	{
             		// Do Something
             	}
-            	else if (e.getActionCommand().equals("Import Critter Templates"))
+            	else */
+            	if (e.getActionCommand().equals("Import Critter Templates"))
             	{
     				fc.setDialogTitle("Import Critter Template");
-            		impCritTempVal = fc.showOpenDialog(null);
-            		if (impCritTempVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
+            			Command command = CommandFactory.getImportTemplatesCommand(fc.getSelectedFile().getPath(), "");
             			command.execute();
             		}
             	}
             	else if (e.getActionCommand().equals("Export Critter Templates"))
             	{
             		fc.setDialogTitle("Export Critter Template");
-            		impCritTempVal = fc.showSaveDialog(null);
-            		if (impCritTempVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			Command command = CommandFactory.getExportTemplatesCommand(filePath, fileName);
+            			Command command = CommandFactory.getExportTemplatesCommand(fc.getSelectedFile().getPath(), "");
             			command.execute();
             		}
             	}
             	else if (e.getActionCommand().equals("Load Configuration"))
             	{
             		fc.setDialogTitle("Load Configuration");
-            		loadConfigVal = fc.showOpenDialog(null);
-            		if (loadConfigVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-            			//command.execute();
+            			// need clear all first
+            			BaseGUI.getInstance().reset();
+            			Command command = CommandFactory.getLoadConfigurationCommand(fc.getSelectedFile().getPath(), "");
+            			command.execute();
             		}
             	}
             	else if (e.getActionCommand().equals("Load Simulation"))
             	{
             		fc.setDialogTitle("Load Simulation");
-            		loadSimVal = fc.showOpenDialog(null);
-            		if (loadSimVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-            			//command.execute();
+            			// need clear all first
+            			BaseGUI.getInstance().reset();
+             			Command command = CommandFactory.getLoadSimulationCommand(fc.getSelectedFile().getPath());
+            			command.execute();
+            			// result in configuration screen
+            			// because user may want to check the settings first before start
+            			// need user click Play to continue simulation
             		}
             	}
             	else if (e.getActionCommand().equals("Load Results"))
             	{
             		fc.setDialogTitle("Load Results");
-            		lResVal = fc.showOpenDialog(null);
-            		if (lResVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-            			//command.execute();
+           				// need clear all first
+           				BaseGUI.getInstance().reset();
+           				Command command = CommandFactory.getLoadResultsCommand(fc.getSelectedFile().getPath());
+           				command.execute();
+           				// switch to results
+           				BaseGUI.getInstance().goResults();
             		}
             	}
             	else if (e.getActionCommand().equals("Save Configuration"))
             	{
             		fc.setDialogTitle("Save Configuration");
-            		saveConfigVal = fc.showSaveDialog(null);
-            		if (saveConfigVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-            			//command.execute();
+            			Command command = CommandFactory.getSaveConfigurationCommand(fc.getSelectedFile().getPath(), "");
+            			command.execute();
             		}
             	}
             	else if (e.getActionCommand().equals("Start Simulation"))
             	{
-            		// Do Something
+            		BaseGUI.getInstance().goSimulation();
+        			Command command = CommandFactory.getStartSimulationCommand();
+        			command.execute();
             	}
             	else
             	{
-            		// Do Something
+            		// Do nothing
             	}
             }
         };
 
+        /*
         newCritterTemp.addActionListener( configMenuListener );
         delCritterTemp.addActionListener(configMenuListener);
+        */
         impCritterTemp.addActionListener(configMenuListener);
         expCritterTemp.addActionListener(configMenuListener);
         loadConfig.addActionListener(configMenuListener);
@@ -309,17 +434,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
         {
 			public void actionPerformed( ActionEvent e )
             {       
-	            int sSimVal;
-	            String filePath, fileName;
 				fc.setDialogTitle("Save Simulation");
-        		sSimVal = fc.showSaveDialog(null);
-        		if (sSimVal == JFileChooser.APPROVE_OPTION)
+        		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
         		{
-        			File f=fc.getSelectedFile();
-        			filePath=f.getPath();
-        			fileName=f.getName();
-        			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-        			//command.execute();
+        			Command command = CommandFactory.getSaveSimulationCommand(fc.getSelectedFile().getPath());
+        			command.execute();
         		}
             }
         };
@@ -354,38 +473,33 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
         {
             public void actionPerformed( ActionEvent e )
             {
-            	int sResVal, openLogVal;
-            	String filePath, fileName;
             	if (e.getActionCommand().equals("Open Log"))
             	{
+            		/*
         			fc.setDialogTitle("Open Log");
-            		openLogVal = fc.showOpenDialog(null);
-            		if (openLogVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-            			//command.execute();
+            			Command command = CommandFactory.getOpenLogCommand(fc.getSelectedFile().getPath());
+            			command.execute();
             		}
+            		*/
+            		// only default log file is supported at this time
+        			Command command = CommandFactory.getOpenLogCommand();
+        			command.execute();
             	}
             	else if (e.getActionCommand().equals("Save Results"))
             	{
             		fc.setDialogTitle("Save Results");
-            		sResVal = fc.showSaveDialog(null);
-            		if (sResVal == JFileChooser.APPROVE_OPTION)
+            		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			File f=fc.getSelectedFile();
-            			filePath=f.getPath();
-            			fileName=f.getName();
-            			//Command command = CommandFactory.getImportTemplatesCommand(filePath, fileName);
-            			//command.execute();
+             			Command command = CommandFactory.getSaveResultsCommand(fc.getSelectedFile().getPath());
+            			command.execute();
             		}
             		
             	}
             	else
             	{
-            		// Do Something
+            		// Do nothing
             	}
             }
         };
@@ -495,23 +609,50 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		if (e.getActionCommand().equals("Back to Configuration")) // rewind
     	{
-			// Do Something
+			// warning user the simulation data will be lost
+			String message = "This will clear current simulation/results. Go ahead?";
+			if (JOptionPane.showConfirmDialog(this, message) == JOptionPane.YES_OPTION) { 
+				if (!isInConfiguration) goConfiguration();
+			}
     	}
     	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
-			// Do Something
+    		if (isInConfiguration) {
+      			goSimulation();
+     			Command command = CommandFactory.getStartSimulationCommand();
+    			command.execute();
+      		}
+    		else if (isInSimulation) {
+    			if (isPaused) {
+    				isPaused = false;
+    				playButton.setIcon(playIcon);		
+         			Command command = CommandFactory.getResumeSimulationCommand();
+        			command.execute();
+    			} else {
+    				isPaused = true;
+    				playButton.setIcon(pauseIcon);		
+         			Command command = CommandFactory.getPauseSimulationCommand();
+        			command.execute();
+    			}
+    		}
     	}
     	else if (e.getActionCommand().equals("Abort to Results")) // stop
     	{
-			// Do Something
+    		if (isInSimulation) {
+ 				playButton.setIcon(playIcon);		
+      			Command command = CommandFactory.getStopSimulationCommand();
+     			command.execute();
+     			goResults();
+    		}
     	}
     	else if (e.getActionCommand().equals("Simulate to End")) // fast forward
     	{
-			// Do Something
+			// nothing need to be done here
+    		// the GUI will just display all things fast
     	}
     	else
     	{
-    		// Do Something
+    		// Do nothing
     	}
 	}
 	

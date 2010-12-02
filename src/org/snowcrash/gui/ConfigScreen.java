@@ -1,8 +1,9 @@
 package org.snowcrash.gui;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -13,34 +14,28 @@ import javax.swing.JTabbedPane;
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.testCritterTemplate;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.dataaccess.DAOFactory;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
 import org.snowcrash.utilities.Callback;
 import org.snowcrash.utilities.SelectionEvent;
 import org.snowcrash.utilities.SelectionListener;
 
-public class ConfigScreen extends BaseGUI implements SelectionListener
+public class ConfigScreen extends JPanel implements SelectionListener
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
 	
 	JTabbedPane tabPane1, tabPane2, tabPane3;
 	
+	private CritterPanel critterPanel = new CritterPanel();
+	
 	public ConfigScreen()
 	{
-		rewind.setEnabled(false);
-		play.setEnabled(true);
-		stop.setEnabled(false);
-		ff.setEnabled(false);
-		saveSim.setEnabled(true);
-		
-		rewindButton.setEnabled(false);
-		playButton.setEnabled(true);
-		stopButton.setEnabled(false);
-		ffButton.setEnabled(false);
-		
-		Container content = getContentPane();
-
-		JPanel configPanel = new JPanel();
+		JPanel configPanel = this;
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -48,7 +43,7 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		// get the critter panel and add a tab
 		JPanel cPanel = new CritterPanel();
 		tabPane1 = new JTabbedPane();
-		tabPane1.addTab("Critters", cPanel);
+		tabPane1.addTab("Critters", critterPanel);
 		tabPane1.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane1.setPreferredSize(new Dimension
 				((WIDTH - 20) / 3, Short.MAX_VALUE));
@@ -57,7 +52,7 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		// get the traits panel and add a tab
-		TraitsPanel traitsConfig = new TraitsPanel();
+		TraitsPanel traitsConfig = new TraitsPanel( this );
 		cPanel = traitsConfig.TraitsPanel();
 		tabPane2 = new JTabbedPane();
 		tabPane2.addTab("Traits", cPanel);
@@ -80,7 +75,29 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 		configPanel.add(tabPane3);
 		
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
-		content.add(configPanel);
+	}
+	
+	// DAO changed, update critterPanel
+	// here replaced by new critterPanel
+	public void update() {
+		DatabaseObject[] objects;
+		DAO dao = DAOFactory.getDAO();
+		try {
+			//objects = dao.read( CritterTemplate.class );
+			objects = dao.read( testCritterTemplate.class );
+		} catch (DAOException e) {
+			throw new RuntimeException( e );
+		}
+		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>(objects.length);
+		int i;
+		for (i = 0;i < objects.length;i++)
+			critterTemplates.add((CritterTemplate) (objects[i]));
+		CritterPanel cPanel = new CritterPanel();
+		cPanel.addData(critterTemplates);
+		tabPane1.setComponentAt(tabPane1.indexOfTab("Critters"), cPanel);
+		// shall we replace traitsPanel?
+		//JPanel tPanel = (new TraitsPanel()).TraitsPanel();
+		//tabPane1.setComponentAt(tabPane1.indexOfTab("Traits"), tPanel);
 	}
 	
 	public void componentResized(ComponentEvent e) 
@@ -121,6 +138,11 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
        }
     }
 	
+	public void clearSelections()
+	{
+		critterPanel.clearSelection();
+	}
+	
 	public void selectionOccurred( SelectionEvent e )
 	{
 		if ( e.getSource() instanceof CritterTemplateWidget )
@@ -137,7 +159,7 @@ public class ConfigScreen extends BaseGUI implements SelectionListener
 						CritterTemplate template = (CritterTemplate) results[0];
 						
 						// -- Update traits panel.
-						TraitsPanel tp = new TraitsPanel();
+						TraitsPanel tp = new TraitsPanel( ConfigScreen.this );
 						tabPane2.add( tp.TraitsPanel( template ) );
 					}
 				}

@@ -189,6 +189,8 @@ public class CritterPanel extends JPanel implements SelectionListener
 						
 						Command deleteCommand = CommandFactory.getDeleteTemplateCommand( critterTemplateName );
 						deleteCommand.execute();
+						
+						list.removeItemFromList( critterTemplateName );
 					}
 				}
 			}

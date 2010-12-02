@@ -21,6 +21,9 @@ public class MultiPanelList extends Box implements SelectionListener
 	private Map<String,BorderedList> subLists = new HashMap<String,BorderedList>();
 	private Selectable selection = null;
 	
+	private Map<String,SelectableComponent<CritterTemplateWidget>> componentMapping = 
+		new HashMap<String,SelectableComponent<CritterTemplateWidget>>();
+	
 	private List<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
 	
 	protected MultiPanelList()
@@ -71,7 +74,19 @@ public class MultiPanelList extends Box implements SelectionListener
 			component.setSelectionBehavior( CritterTemplateSelectionBehavior.getInstance() );
 			component.setDeselectionBehavior( CritterTemplateDeselectionBehavior.getInstance() );
 			
+			componentMapping.put( item, component );
+			
 			list.add( component );
+		}
+	}
+	
+	public void removeItemFromList( String item )
+	{
+		SelectableComponent<CritterTemplateWidget> component = componentMapping.get( item );
+		
+		for ( ComponentList<SelectableComponent<CritterTemplateWidget>> list : subLists.values() )
+		{
+			list.remove( component );
 		}
 	}
 	
