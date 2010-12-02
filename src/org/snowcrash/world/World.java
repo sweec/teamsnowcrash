@@ -31,6 +31,7 @@ import java.util.Set;
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterFactory;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.NameGenerator;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DatabaseObject;
@@ -66,6 +67,7 @@ public class World implements DatabaseObject, TimeListener {
 	
 	public static World reset() {
 		instance = null;
+		NameGenerator.reset();
 		return getInstance();
 	}
 	
