@@ -38,18 +38,18 @@ public class Searching implements State {
 
 	@Override
 	public void act(StateContext stateContext, Critter myCritter) {
-		System.out.println(myCritter.getPrototype() + " entered Searching.");
+		System.out.println(myCritter.getCritterName() + " entered Searching.");
 		if ((double)myCritter.getHealth() /(double)myCritter.getMaxHealth() >= REPRODUCE_MIN_HEALTH) {
-			System.out.println(myCritter.getPrototype() + " goes to Reproducing.");
+			System.out.println(myCritter.getCritterName() + " goes to Reproducing.");
 			stateContext.setState(new Reproducing());
 			stateContext.act(myCritter);
 		} else {
 			if (myCritter.getPrototype().equals(CritterPrototype.PLANT)) {
-				System.out.println(myCritter.getPrototype() + " goes to Growing.");
+				System.out.println(myCritter.getCritterName() + " goes to Growing.");
 				stateContext.setState(new Growing());
 				stateContext.act(myCritter);
 			} else {
-				System.out.println(myCritter.getPrototype() + " goes to Hunting.");
+				System.out.println(myCritter.getCritterName() + " goes to Hunting.");
 				stateContext.setState(new Hunting());
 				stateContext.act(myCritter);
 			}
