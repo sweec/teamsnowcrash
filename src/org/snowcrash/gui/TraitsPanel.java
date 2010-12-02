@@ -50,6 +50,8 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	
 	JTextField nameField; // indicates and changes the critter name
 	
+	private ConfigScreen parentConfig;
+	
 	// determinants that store values for the command factory
 	private static int points = critterPoints;
 	private static int visionUpper, visionLower, speedUpper, speedLower;
@@ -63,6 +65,11 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	private CritterPrototype tempPrototype;
 	private HashMap<Trait, Pair<Integer, Integer>> tempTraitRange;
 	private Pair<Integer, Integer> tempSliderVal;
+	
+	public TraitsPanel(ConfigScreen parent)
+	{
+		parentConfig = parent;
+	}
 	
 	public JPanel TraitsPanel() // empty traits panel, used when critter isn't selected
 	{
@@ -671,7 +678,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		}
 		else if (e.getActionCommand().equals("Cancel"))
 		{
-			//TODO something
+			parentConfig.cancelTraits();
 		}
 		else
 		{
