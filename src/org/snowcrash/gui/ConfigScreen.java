@@ -32,6 +32,8 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	JTabbedPane tabPane1, tabPane2, tabPane3;
 	WorldPanel worldConfig;
 	
+	TraitsPanel traitsConfig = new TraitsPanel(this);
+	
 	public ConfigScreen()
 	{
 		JPanel configPanel = this;
@@ -51,7 +53,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		// get the traits panel and add a tab
-		TraitsPanel traitsConfig = new TraitsPanel();
+		traitsConfig = new TraitsPanel(this);
 		cPanel = traitsConfig.TraitsPanel();
 		tabPane2 = new JTabbedPane();
 		tabPane2.addTab("Traits", cPanel);
@@ -79,8 +81,16 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	public void cancelTraits()
 	{
 		tabPane2.removeAll();
-		TraitsPanel traitsConfig = new TraitsPanel();
+		traitsConfig = new TraitsPanel(this);
 		tabPane2.add(traitsConfig.TraitsPanel());
+		tabPane2.repaint();
+	}
+	
+	public void showTraits(CritterTemplate template)
+	{
+		tabPane2.removeAll();
+		traitsConfig = new TraitsPanel(this);
+		tabPane2.add(traitsConfig.TraitsPanel(template));
 		tabPane2.repaint();
 	}
 	
@@ -164,11 +174,13 @@ public class ConfigScreen extends JPanel implements SelectionListener
 					if ( results.length == 1 && results[0] instanceof CritterTemplate )
 					{
 						CritterTemplate template = (CritterTemplate) results[0];
+						showTraits(template);
 						
 						// -- TODO update traits panel
 					}
 				}
 			});
+			command.execute();		
 		}
 	}
 	
