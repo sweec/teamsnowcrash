@@ -37,6 +37,7 @@ import javax.swing.JOptionPane;
 
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
@@ -44,6 +45,7 @@ import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
+import org.snowcrash.dataaccess.SessionedDAO;
 import org.snowcrash.gui.BaseGUI;
 import org.snowcrash.state.Growing;
 import org.snowcrash.state.Hunting;
@@ -91,6 +93,9 @@ public class FileManager implements IFileManager {
 	 * that means critters need to be populated first
 	 */
 	public boolean saveWorld(World world, String filename) {
+		// save templates first
+		saveCritterTemplates(null,filename);
+		
 		// get world instance from the database
 		if (world == null) {
 			DatabaseObject[] objects = null;
@@ -104,13 +109,7 @@ public class FileManager implements IFileManager {
 			world = (World)objects[0];
 		}
 		
-		// save templates first
-		saveCritterTemplates(null,filename);
-		
-		// world instance need to be complete to be saved
-		// needed by saveConfiguration
-		//World.getInstance().Populate();	// Populate() creates all critters if not yet
-		
+		// here assume initTemplateList is already set if saveConfiguration
 		try { 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename, true));
 			
@@ -118,8 +117,10 @@ public class FileManager implements IFileManager {
 			.registerTypeAdapter(State.class, new StateSerializer())
 			.create();
 			gson.toJson(world, out);
+			gson.toJson(StatisticsCollector.getInstance(), out);
 			out.close(); 
 		} catch (IOException e) { 
+			fileIOErrorWindow(filename);
 			e.printStackTrace();
 			return false;
 		} 	
@@ -131,112 +132,57 @@ public class FileManager implements IFileManager {
 	 */
 	public World loadWorld(String filename) {
 		World world = null;
+		CritterTemplate[] templates = null;
+		StatisticsCollector sc = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filename)); 
 			JsonStreamParser parser = new JsonStreamParser(in);
-			JsonElement element;
 			Gson gson = new GsonBuilder()
 			.registerTypeAdapter(State.class, new StateDeserializer())
 			.registerTypeAdapter(ArrayList.class, new ArrayListDeserializer())
 			.create();
-			if (parser.hasNext()) {
-				element = parser.next();
-				//CritterTemplate[] templates = gson.fromJson(element, CritterTemplate[].class);
-				CritterTemplate[] templates = gson.fromJson(element, CritterTemplate[].class);
-				if (templates == null) return null;
-				
-				DAO dao = DAOFactory.getDAO();
-				// TODO
-				// clear database first
-				//dao.reset();
-				int i;
-				for (i = 0;i < templates.length;i++) {
-					try {
-						dao.create( templates[i] );
-					} catch (DAOException e) {
-						//throw new RuntimeException( e );
-					}
-				}
-				dao.notifyChanged();	// notify critterPanel of the changes
-			}
-			if (parser.hasNext()) {
-				element = parser.next();
-				world = gson.fromJson(element, World.class);
-				
-				DAO dao = DAOFactory.getDAO();
-				try {
-					dao.create( world );
-				} catch (DAOException e) {
-					if (e.getMessage().contentEquals("Data already exists in the database.")) {
-						try {
-							dao.update( world );
-						} catch (DAOException e2) {
-							throw new RuntimeException( e2 );
-						}
-					} else throw new RuntimeException( e );
-				}
-				
-			}
+			if (parser.hasNext())
+				templates = gson.fromJson(parser.next(), CritterTemplate[].class);
+			if (parser.hasNext())
+				world = gson.fromJson(parser.next(), World.class);
+			if (parser.hasNext())
+				sc = gson.fromJson(parser.next(), StatisticsCollector.class);
 			in.close(); 
 		} catch (IOException e) { 
+			fileIOErrorWindow(filename);
 			e.printStackTrace();
 		}
+		if (templates == null) return null;
 		if (world == null) return null;
+		if (sc == null) return null;
+		SessionedDAO dao = DAOFactory.getDAO();
+		try {
+			dao.nuke();
+			dao.startSession();
+			for (int i = 0;i < templates.length;i++)
+				dao.create( templates[i] );
+			dao.create( world );
+			dao.endSession(true);
+		} catch (DAOException e) {
+			throw new RuntimeException( e );
+		}
+		
 		return world;
 	}
 	
 	public World resetWorld() {
-		// clear templates from database
-		DAO dao = DAOFactory.getDAO();
-		DatabaseObject[] objects = null;
-		try {
-			objects = dao.read( CritterTemplate.class );
-		} catch (DAOException e) {
-			// do nothing
-		}
-		if (objects != null) {
-			for (int i = 0;i < objects.length;i++) {
-				CritterTemplate template = (CritterTemplate) objects[i];
-				try {
-					dao.delete( template );
-				} catch (DAOException e) {
-					throw new RuntimeException( e );
-				}
-			}
-		}
+		SessionedDAO dao = DAOFactory.getDAO();
+		dao.nuke();
 		
-		// clear world from database
-		World world = null;
-		try {
-			objects = dao.read( World.class );
-		} catch (DAOException e) {
-			// do nothing
-		}
-		if (objects != null) {
-			for (int i = 0;i < objects.length;i++) {
-				world = (World) objects[i];
-				try {
-					dao.delete( world );
-				} catch (DAOException e) {
-					throw new RuntimeException( e );
-				}
-			}
-		}
-		
-		// create and save new World to database
-		world = World.reset();
+		World world = World.reset();
 		try {
 			dao.create( world );
 		} catch (DAOException e) {
-			if (e.getMessage().contentEquals("Data already exists in the database.")) {
-				try {
-					dao.update( world );
-				} catch (DAOException e2) {
-					throw new RuntimeException( e2 );
-				}
-			} else throw new RuntimeException( e );
+			throw new RuntimeException( e );
 		}
+		// database change will notifyObserver here
 		loadCritterTemplates(defaultCritterTemplatesFile);
+		new StatisticsCollector();
 		return world;
 	}
 	
@@ -259,7 +205,8 @@ public class FileManager implements IFileManager {
 			Gson gson = new Gson();
 			gson.toJson(critterTemplates, out);
 			out.close(); 
-		} catch (IOException e) { 
+		} catch (IOException e) {
+			fileIOErrorWindow(filename);
 			e.printStackTrace();
 			return false;
 		}
@@ -274,34 +221,24 @@ public class FileManager implements IFileManager {
 			Gson gson = new Gson();
 			templates = gson.fromJson(in, CritterTemplate[].class);
 			in.close(); 
-		} catch (IOException e) { 
+		} catch (IOException e) {
+			fileIOErrorWindow(filename);
 			e.printStackTrace();
 		}
 		if (templates == null) return null;
-		DAO dao = DAOFactory.getDAO();
-		int i;
-		for (i = 0;i < templates.length;i++) {
-			try {
-				dao.create( templates[i] );
-			} catch (DAOException e) {
-				/*
-				if (e.getMessage().contentEquals("Data already exists in the database.")) {
-					try {
-						CritterTemplate copy = new CritterTemplate(templates[i]);
-						dao.create( copy );
-					} catch (DAOException e2) {
-						throw new RuntimeException( e2 );
-					}
-				} else */
-					throw new RuntimeException( e );
-			}
+		SessionedDAO dao = DAOFactory.getDAO();
+		dao.startSession();
+		for (int i = 0;i < templates.length;i++)
+			saveCritterTemplateToDatabase(templates[i]);
+		try {
+			dao.endSession(true);
+		} catch (DAOException e) {
+			throw new RuntimeException( e );
 		}
-		
-		dao.notifyChanged();
 		return templates;
 	}
 
-	// if already exists a same name template, save it with name as name#
+	// if already exists a template with same name, save with name as name#
 	private void saveCritterTemplateToDatabase(CritterTemplate template) {
 		DAO dao = DAOFactory.getDAO();
 		String name = template.getName();

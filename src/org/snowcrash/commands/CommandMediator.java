@@ -2,6 +2,7 @@ package org.snowcrash.commands;
 
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.world.World;
@@ -128,6 +129,8 @@ public class CommandMediator
 	 */
 	static void saveConfiguration( String filename )
 	{
+		// need call World.getInstance().randomPopulate(list)
+		// to get critter numbers saved
 		fileManager.saveWorld(world, filename);
 	}
 	
@@ -140,7 +143,11 @@ public class CommandMediator
 	 */
 	static void loadConfiguration( String filename )
 	{
+		TimeEngine.removeTimeListener(world);
+		TimeEngine.stopTimer();
 		world = fileManager.loadWorld(filename);
+		TimeEngine.addTimeListener(world);
+		World.addObserver(StatisticsCollector.getInstance());
 	}
 	
 	static void saveSimulation( String filename )
@@ -150,7 +157,11 @@ public class CommandMediator
 	
 	static void loadSimulation( String filename )
 	{
+		TimeEngine.removeTimeListener(world);
+		TimeEngine.stopTimer();
 		world = fileManager.loadWorld(filename);
+		TimeEngine.addTimeListener(world);
+		World.addObserver(StatisticsCollector.getInstance());
 	}
 	
 	static void saveResults( String filename )
@@ -160,11 +171,25 @@ public class CommandMediator
 	
 	static void loadResults( String filename )
 	{
+		TimeEngine.removeTimeListener(world);
+		TimeEngine.stopTimer();
 		world = fileManager.loadWorld(filename);
+		TimeEngine.addTimeListener(world);
+		World.addObserver(StatisticsCollector.getInstance());
 	}
 	
 	static void startSimulation()
 	{
+		if (world.getCurrentTurn() == 0) {
+			// first time to start the simulation
+			// need call World.getInstance().randomPopulate(list)
+			// to create critters first
+		}
+		// in case of load simulation/results
+		// timeLimit left need to be calculated
+		int timeLimit = world.getTurns() - world.getCurrentTurn();
+		if (timeLimit <= 0) return;
+		TimeEngine.setTimeLimit(timeLimit);
 		TimeEngine.startTimer();
 	}
 	
@@ -263,5 +288,6 @@ public class CommandMediator
 		TimeEngine.stopTimer();
 		world = fileManager.resetWorld();
 		TimeEngine.addTimeListener(world);
+		World.addObserver(StatisticsCollector.getInstance());
 	}
 }

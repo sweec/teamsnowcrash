@@ -1,6 +1,7 @@
 import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
+import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
@@ -38,5 +39,6 @@ public class Main
 		// -- Make BaseGUI observer to DAO and World
 		dao.addObserver(screenManager);
 		World.addObserver(screenManager);
+		World.addObserver(new StatisticsCollector());
 	}
 }

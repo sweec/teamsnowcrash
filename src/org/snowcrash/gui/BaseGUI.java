@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.critter.Critter;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
 import org.snowcrash.world.World;
 import org.snowcrash.world.WorldObserver;
@@ -87,7 +88,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		setTitle("SnowCrash");
 		
 		addComponentListener(this);
-		//World.addObserver(this);	// move to Main.java
 		goConfiguration();
 		setVisible(true);
 	}
@@ -177,8 +177,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	}
 	
 	public void reset() {
-		Command command = CommandFactory.getResetCommand();
-		command.execute();
 		// this clears configuration screen
 		if ((configScreen != null)
 				&& isAncestorOf(configScreen))
@@ -195,7 +193,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 
 	public void update(Observable arg0, Object arg1)
 	{
-		System.out.println("DAO updated");
 		if (isInConfiguration && (configScreen != null)) {
 			configScreen.update();
 			repaint();
@@ -228,7 +225,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	else if (e.getActionCommand().equals("Reset"))
             	{
             		BaseGUI.getInstance().reset();
-            	}
+            		Command command = CommandFactory.getResetCommand();
+            		command.execute();
+           	}
             	else
             	{
             		// Do nothing
@@ -330,7 +329,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Configuration");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			// need clear all first
             			BaseGUI.getInstance().reset();
             			Command command = CommandFactory.getLoadConfigurationCommand(fc.getSelectedFile().getPath(), "");
             			command.execute();
@@ -341,7 +339,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Simulation");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			// need clear all first
             			BaseGUI.getInstance().reset();
              			Command command = CommandFactory.getLoadSimulationCommand(fc.getSelectedFile().getPath());
             			command.execute();
@@ -355,7 +352,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Results");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-           				// need clear all first
            				BaseGUI.getInstance().reset();
            				Command command = CommandFactory.getLoadResultsCommand(fc.getSelectedFile().getPath());
            				command.execute();
@@ -374,9 +370,12 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	}
             	else if (e.getActionCommand().equals("Start Simulation"))
             	{
-            		BaseGUI.getInstance().goSimulation();
-        			Command command = CommandFactory.getStartSimulationCommand();
+         			Command command = CommandFactory.getStartSimulationCommand();
         			command.execute();
+        			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());
+        			World world = World.getInstance();
+        			simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
+            		BaseGUI.getInstance().goSimulation();
             	}
             	else
             	{
@@ -620,11 +619,13 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
     		if (isInConfiguration) {
-    			simPBar.setNumberOfTicks(configScreen.getTotalTurns());
-      			goSimulation();
      			Command command = CommandFactory.getStartSimulationCommand();
     			command.execute();
-      		}
+    			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());
+    			World world = World.getInstance();
+    			simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
+      			goSimulation();
+     		}
     		else if (isInSimulation) {
     			if (isPaused) {
     				isPaused = false;
@@ -650,8 +651,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     	}
     	else if (e.getActionCommand().equals("Simulate to End")) // fast forward
     	{
-			// nothing need to be done here
-    		// the GUI will just display all things fast
+  			Command command = CommandFactory.getFinishSimulationCommand();
+ 			command.execute();
     	}
     	else
     	{
@@ -692,6 +693,12 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     
     public void componentHidden(ComponentEvent e) 
     {
-    }	
+    }
+
+	@Override
+	public void updateStatistics(Critter[] critters) {
+		// Nothing need to be done here
+		
+	}	
     
 }
