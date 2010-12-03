@@ -50,24 +50,6 @@ public class SimResScreen extends JPanel
 		
 		cPanel.add(cTabPane);
 		cPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-				
-		/* Console Test code */
-		/*
-		ConsolePanel console2 = new ConsolePanel();
-		String mishmash;
-		Queue<String> testQueue = new LinkedList<String>();
-		for (int j=1; j<=20; j++)
-		{
-			for (int k = 1; k<=20; k++)
-			{
-				mishmash = "Turn " + j + ", Message # " + k;
-				testQueue.offer(mishmash);
-			}
-			console2.addMessage(testQueue);
-			testQueue = new LinkedList<String>();
-		}
-		************************/
-		
 	}
 	
 	public void goResults()

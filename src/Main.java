@@ -5,7 +5,7 @@ import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
-import org.snowcrash.filemanagement.IFileManager2;
+import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.gui.BaseGUI;
 import org.snowcrash.world.World;
 
@@ -15,7 +15,7 @@ public class Main
 	public static void main(String... args)
 	{
 		// -- Create managers.
-		IFileManager2 fileManager = new FileManager();
+		IFileManager fileManager = new FileManager();
 		IConfigurationManager configManager = new ConfigurationManager();
 		
 		// -- Add managers to the CommandMediator.
