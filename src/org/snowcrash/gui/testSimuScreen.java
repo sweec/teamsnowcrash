@@ -86,7 +86,7 @@ public class testSimuScreen extends JPanel {
 	// test simuPanel
 	private void testSimuPanel() {
 		FileManager mgr = new FileManager();
-		World world = mgr.loadWorld("testWorld.Json", "");
+		World world = mgr.loadWorld("testWorld.Json");
 		map = world.getMap();
 		simuPanel.updateworld(map);
         Timer timer = new Timer(1000, new ActionListener() { 
@@ -103,7 +103,7 @@ public class testSimuScreen extends JPanel {
 	 */
 	public static void main(String[] args) {
 		FileManager mgr = new FileManager();
-		mgr.loadTestCritterTemplates("testCritterTemplates.Json");
+		mgr.loadCritterTemplates("testCritterTemplates.Json");
 		testSimuScreen sScreen = new testSimuScreen(20,20);
 		simuResultPane.setEnabledAt(simuResultPane.indexOfTab("Results"), true);
 		sScreen.testSimuPanel();
