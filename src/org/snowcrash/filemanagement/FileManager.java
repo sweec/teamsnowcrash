@@ -78,7 +78,7 @@ import com.google.gson.reflect.TypeToken;
  */
 
 public class FileManager implements IFileManager {
-	private final String defaultCritterTemplatesFile = "defaultCritterTemplates.Json";
+	private final String defaultCritterTemplatesFile = "testCritterTemplates.Json";
 	private final String defaultLogFile = "EvolutionSim.log";
 	private static Logger logger = null;
 	private static FileHandler fh = null;
@@ -133,6 +133,7 @@ public class FileManager implements IFileManager {
 	public World loadWorld(String filename) {
 		World world = null;
 		CritterTemplate[] templates = null;
+		StatisticsCollector old = StatisticsCollector.getInstance();
 		StatisticsCollector sc = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filename)); 
@@ -141,20 +142,23 @@ public class FileManager implements IFileManager {
 			.registerTypeAdapter(State.class, new StateDeserializer())
 			.registerTypeAdapter(ArrayList.class, new ArrayListDeserializer())
 			.create();
-			if (parser.hasNext())
+			if (parser.hasNext()) {
 				templates = gson.fromJson(parser.next(), CritterTemplate[].class);
-			if (parser.hasNext())
+				if (templates == null) return null;
+			}
+			if (parser.hasNext()) {
 				world = gson.fromJson(parser.next(), World.class);
-			if (parser.hasNext())
+				if (world == null) return null;
+			}
+			if (parser.hasNext()) {
 				sc = gson.fromJson(parser.next(), StatisticsCollector.class);
+				if (sc == null) return null;
+			}
 			in.close(); 
 		} catch (IOException e) { 
 			fileIOErrorWindow(filename);
 			e.printStackTrace();
 		}
-		if (templates == null) return null;
-		if (world == null) return null;
-		if (sc == null) return null;
 		SessionedDAO dao = DAOFactory.getDAO();
 		try {
 			dao.nuke();
@@ -166,7 +170,8 @@ public class FileManager implements IFileManager {
 		} catch (DAOException e) {
 			throw new RuntimeException( e );
 		}
-		
+		World.removeObserver(old);
+		World.addObserver(sc);
 		return world;
 	}
 	
@@ -182,7 +187,8 @@ public class FileManager implements IFileManager {
 		}
 		// database change will notifyObserver here
 		loadCritterTemplates(defaultCritterTemplatesFile);
-		new StatisticsCollector();
+		World.removeObserver(StatisticsCollector.getInstance());
+		World.addObserver(new StatisticsCollector());
 		return world;
 	}
 	
@@ -240,7 +246,7 @@ public class FileManager implements IFileManager {
 
 	// if already exists a template with same name, save with name as name#
 	private void saveCritterTemplateToDatabase(CritterTemplate template) {
-		DAO dao = DAOFactory.getDAO();
+		SessionedDAO dao = DAOFactory.getDAO();
 		String name = template.getName();
 		int i = 1;
 		boolean isSaved = false;

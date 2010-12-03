@@ -1,14 +1,12 @@
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
-import org.snowcrash.critter.StatisticsCollector;
-import org.snowcrash.dataaccess.DAO;
-import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.gui.BaseGUI;
-import org.snowcrash.world.World;
 
 
 public class Main
@@ -23,22 +21,14 @@ public class Main
 		CommandMediator.setFileManager(fileManager);
 		CommandMediator.setConfigurationManager(configManager);
 		
-		// -- initialize World and save it to database
-		// -- since it's not done elsewhere
-		World world = new World();
-		DAO dao = DAOFactory.getDAO();
-		try {
-			dao.create( world );
-		} catch (DAOException e) {
-			throw new RuntimeException( e );
-		}
-		
 		// -- Run GUI.
 		BaseGUI screenManager = new BaseGUI();
 		
-		// -- Make BaseGUI observer to DAO and World
-		dao.addObserver(screenManager);
-		World.addObserver(screenManager);
-		World.addObserver(new StatisticsCollector());
+		// -- Make BaseGUI observer to DAO
+		DAOFactory.getDAO().addObserver(screenManager);
+		
+		// -- Reset the world
+		Command command = CommandFactory.getResetCommand();
+		command.execute();
 	}
 }

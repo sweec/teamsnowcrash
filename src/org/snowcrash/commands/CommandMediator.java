@@ -2,7 +2,6 @@ package org.snowcrash.commands;
 
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
-import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.world.World;
@@ -143,11 +142,12 @@ public class CommandMediator
 	 */
 	static void loadConfiguration( String filename )
 	{
+		World newWorld = fileManager.loadWorld(filename);
+		if (newWorld == null) return;	// IO error, go back
 		TimeEngine.removeTimeListener(world);
 		TimeEngine.stopTimer();
-		world = fileManager.loadWorld(filename);
+		world = newWorld;
 		TimeEngine.addTimeListener(world);
-		World.addObserver(StatisticsCollector.getInstance());
 	}
 	
 	static void saveSimulation( String filename )
@@ -157,11 +157,12 @@ public class CommandMediator
 	
 	static void loadSimulation( String filename )
 	{
+		World newWorld = fileManager.loadWorld(filename);
+		if (newWorld == null) return;	// IO error, go back
 		TimeEngine.removeTimeListener(world);
 		TimeEngine.stopTimer();
-		world = fileManager.loadWorld(filename);
+		world = newWorld;
 		TimeEngine.addTimeListener(world);
-		World.addObserver(StatisticsCollector.getInstance());
 	}
 	
 	static void saveResults( String filename )
@@ -171,11 +172,12 @@ public class CommandMediator
 	
 	static void loadResults( String filename )
 	{
+		World newWorld = fileManager.loadWorld(filename);
+		if (newWorld == null) return;	// IO error, go back
 		TimeEngine.removeTimeListener(world);
 		TimeEngine.stopTimer();
-		world = fileManager.loadWorld(filename);
+		world = newWorld;
 		TimeEngine.addTimeListener(world);
-		World.addObserver(StatisticsCollector.getInstance());
 	}
 	
 	static void startSimulation()
@@ -288,6 +290,5 @@ public class CommandMediator
 		TimeEngine.stopTimer();
 		world = fileManager.resetWorld();
 		TimeEngine.addTimeListener(world);
-		World.addObserver(StatisticsCollector.getInstance());
 	}
 }

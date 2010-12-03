@@ -2,7 +2,6 @@ package org.snowcrash.critter;
 
 import java.util.HashMap;
 import java.util.Observable;
-import java.util.Observer;
 
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DAO;
@@ -12,7 +11,7 @@ import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.world.World;
 import org.snowcrash.world.WorldObserver;
 
-public class StatisticsCollector implements WorldObserver, Observer {
+public class StatisticsCollector implements WorldObserver {
 	private HashMap<String, Integer> startPopulation, endPopulation, totalPopulation;
 	private HashMap<String, Integer> minAge, maxAge, totalAge;
 	private HashMap<String, HashMap<Trait, Float>> startTraits, endTraits;
@@ -250,6 +249,11 @@ public class StatisticsCollector implements WorldObserver, Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// Nothing need do here
+	}
+
+	public void notifyTheEnd() {
+		// Nothing need do here
+		// ResultsPanel will call the calculation method instead
 	}
 
 }

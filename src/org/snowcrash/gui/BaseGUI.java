@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -35,7 +34,7 @@ import org.snowcrash.world.WorldObserver;
  * create a method addListener so that others can register for interested Actions happened in GUI
  * Add listener to turns and end of simulation so that GUI can be updated
  */
-public class BaseGUI extends JFrame implements ActionListener, ComponentListener, WorldObserver, Observer
+public class BaseGUI extends JFrame implements ActionListener, ComponentListener, WorldObserver
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
@@ -45,7 +44,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	private JButton rewindButton, playButton, stopButton, ffButton;
 	private ConfigScreen configScreen = null;
 	private SimResScreen simResScreen = null;
-	private boolean isInConfiguration, isInSimulation, isPaused;
+	private boolean isInConfiguration, isInSimulation, isPaused, skipToEnd;
 	private SimulationProgressBar simPBar;
 	
 	// universal cross-platform newline
@@ -89,6 +88,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		addComponentListener(this);
 		goConfiguration();
+		World.addObserver(this);	// Move back
 		setVisible(true);
 	}
 
@@ -98,7 +98,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 			remove(simResScreen);
 		if (configScreen == null)
 			configScreen = new ConfigScreen();
-		add(configScreen);
+		if (!isAncestorOf(configScreen))
+			add(configScreen);
 
 		rewind.setEnabled(false);
 		play.setEnabled(true);
@@ -138,10 +139,13 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		playButton.setEnabled(true);
 		stopButton.setEnabled(true);
 		ffButton.setEnabled(true);
+		World world = World.getInstance();
+		simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
 		
 		isInConfiguration = false;
 		isInSimulation = true;
 		isPaused = false;
+		skipToEnd = false;
 		
 		// repaint has no effect here
 		simResScreen.revalidate();
@@ -178,17 +182,20 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	
 	public void reset() {
 		// this clears configuration screen
+		/* if configScreen get update from DAO, below is not needed
 		if ((configScreen != null)
 				&& isAncestorOf(configScreen))
 		remove(configScreen);
 		configScreen = new ConfigScreen();
+		*/
 		goConfiguration();
 	}
 	
 	public void updateWorld( World world ) {
-		if (isInSimulation && (simResScreen != null))
-			simResScreen.updateWorld(world);
+		if (isInSimulation && (simResScreen != null)) {
+			if (!skipToEnd) simResScreen.updateWorld(world);
 			simPBar.gotoNextTick();
+		}
 	}
 
 	public void update(Observable arg0, Object arg1)
@@ -372,9 +379,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	{
          			Command command = CommandFactory.getStartSimulationCommand();
         			command.execute();
-        			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());
-        			World world = World.getInstance();
-        			simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
+        			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());	// moved to goSimulation()
             		BaseGUI.getInstance().goSimulation();
             	}
             	else
@@ -621,9 +626,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     		if (isInConfiguration) {
      			Command command = CommandFactory.getStartSimulationCommand();
     			command.execute();
-    			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());
-    			World world = World.getInstance();
-    			simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
+    			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());	// moved to goSimulation()
       			goSimulation();
      		}
     		else if (isInSimulation) {
@@ -653,6 +656,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     	{
   			Command command = CommandFactory.getFinishSimulationCommand();
  			command.execute();
+ 			skipToEnd = true;
     	}
     	else
     	{
@@ -701,4 +705,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 	}	
     
+	public void notifyTheEnd() {
+		if (isInSimulation && (simResScreen != null)) {
+			goResults();
+		}
+	}
 }
