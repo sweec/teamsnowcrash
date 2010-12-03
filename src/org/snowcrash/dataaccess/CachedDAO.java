@@ -163,8 +163,8 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 		}
 	}
 	
-	public void notifyChanged() {
-		setChanged();
-		notifyObservers();
+	public void nuke()
+	{
+		database = new HashMap<Class<?>,CachedTable<? extends DatabaseObject>>();
 	}
 }
