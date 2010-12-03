@@ -14,7 +14,6 @@ import javax.swing.JTabbedPane;
 import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.CritterTemplate;
-import org.snowcrash.critter.testCritterTemplate;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
@@ -30,8 +29,9 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	public static final int HEIGHT = 600;	// minimum window height
 	
 	JTabbedPane tabPane1, tabPane2, tabPane3;
+	WorldPanel worldConfig;
 	
-	private CritterPanel critterPanel = new CritterPanel();
+	TraitsPanel traitsConfig = new TraitsPanel(this);
 	
 	public ConfigScreen()
 	{
@@ -43,7 +43,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		// get the critter panel and add a tab
 		JPanel cPanel = new CritterPanel();
 		tabPane1 = new JTabbedPane();
-		tabPane1.addTab("Critters", critterPanel);
+		tabPane1.addTab("Critters", cPanel);
 		tabPane1.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane1.setPreferredSize(new Dimension
 				((WIDTH - 20) / 3, Short.MAX_VALUE));
@@ -52,7 +52,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		// get the traits panel and add a tab
-		TraitsPanel traitsConfig = new TraitsPanel( this );
+		traitsConfig = new TraitsPanel(this);
 		cPanel = traitsConfig.TraitsPanel();
 		tabPane2 = new JTabbedPane();
 		tabPane2.addTab("Traits", cPanel);
@@ -65,7 +65,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		
 		// get the world panel and add a tab
 		JScrollPane cScroll = new JScrollPane();
-		WorldPanel worldConfig = new WorldPanel();
+		worldConfig = new WorldPanel();
 		cScroll = worldConfig.WorldPanel();
 		tabPane3 = new JTabbedPane();
 		tabPane3.addTab("World Settings", cScroll);
@@ -77,21 +77,42 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		configPanel.add(Box.createRigidArea(new Dimension(5,0)));
 	}
 	
+	public void cancelTraits()
+	{
+		tabPane2.removeAll();
+		traitsConfig = new TraitsPanel(this);
+		tabPane2.add(traitsConfig.TraitsPanel());
+		tabPane2.repaint();
+	}
+	
+	public void showTraits(CritterTemplate template)
+	{
+		tabPane2.removeAll();
+		traitsConfig = new TraitsPanel(this);
+		tabPane2.add(traitsConfig.TraitsPanel(template));
+		tabPane2.repaint();
+	}
+	
+	public int getTotalTurns()
+	{
+		return worldConfig.getTotalTurns();
+	}
+	
 	// DAO changed, update critterPanel
 	// here replaced by new critterPanel
 	public void update() {
-		DatabaseObject[] objects;
+		DatabaseObject[] objects = null;
 		DAO dao = DAOFactory.getDAO();
 		try {
-			//objects = dao.read( CritterTemplate.class );
-			objects = dao.read( testCritterTemplate.class );
+			objects = dao.read( CritterTemplate.class );
 		} catch (DAOException e) {
-			throw new RuntimeException( e );
+			//Do nothing
 		}
-		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>(objects.length);
-		int i;
-		for (i = 0;i < objects.length;i++)
-			critterTemplates.add((CritterTemplate) (objects[i]));
+		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>();
+		if (objects != null) {
+			for (int i = 0;i < objects.length;i++)
+				critterTemplates.add((CritterTemplate) (objects[i]));
+		}
 		CritterPanel cPanel = new CritterPanel();
 		cPanel.addData(critterTemplates);
 		tabPane1.setComponentAt(tabPane1.indexOfTab("Critters"), cPanel);
@@ -138,11 +159,6 @@ public class ConfigScreen extends JPanel implements SelectionListener
        }
     }
 	
-	public void clearSelections()
-	{
-		critterPanel.clearSelection();
-	}
-	
 	public void selectionOccurred( SelectionEvent e )
 	{
 		if ( e.getSource() instanceof CritterTemplateWidget )
@@ -157,15 +173,13 @@ public class ConfigScreen extends JPanel implements SelectionListener
 					if ( results.length == 1 && results[0] instanceof CritterTemplate )
 					{
 						CritterTemplate template = (CritterTemplate) results[0];
+						showTraits(template);
 						
-						// -- Update traits panel.
-						TraitsPanel tp = new TraitsPanel( ConfigScreen.this );
-						tabPane2.add( tp.TraitsPanel( template ) );
+						// -- TODO update traits panel
 					}
 				}
 			});
-			
-			command.execute();
+			command.execute();		
 		}
 	}
 	
