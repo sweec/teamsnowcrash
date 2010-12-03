@@ -81,6 +81,7 @@ public class World implements DatabaseObject, TimeListener {
 	private LinkedList<String> turnLog = null;
 	private static Set<WorldObserver> observers = new HashSet<WorldObserver>();
 	private ArrayList<Pair<CritterTemplate,Integer>> initTemplateList = null;
+	private Critter[][] initMap = null;
 	
 	public static void addObserver(WorldObserver observer) {
 		observers.add(observer);
@@ -347,6 +348,7 @@ public class World implements DatabaseObject, TimeListener {
 			}
 		}
 		randomPopulate(critterList.iterator());
+		initMap = map;
 	}
 
 	/**
@@ -484,5 +486,7 @@ public class World implements DatabaseObject, TimeListener {
 		return initTemplateList;
 	}
 	
-
+	public Critter[][] getInitMap() {
+		return initMap;
+	}
 }

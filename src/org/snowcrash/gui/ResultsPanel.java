@@ -47,9 +47,9 @@ public class ResultsPanel extends JPanel {
 	final private int SIZEX = 500, SIZEY = 1000;
 	
 	// critterTemplate Panel
-	private ArrayList<CritterTemplate> plantTemplates = new ArrayList<CritterTemplate>();
-	private ArrayList<CritterTemplate> preyTemplates = new ArrayList<CritterTemplate>();
-	private ArrayList<CritterTemplate> predatorTemplates = new ArrayList<CritterTemplate>();
+	private ArrayList<String> plantTemplates = new ArrayList<String>();
+	private ArrayList<String> preyTemplates = new ArrayList<String>();
+	private ArrayList<String> predatorTemplates = new ArrayList<String>();
 	private JList plantList = null, preyList = null, predatorList = null;
 	
 	// statistics Panel
@@ -84,33 +84,32 @@ public class ResultsPanel extends JPanel {
 	}
 
 	private void setupData() {
-		StatisticsCollector.initializeStatistics();
-		StatisticsCollector.calculateStatistics();
+		StatisticsCollector sc = StatisticsCollector.getInstance();
+		sc.calculateStatistics();
 		
 		DAO dao = DAOFactory.getDAO();
-		DatabaseObject[] object = null;
+		DatabaseObject[] objects = null;
 		try {
-			// get CritterTemplates
-			object = dao.read(CritterTemplate.class);
+			objects = dao.read(CritterTemplate.class);
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (object == null) return;
+		if (objects == null) return;
 		int i;
-		for (i = 0;i < object.length;i++) {
-			CritterTemplate template = (CritterTemplate) (object[i]);
-			if (template.getStartPopulation() == 0) continue;
+		for (i = 0;i < objects.length;i++) {
+			CritterTemplate template = (CritterTemplate) (objects[i]);
+			String name = template.getName();
+			if (sc.getStartPopulation(name) == 0) continue;
 			CritterPrototype type = template.getPrototype();
 			switch (type) {
 			case PLANT:
-				plantTemplates.add(template);
+				plantTemplates.add(name);
 				break;
 			case PREY:
-				preyTemplates.add(template);
+				preyTemplates.add(name);
 				break;
 			case PREDATOR:
-				predatorTemplates.add(template);
+				predatorTemplates.add(name);
 				break;
 			}
 		}
@@ -128,7 +127,7 @@ public class ResultsPanel extends JPanel {
 		plants.setLayout(new BorderLayout());
 		ListModel plantModel = new AbstractListModel() {
 		    public int getSize() { return plantTemplates.size(); }
-		    public Object getElementAt(int index) { return ((CritterTemplate)plantTemplates.get(index)).getName(); }
+		    public Object getElementAt(int index) { return plantTemplates.get(index); }
 		};
 		plantList = new JList(plantModel);
 		plantList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -149,7 +148,7 @@ public class ResultsPanel extends JPanel {
 		preys.setLayout(new BorderLayout());
 		ListModel preyModel = new AbstractListModel() {
 		    public int getSize() { return preyTemplates.size(); }
-		    public Object getElementAt(int index) { return ((CritterTemplate)preyTemplates.get(index)).getName(); }
+		    public Object getElementAt(int index) { return preyTemplates.get(index); }
 		};
 		preyList = new JList(preyModel);
 		preyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -168,7 +167,7 @@ public class ResultsPanel extends JPanel {
 		predators.setLayout(new BorderLayout());
 		ListModel predatorModel = new AbstractListModel() {
 		    public int getSize() { return predatorTemplates.size(); }
-		    public Object getElementAt(int index) { return ((CritterTemplate)predatorTemplates.get(index)).getName(); }
+		    public Object getElementAt(int index) { return predatorTemplates.get(index); }
 		};
 		predatorList = new JList(predatorModel);
 		predatorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -244,32 +243,41 @@ public class ResultsPanel extends JPanel {
 	}
 	
 	private void updateSelection(CritterPrototype type) {
-		CritterTemplate template = null;
-		
+		String name = null;
 		switch (type) {
 		case PLANT:
 			if (plantList.isSelectionEmpty()) return;
 			if (preyList != null) preyList.clearSelection();
 			if (predatorList != null) predatorList.clearSelection();
 			critterImage.setIcon(plant);
-			template = plantTemplates.get(plantList.getSelectedIndex());
+			name = plantTemplates.get(plantList.getSelectedIndex());
 			break;
 		case PREY:
 			if (preyList.isSelectionEmpty()) return;
 			if (plantList != null) plantList.clearSelection();
 			if (predatorList != null) predatorList.clearSelection();
 			critterImage.setIcon(prey);
-			template = preyTemplates.get(preyList.getSelectedIndex());
+			name = preyTemplates.get(preyList.getSelectedIndex());
 			break;
 		case PREDATOR:
 			if (predatorList.isSelectionEmpty()) return;
 			if (plantList != null) plantList.clearSelection();
 			if (preyList != null) preyList.clearSelection();
 			critterImage.setIcon(predator);
-			template = predatorTemplates.get(predatorList.getSelectedIndex());
+			name = predatorTemplates.get(predatorList.getSelectedIndex());
 			break;
 		}
 		
+		DAO dao = DAOFactory.getDAO();
+		CritterTemplate template = null;
+		try {
+			template = (CritterTemplate) dao.read(CritterTemplate.class, name);
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		if (template == null) return;
+		
+		critterName.setText("Name: " + name);
 		Size size = template.getSize();
 		switch (size) {
 		case SMALL:
@@ -283,25 +291,24 @@ public class ResultsPanel extends JPanel {
 			break;
 		}
 		
-		critterName.setText("Name: " + template.getName());
+		StatisticsCollector sc = StatisticsCollector.getInstance();
+		startPopulation.setText("Start: " + sc.getStartPopulation(name));
+		endPopulation.setText("End: " + sc.getEndPopulation(name));
+		totalPopulation.setText("Total: " + sc.getTotalPopulation(name));
+		minAge.setText("Min age: " + sc.getMinAge(name));
+		maxAge.setText("Max age: " + sc.getMaxAge(name));
+		averageAge.setText("Average age: " + sc.getAverageAge(name));
 		
-		startPopulation.setText("Start: " + template.getStartPopulation());
-		endPopulation.setText("End: " + template.getEndPopulation());
-		totalPopulation.setText("Total: " + template.getTotalPopulation());
-		minAge.setText("Min age: " + template.getMinAge());
-		maxAge.setText("Max age: " + template.getMaxAge());
-		averageAge.setText("Average age: " + template.getAverageAge());
-		
-		startTraitsLabel.get(Trait.CAMO).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.CAMO)));
-		endTraitsLabel.get(Trait.CAMO).setText(String.format("End: %1.1f", template.getStartTrait(Trait.CAMO)));
-		startTraitsLabel.get(Trait.COMBAT).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.COMBAT)));
-		endTraitsLabel.get(Trait.COMBAT).setText(String.format("End: %1.1f", template.getStartTrait(Trait.COMBAT)));
-		startTraitsLabel.get(Trait.ENDURANCE).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.ENDURANCE)));
-		endTraitsLabel.get(Trait.ENDURANCE).setText(String.format("End: %1.1f", template.getStartTrait(Trait.ENDURANCE)));
-		startTraitsLabel.get(Trait.SPEED).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.SPEED)));
-		endTraitsLabel.get(Trait.SPEED).setText(String.format("End: %1.1f", template.getStartTrait(Trait.SPEED)));
-		startTraitsLabel.get(Trait.VISION).setText(String.format("Start: %1.1f", template.getStartTrait(Trait.SPEED)));
-		endTraitsLabel.get(Trait.VISION).setText(String.format("End: %1.1f", template.getStartTrait(Trait.VISION)));
+		startTraitsLabel.get(Trait.CAMO).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.CAMO)));
+		endTraitsLabel.get(Trait.CAMO).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.CAMO)));
+		startTraitsLabel.get(Trait.COMBAT).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.COMBAT)));
+		endTraitsLabel.get(Trait.COMBAT).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.COMBAT)));
+		startTraitsLabel.get(Trait.ENDURANCE).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.ENDURANCE)));
+		endTraitsLabel.get(Trait.ENDURANCE).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.ENDURANCE)));
+		startTraitsLabel.get(Trait.SPEED).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.SPEED)));
+		endTraitsLabel.get(Trait.SPEED).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.SPEED)));
+		startTraitsLabel.get(Trait.VISION).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.SPEED)));
+		endTraitsLabel.get(Trait.VISION).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.VISION)));
 	}
 	
 	private ImageIcon resizeIcon(ImageIcon origIcon) // resizes the critter icon
