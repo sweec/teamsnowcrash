@@ -14,6 +14,9 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
+
 public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 {
 	public static final int SIZEMIN = 20;		// minimum value for each slider
@@ -23,7 +26,9 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 	
 	JSlider worldSlider;
 	JLabel currentSizeLabel, currentTurnsLabel;
-	JTextField worldTurns;
+	JTextField TurnsField;
+	int worldTurns = TURNSINIT;
+	int worldSize = SIZEINIT;
 	
 	public JScrollPane WorldPanel()
 	{
@@ -57,8 +62,7 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
-		String initWorldSize = Integer.toString(SIZEINIT);
-		currentSizeLabel = new JLabel(initWorldSize + " X " + initWorldSize);
+		currentSizeLabel = new JLabel(SIZEINIT + " X " + SIZEINIT);
 		currentSizeLabel.setAlignmentX(CENTER_ALIGNMENT);
 		cPanel.add(currentSizeLabel);
 		
@@ -71,11 +75,11 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
 		// allows the user to change the number of turns
-		worldTurns = new JTextField(10);
-		worldTurns.setActionCommand("jtext");
-		worldTurns.setMaximumSize( worldTurns.getPreferredSize() );
-		worldTurns.setAlignmentX(CENTER_ALIGNMENT);
-		cPanel.add(worldTurns);
+		TurnsField = new JTextField(10);
+		TurnsField.setActionCommand("jtext");
+		TurnsField.setMaximumSize( TurnsField.getPreferredSize() );
+		TurnsField.setAlignmentX(CENTER_ALIGNMENT);
+		cPanel.add(TurnsField);
 		
 		cPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
@@ -88,43 +92,53 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 		cScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		cScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		
-		worldTurns.addActionListener(this);
+		TurnsField.addActionListener(this);
 		
 		return cScroll;
 	}
 	
+	public int getTotalTurns()
+	{
+		return worldTurns;
+	}
+	
 	public void stateChanged(ChangeEvent e) // event handler for the "World Size" slider
 	{
+		worldSize = worldSlider.getValue();
 		if (e.getSource().equals(this.worldSlider) 
 				&& !worldSlider.getValueIsAdjusting())
 		{
-			// do something
+			Command command = CommandFactory.getSetWorldSizeCommand(worldSize);
+			command.execute();
 		}
 		else
 		{
-			String worldSize = Integer.toString(worldSlider.getValue());
 			currentSizeLabel.setText(worldSize + " X " + worldSize);
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) // event handler for the "World Turns"
 	{
-		try // ensure that turnsint is a number
+		try // ensure that worldTurns is a number
 		{
-			int turnsint = Integer.parseInt(worldTurns.getText().trim());
-			if (turnsint >= 10 && turnsint <= 100)
+			int prevWorldTurns = worldTurns;
+			worldTurns = Integer.parseInt(TurnsField.getText().trim());
+			if (worldTurns >= 10 && worldTurns <= 100)
 			{
-				currentTurnsLabel.setText(worldTurns.getText());
-				worldTurns.setText("");
+				currentTurnsLabel.setText(TurnsField.getText());
+				TurnsField.setText("");
+				Command command = CommandFactory.getSetNumberOfTurnsCommand(worldTurns);
+    			command.execute();
 			}
 			else
 			{
-				worldTurns.setText("");
+				TurnsField.setText("");
+				worldTurns = prevWorldTurns;
 			}
 		}
 		catch (NumberFormatException err) 
 		{
-			worldTurns.setText("");
+			TurnsField.setText("");
 		} 
 	}
 }
