@@ -41,7 +41,9 @@ class TestDAO extends Observable implements DAO {
 		return null;
 	}
 
-	public void notifyChanged() {
-		setChanged();
+	@Override
+	public void nuke() {
+		// TODO Auto-generated method stub
+		
 	}
 }

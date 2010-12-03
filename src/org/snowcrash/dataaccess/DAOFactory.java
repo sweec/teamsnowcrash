@@ -11,8 +11,8 @@ public class DAOFactory {
 		// -- Static class.
 	}
 
-	public static DAO getDAO() {
-		return SINGLETON_DAO;
+	public static SessionedDAO getDAO() {
+		return new SessionedDAO( SINGLETON_DAO );
 	}
 	
 	public static DAO getTestDAO()

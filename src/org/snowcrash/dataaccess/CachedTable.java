@@ -196,4 +196,9 @@ class CachedTable<T extends DatabaseObject> extends Observable implements DAO, D
 					UNSUPPORTED_TYPE_MESSAGE, type.getSimpleName() ) );
 		}
 	}
+	
+	public void nuke()
+	{
+		table = new HashMap<Object,T>();
+	}
 }
