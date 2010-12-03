@@ -7,7 +7,7 @@ import java.util.Observable;
 import org.snowcrash.utilities.CloningUtility;
 
 
-class SessionedDAO extends Observable implements DAO, DAOExceptionMessages
+public class SessionedDAO extends Observable implements DAO, DAOExceptionMessages
 {
 	private static final SessionedDAO READ_LOCK_SESSION = new SessionedDAO( null );
 	
