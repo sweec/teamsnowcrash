@@ -299,23 +299,30 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 	{
 		if ( hasLock( o.getClass(), this ) )
 		{
-			if ( ( isInDatabase( o.getClass(), o.getId() ) && !isDeleted( o.getClass(), o.getId() ) ) ||
-					isCached( o.getClass(), o.getId() ) )
+			if ( isSessioned )
 			{
-				throw new InvalidInputDAOException( ALREADY_EXISTS_MESSAGE );
+				if ( ( isInDatabase( o.getClass(), o.getId() ) && !isDeleted( o.getClass(), o.getId() ) ) ||
+						isCached( o.getClass(), o.getId() ) )
+				{
+					throw new InvalidInputDAOException( ALREADY_EXISTS_MESSAGE );
+				}
+				else
+				{
+					CachedTable<? extends DatabaseObject> table = cache.get( o.getClass() );
+					
+					if ( table == null )
+					{
+						table = new CachedTable( o.getClass() );
+						cache.put( o.getClass(), table );
+					}
+					
+					DatabaseObject clone = CloningUtility.clone( o );
+					table.create( clone );
+				}
 			}
 			else
 			{
-				CachedTable<? extends DatabaseObject> table = cache.get( o.getClass() );
-				
-				if ( table == null )
-				{
-					table = new CachedTable( o.getClass() );
-					cache.put( o.getClass(), table );
-				}
-				
-				DatabaseObject clone = CloningUtility.clone( o );
-				table.create( clone );
+				delegate.create( o );
 			}
 		}
 		else
@@ -339,29 +346,36 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 		
 		if ( hasLock( type, READ_LOCK_SESSION ) )
 		{
-			Map<Object,DatabaseObject> resultMap = new HashMap<Object,DatabaseObject>();
-			
-			results = delegate.read( type );
-			
-			for ( DatabaseObject result : results )
+			if ( isSessioned )
 			{
-				if ( !isDeleted( result.getClass(), result.getId() ) )
+				Map<Object,DatabaseObject> resultMap = new HashMap<Object,DatabaseObject>();
+				
+				results = delegate.read( type );
+				
+				for ( DatabaseObject result : results )
 				{
-					resultMap.put( result.getId(), result );
+					if ( !isDeleted( result.getClass(), result.getId() ) )
+					{
+						resultMap.put( result.getId(), result );
+					}
 				}
+				
+				CachedTable<? extends DatabaseObject> table = cache.get( type );
+				
+				if ( table != null )
+				{
+					for ( DatabaseObject result : table.read( type ) )
+					{
+						resultMap.put( result.getId(), result );
+					}
+				}
+				
+				results = resultMap.values().toArray( results );
 			}
-			
-			CachedTable<? extends DatabaseObject> table = cache.get( type );
-			
-			if ( table != null )
+			else
 			{
-				for ( DatabaseObject result : table.read( type ) )
-				{
-					resultMap.put( result.getId(), result );
-				}
+				results = delegate.read( type );
 			}
-			
-			results = resultMap.values().toArray( results );
 		}
 		else
 		{
@@ -386,23 +400,30 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 		
 		if ( hasLock( type, id, READ_LOCK_SESSION ) )
 		{
-			result = delegate.read( type, id );
-			
-			if ( isDeleted( type, id ) )
+			if ( isSessioned )
 			{
-				result = null;
-			}
-			
-			CachedTable<? extends DatabaseObject> table = cache.get( type );
-			
-			if ( table != null )
-			{
-				DatabaseObject object = table.read( type, id );
+				result = delegate.read( type, id );
 				
-				if ( object != null )
+				if ( isDeleted( type, id ) )
 				{
-					result = object;
+					result = null;
 				}
+				
+				CachedTable<? extends DatabaseObject> table = cache.get( type );
+				
+				if ( table != null )
+				{
+					DatabaseObject object = table.read( type, id );
+					
+					if ( object != null )
+					{
+						result = object;
+					}
+				}
+			}
+			else
+			{
+				result = delegate.read( type, id );
 			}
 		}
 		else
@@ -427,24 +448,31 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 	{
 		if ( hasLock( o.getClass(), o.getId(), this ) )
 		{
-			if ( ( !isInDatabase( o.getClass(), o.getId() ) && !isCached( o.getClass(), o.getId() ) ) ||
-					( isInDatabase( o.getClass(), o.getId() ) && isDeleted( o.getClass(), o.getId() ) &&
-							!isCached( o.getClass(), o.getId() ) ) )
+			if ( isSessioned )
 			{
-				throw new InvalidInputDAOException( DOES_NOT_EXIST_MESSAGE );
+				if ( ( !isInDatabase( o.getClass(), o.getId() ) && !isCached( o.getClass(), o.getId() ) ) ||
+						( isInDatabase( o.getClass(), o.getId() ) && isDeleted( o.getClass(), o.getId() ) &&
+								!isCached( o.getClass(), o.getId() ) ) )
+				{
+					throw new InvalidInputDAOException( DOES_NOT_EXIST_MESSAGE );
+				}
+				else
+				{
+					CachedTable<? extends DatabaseObject> table = cache.get( o.getClass() );
+					
+					if ( table == null )
+					{
+						table = new CachedTable( o.getClass() );
+						cache.put( o.getClass(), table );
+					}
+					
+					DatabaseObject clone = CloningUtility.clone( o );
+					table.update( clone );
+				}
 			}
 			else
 			{
-				CachedTable<? extends DatabaseObject> table = cache.get( o.getClass() );
-				
-				if ( table == null )
-				{
-					table = new CachedTable( o.getClass() );
-					cache.put( o.getClass(), table );
-				}
-				
-				DatabaseObject clone = CloningUtility.clone( o );
-				table.update( clone );
+				delegate.update( o );
 			}
 		}
 		else
@@ -479,31 +507,38 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				DatabaseObject objectInDb = delegate.read( type, id );
-				
-				if ( objectInDb != null )
+				if ( isSessioned )
 				{
-					CachedTable<? extends DatabaseObject> table = deleted.get( type );
+					DatabaseObject objectInDb = delegate.read( type, id );
 					
-					if ( table == null )
+					if ( objectInDb != null )
 					{
-						table = new CachedTable( type );
-						deleted.put( type, table );
+						CachedTable<? extends DatabaseObject> table = deleted.get( type );
+						
+						if ( table == null )
+						{
+							table = new CachedTable( type );
+							deleted.put( type, table );
+						}
+						
+						table.create( objectInDb );
 					}
 					
-					table.create( objectInDb );
+					CachedTable<? extends DatabaseObject> table = cache.get( type );
+					
+					if ( table != null )
+					{
+						DatabaseObject objectInCache = table.read( type, id );
+						
+						if ( objectInCache != null )
+						{
+							table.delete( objectInCache );
+						}
+					}
 				}
-				
-				CachedTable<? extends DatabaseObject> table = cache.get( type );
-				
-				if ( table != null )
+				else
 				{
-					DatabaseObject objectInCache = table.read( type, id );
-					
-					if ( objectInCache != null )
-					{
-						table.delete( objectInCache );
-					}
+					delegate.delete( type, id );
 				}
 			}
 		}
