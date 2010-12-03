@@ -1,6 +1,3 @@
-import java.util.Observable;
-import java.util.Observer;
-
 import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
@@ -38,8 +35,8 @@ public class Main
 		// -- Run GUI.
 		BaseGUI screenManager = new BaseGUI();
 		
-		// -- Run GUI.
-		ConfigScreen cs = new ConfigScreen();
-		cs.setVisible( true );
+		// -- Make BaseGUI observer to DAO and World
+		dao.addObserver(screenManager);
+		World.addObserver(screenManager);
 	}
 }
