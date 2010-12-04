@@ -180,11 +180,11 @@ public class FileManager implements IFileManager {
 		dao.nuke();
 		
 		World world = World.reset();
-		try {
+		/*try {
 			dao.create( world );
 		} catch (DAOException e) {
 			throw new RuntimeException( e );
-		}
+		}*/
 		// database change will notifyObserver here
 		loadCritterTemplates(defaultCritterTemplatesFile);
 		World.removeObserver(StatisticsCollector.getInstance());
