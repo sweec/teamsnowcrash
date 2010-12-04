@@ -1,6 +1,8 @@
 package org.snowcrash.utilities;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 
 public class CloningUtility
@@ -17,7 +19,10 @@ public class CloningUtility
 		
 		try
 		{
-			clone = (T) bean.getClass().newInstance();
+			Constructor<?> constructor = bean.getClass().getDeclaredConstructor();
+			constructor.setAccessible( true );
+			clone = (T) constructor.newInstance();
+			constructor.setAccessible( false );
 			
 			for ( Class<?> clazz = bean.getClass(); !Object.class.equals( clazz ); clazz = clazz.getSuperclass() )
 			{
@@ -34,6 +39,22 @@ public class CloningUtility
 			e.printStackTrace();
 		}
 		catch (IllegalAccessException e)
+		{
+			e.printStackTrace();
+		}
+		catch (SecurityException e)
+		{
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
+		catch (InvocationTargetException e)
 		{
 			e.printStackTrace();
 		}
