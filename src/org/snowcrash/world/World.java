@@ -104,6 +104,7 @@ public class World implements DatabaseObject, TimeListener {
 		this.currentPos = new Pair<Integer, Integer> (0,0);
 		this.turnLog = new LinkedList<String>();
 		this.turnDeaths = new ArrayList<Critter>();
+		this.map = new Critter[sizeX][sizeY];
 		instance = this;	// needed for load simulation since instance is not saved
 	}
 	
