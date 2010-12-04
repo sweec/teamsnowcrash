@@ -11,6 +11,7 @@ import java.util.Observable;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -38,6 +39,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 {
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
+	
+	private static final Icon playIcon = new ImageIcon( "images/Play24.gif" );
+	private static final Icon pauseIcon = new ImageIcon( "images/Pause24.gif" );
 	
 	// objects for the menus and media panel
 	private JMenuItem rewind, play, stop, ff, saveSim;
@@ -111,6 +115,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		playButton.setEnabled(true);
 		stopButton.setEnabled(false);
 		ffButton.setEnabled(false);
+		
+		playButton.setIcon( playIcon );
 		
 		isInConfiguration = true;
 		isInSimulation = false;
@@ -414,7 +420,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		simulation.add(rewind);
 		
 		// menu item - "Play/Pause Simulation"
-		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		play = new JMenuItem("Play/Pause", playIcon);
 		simulation.add(play);
 		
@@ -559,14 +564,10 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		// play/pause button
 		playButton = new JButton();
-		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
 		playButton.setIcon(playIcon);		
 		playButton.setActionCommand("Play/Pause");
 		playButton.setToolTipText("Play/Pause");
 		playButton.setAlignmentY(TOP_ALIGNMENT);
-		
-		// pause icon for play/pause button
-		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
 		
 		// stop button, aka "Abort to Results"
 		stopButton = new JButton();
@@ -610,16 +611,26 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	// event handler for simulation menu and media panel
 	public void actionPerformed(ActionEvent e)
 	{	
-		ImageIcon playIcon = new ImageIcon("images/Play24.gif");
-		ImageIcon pauseIcon = new ImageIcon("images/Pause24.gif");
-		
 		if (e.getActionCommand().equals("Back to Configuration")) // rewind
     	{
+			Command pause = CommandFactory.getPauseSimulationCommand();
+			pause.execute();
+			
 			// warning user the simulation data will be lost
+			Command timerCommand = null;
 			String message = "This will clear current simulation/results. Go ahead?";
-			if (JOptionPane.showConfirmDialog(this, message) == JOptionPane.YES_OPTION) { 
+			int answer = JOptionPane.showConfirmDialog( this, message, "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+			if (answer == JOptionPane.YES_OPTION) { 
 				if (!isInConfiguration) goConfiguration();
+				
+				timerCommand = CommandFactory.getStopSimulationCommand();
 			}
+			else
+			{
+				timerCommand = CommandFactory.getResumeSimulationCommand();
+			}
+			
+			timerCommand.execute();
     	}
     	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
@@ -627,17 +638,18 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
      			Command command = CommandFactory.getStartSimulationCommand();
     			command.execute();
     			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());	// moved to goSimulation()
+    			playButton.setIcon( pauseIcon );
       			goSimulation();
      		}
     		else if (isInSimulation) {
     			if (isPaused) {
     				isPaused = false;
-    				playButton.setIcon(playIcon);		
+    				playButton.setIcon(pauseIcon);
          			Command command = CommandFactory.getResumeSimulationCommand();
         			command.execute();
     			} else {
     				isPaused = true;
-    				playButton.setIcon(pauseIcon);		
+    				playButton.setIcon(playIcon);
          			Command command = CommandFactory.getPauseSimulationCommand();
         			command.execute();
     			}
@@ -657,10 +669,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
   			Command command = CommandFactory.getFinishSimulationCommand();
  			command.execute();
  			skipToEnd = true;
-    	}
-    	else
-    	{
-    		// Do nothing
     	}
 	}
 	
