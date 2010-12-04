@@ -274,8 +274,8 @@ public class World implements DatabaseObject, TimeListener {
 		int currY = currentPos.getRight();
 		for (;currX < sizeX; currX++) {
 			for (;currY < sizeY; currY++) {
-				System.out.println("Map At: " + currX + "," + currY);
 				if (map[currX][currY] != null) {
+					System.out.println("Map At: " + currX + "," + currY);
 					isNext = true;
 					currentPos = new Pair<Integer, Integer>(currX, currY);
 					return true;
