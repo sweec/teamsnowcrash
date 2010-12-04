@@ -21,6 +21,7 @@ import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
 import org.snowcrash.gui.widgets.MultiPanelList;
 import org.snowcrash.gui.widgets.SelectableComponent;
+import org.snowcrash.utilities.Callback;
 import org.snowcrash.utilities.SelectionEvent;
 import org.snowcrash.utilities.SelectionListener;
 
@@ -40,6 +41,10 @@ public class CritterPanel extends JPanel implements SelectionListener
 	private MultiPanelList list = new MultiPanelList( PLANTS_TITLE, PREY_TITLE, PREDATORS_TITLE );
 	
 	private List<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
+	
+	private SelectableComponent<CritterTemplateWidget> currentSelection = null;
+	
+	private ConfigScreen parentRef = null;
 	
 	public CritterPanel()
 	{
@@ -64,6 +69,11 @@ public class CritterPanel extends JPanel implements SelectionListener
 	public void removeSelectionListener( SelectionListener listener )
 	{
 		selectionListeners.remove( listener );
+	}
+	
+	public void setParent( ConfigScreen parent )
+	{
+		parentRef = parent;
 	}
 	
 	public String getSelectedCritterName()
@@ -105,8 +115,14 @@ public class CritterPanel extends JPanel implements SelectionListener
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void selectionOccurred( SelectionEvent e )
 	{
+		if ( e.getSource() instanceof SelectableComponent )
+		{
+			currentSelection = (SelectableComponent<CritterTemplateWidget>) e.getSource();
+		}
+		
 		// -- Pass the event to listeners.
 		for ( SelectionListener selectionListener : selectionListeners )
 		{
@@ -182,18 +198,32 @@ public class CritterPanel extends JPanel implements SelectionListener
 		{
 			public void actionPerformed( ActionEvent e )
 			{
-				if ( e.getSource() instanceof SelectableComponent )
+				JComponent component = currentSelection.getDelegate();
+				
+				if ( component instanceof CritterTemplateWidget )
 				{
-					JComponent component = ( (SelectableComponent<?>) e.getSource() ).getDelegate();
+					String critterTemplateName = ( (CritterTemplateWidget) component ).getCritterTemplateName();
 					
-					if ( component instanceof CritterTemplateWidget )
+					Command readCommand = CommandFactory.getRetrieveTemplateCommand(critterTemplateName, new Callback()
 					{
-						String critterTemplateName = ( (CritterTemplateWidget) component ).getCritterTemplateName();
-						
-						Command deleteCommand = CommandFactory.getDeleteTemplateCommand( critterTemplateName );
-						deleteCommand.execute();
-						
-						list.removeItemFromList( critterTemplateName );
+						public void callback( Object ... results )
+						{
+							if ( results.length == 1 && results[0] instanceof CritterTemplate )
+							{
+								CritterTemplate template = (CritterTemplate) results[0];
+								
+								Command deleteCommand = CommandFactory.getDeleteTemplateCommand( template );
+								deleteCommand.execute();
+							}
+						}
+					});
+					readCommand.execute();
+					
+					list.removeItemFromList( critterTemplateName );
+					
+					if ( parentRef != null )
+					{
+						parentRef.cancelTraits();
 					}
 				}
 				

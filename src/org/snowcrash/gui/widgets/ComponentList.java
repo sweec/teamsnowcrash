@@ -52,6 +52,7 @@ public class ComponentList<T extends JComponent & Selectable> extends Box
 		
 		selectables.remove( component );
 		
+		super.validate();
 		super.repaint();
 	}
 	
