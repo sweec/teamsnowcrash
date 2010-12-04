@@ -48,6 +48,7 @@ public class CritterTemplate implements DatabaseObject {
 	protected String name;
 	protected String uuid;
 	private HashMap<Trait, Pair<Integer,Integer>> traitRange;
+	protected int startingInstancesCount = 0;
 
 	/**
 	 *  No-args constructor required by gson
@@ -91,6 +92,11 @@ public class CritterTemplate implements DatabaseObject {
 	public Pair<Integer,Integer> getTraitRange(Trait trait) {
 		return traitRange.get(trait);
 	}
+	
+	public int getStartingInstancesCount()
+	{
+		return startingInstancesCount;
+	}
 
 	public String getUuid() {
 		return uuid;
@@ -110,6 +116,11 @@ public class CritterTemplate implements DatabaseObject {
 
 	public void setTraitRange(Trait trait, Pair<Integer,Integer> range) {
 		traitRange.put(trait, range);
+	}
+	
+	public void setStartingInstancesCount( int startingInstancesCount )
+	{
+		this.startingInstancesCount = startingInstancesCount;
 	}
 
 	@Override

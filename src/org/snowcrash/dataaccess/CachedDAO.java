@@ -45,6 +45,8 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 		 */
 		DatabaseObject clone = CloningUtility.clone( o );
 		table.create( clone );
+		
+		setChanged();
 	}
 	
 	/*
@@ -117,6 +119,8 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 			 */
 			DatabaseObject clone = CloningUtility.clone( o );
 			table.update( clone );
+			
+			setChanged();
 		}
 		else
 		{
@@ -139,6 +143,8 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 			 * Any exceptions from the table are automatically passed up.
 			 */
 			table.delete( o );
+			
+			setChanged();
 		}
 		else
 		{
@@ -161,6 +167,8 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 			 * Any exceptions from the table are automatically passed up.
 			 */
 			table.delete( type, id );
+			
+			setChanged();
 		}
 		else
 		{

@@ -1,7 +1,5 @@
 package org.snowcrash.gui.widgets;
 
-import java.awt.Color;
-
 
 public class CritterTemplateDeselectionBehavior implements SelectionStateBehavior<CritterTemplateWidget>
 {
@@ -19,7 +17,7 @@ public class CritterTemplateDeselectionBehavior implements SelectionStateBehavio
 	
 	public void execute( CritterTemplateWidget object )
 	{
-		object.setBackground(Color.LIGHT_GRAY);
 		object.setOpaque(false);
+		object.setBorder(null);
 	}
 }

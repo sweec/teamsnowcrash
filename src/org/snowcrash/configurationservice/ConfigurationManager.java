@@ -1,7 +1,5 @@
 package org.snowcrash.configurationservice;
 
-import java.util.Arrays;
-
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;

@@ -12,7 +12,9 @@ public class DAOFactory {
 	}
 
 	public static SessionedDAO getDAO() {
-		return new SessionedDAO( SINGLETON_DAO );
+		SessionedDAO session = new SessionedDAO( SINGLETON_DAO );
+		
+		return session;
 	}
 	
 	public static DAO getTestDAO()
