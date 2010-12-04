@@ -148,7 +148,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 		return isAvailable;
 	}
 	
-	private static boolean isAvailable( Class<?> type, Object key )
+	private static boolean isLockAvailable( Class<?> type, Object key )
 	{
 		boolean isAvailable = false;
 		
@@ -158,7 +158,8 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			{
 				Map<Object,SessionedDAO> objectMap = objectLockMap.get( type );
 				
-				isAvailable = isLockAvailable( type ) && ( objectMap == null || !objectMap.containsKey( key ) );
+				isAvailable = ( !tableLockMap.containsKey( type ) ) && 
+						( objectMap == null || !objectMap.containsKey( key ) );
 			}
 		}
 		
@@ -322,8 +323,14 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				delegate.create( o );
-				unlock( o.getClass(), this );
+				try
+				{
+					delegate.create( o );
+				}
+				finally
+				{
+					unlock( o.getClass(), this );
+				}
 			}
 		}
 		else
@@ -375,8 +382,14 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				results = delegate.read( type );
-				unlock( type, READ_LOCK_SESSION );
+				try
+				{
+					results = delegate.read( type );
+				}
+				finally
+				{
+					unlock( type, READ_LOCK_SESSION );
+				}
 			}
 		}
 		else
@@ -425,13 +438,19 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				result = delegate.read( type, id );
-				unlock( type, id, READ_LOCK_SESSION );
+				try
+				{
+					result = delegate.read( type, id );
+				}
+				finally
+				{
+					unlock( type, id, READ_LOCK_SESSION );
+				}
 			}
 		}
 		else
 		{
-			if ( isAvailable( type, id ) )
+			if ( isLockAvailable( type, id ) )
 			{
 				lock( type, id, READ_LOCK_SESSION );
 				
@@ -475,13 +494,19 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				delegate.update( o );
-				unlock( o.getClass(), o.getId(), this );
+				try
+				{
+					delegate.update( o );
+				}
+				finally
+				{
+					unlock( o.getClass(), o.getId(), this );
+				}
 			}
 		}
 		else
 		{
-			if ( isAvailable( o.getClass(), o.getId() ) )
+			if ( isLockAvailable( o.getClass(), o.getId() ) )
 			{
 				lock( o.getClass(), o.getId(), this );
 				
@@ -542,8 +567,14 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 				}
 				else
 				{
-					delegate.delete( type, id );
-					unlock( type, this );
+					try
+					{
+						delegate.delete( type, id );
+					}
+					finally
+					{
+						unlock( type, this );
+					}
 				}
 			}
 		}
