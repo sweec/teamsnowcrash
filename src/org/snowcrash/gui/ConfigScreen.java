@@ -85,7 +85,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	{
 		tabPane2.removeAll();
 		traitsConfig = new TraitsPanel(this);
-		tabPane2.add(traitsConfig.TraitsPanel());
+		tabPane2.add("Traits", traitsConfig.TraitsPanel());
 		tabPane2.repaint();
 	}
 	
@@ -93,7 +93,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	{
 		tabPane2.removeAll();
 		traitsConfig = new TraitsPanel(this);
-		tabPane2.add(traitsConfig.TraitsPanel(template));
+		tabPane2.add("Traits", traitsConfig.TraitsPanel(template));
 		tabPane2.repaint();
 	}
 	
