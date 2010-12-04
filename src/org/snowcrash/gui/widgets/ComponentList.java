@@ -40,6 +40,7 @@ public class ComponentList<T extends JComponent & Selectable> extends Box
 		
 		selectables.add( component );
 		
+		super.validate();
 		super.repaint();
 	}
 	

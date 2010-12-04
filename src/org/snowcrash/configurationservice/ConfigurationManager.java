@@ -1,11 +1,14 @@
 package org.snowcrash.configurationservice;
 
+import java.util.Arrays;
+
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
+import org.snowcrash.dataaccess.DatabaseObject;
 
 
 public class ConfigurationManager implements IConfigurationManager
@@ -74,7 +77,13 @@ public class ConfigurationManager implements IConfigurationManager
 		
 		try
 		{
-			dao.read( CritterTemplate.class );
+			DatabaseObject[] arr = dao.read( CritterTemplate.class );
+			results = new CritterTemplate[ arr.length ];
+			
+			for ( int i = 0; i < arr.length; i++ )
+			{
+				results[i] = ( arr[i] instanceof CritterTemplate ) ? (CritterTemplate) arr[i] : null;
+			}
 		}
 		catch (DAOException e)
 		{

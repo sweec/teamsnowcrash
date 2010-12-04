@@ -44,6 +44,8 @@ public class MultiPanelList extends Box implements SelectionListener
 			panel.addSelectionListener( this );
 			add( panel );
 		}
+		
+		CritterTemplateWidget.setValidate( false );
 	}
 	
 	public void addSelectionListener( SelectionListener listener )

@@ -19,6 +19,7 @@ import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
+import org.snowcrash.gui.widgets.SelectableComponent;
 import org.snowcrash.utilities.Callback;
 import org.snowcrash.utilities.SelectionEvent;
 import org.snowcrash.utilities.SelectionListener;
@@ -41,9 +42,11 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		configPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		// get the critter panel and add a tab
-		JPanel cPanel = new CritterPanel();
+		JPanel cPanel = null;
+		CritterPanel critterPanel = new CritterPanel();
+		critterPanel.addSelectionListener( this );
 		tabPane1 = new JTabbedPane();
-		tabPane1.addTab("Critters", cPanel);
+		tabPane1.addTab("Critters", critterPanel);
 		tabPane1.setAlignmentY(BOTTOM_ALIGNMENT);
 		tabPane1.setPreferredSize(new Dimension
 				((WIDTH - 20) / 3, Short.MAX_VALUE));
@@ -161,25 +164,28 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	
 	public void selectionOccurred( SelectionEvent e )
 	{
-		if ( e.getSource() instanceof CritterTemplateWidget )
+		if ( e.getSource() instanceof SelectableComponent )
 		{
-			CritterTemplateWidget ctw = (CritterTemplateWidget) e.getSource();
-			String critterTemplateName = ctw.getCritterTemplateName();
+			SelectableComponent<?> component = (SelectableComponent<?>) e.getSource();
 			
-			Command command = CommandFactory.getRetrieveTemplateCommand(critterTemplateName, new Callback()
+			if ( component.getDelegate() instanceof CritterTemplateWidget )
 			{
-				public void callback( Object ... results )
+				CritterTemplateWidget ctw = (CritterTemplateWidget) component.getDelegate();
+				String critterTemplateName = ctw.getCritterTemplateName();
+				
+				Command command = CommandFactory.getRetrieveTemplateCommand(critterTemplateName, new Callback()
 				{
-					if ( results.length == 1 && results[0] instanceof CritterTemplate )
+					public void callback( Object ... results )
 					{
-						CritterTemplate template = (CritterTemplate) results[0];
-						showTraits(template);
-						
-						// -- TODO update traits panel
+						if ( results.length == 1 && results[0] instanceof CritterTemplate )
+						{
+							CritterTemplate template = (CritterTemplate) results[0];
+							showTraits(template);
+						}
 					}
-				}
-			});
-			command.execute();		
+				});
+				command.execute();		
+			}
 		}
 	}
 	

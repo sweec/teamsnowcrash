@@ -163,11 +163,14 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		// add the "Apply" and "Cancel" buttons to the buttonpanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		final JButton newButton = new JButton("Apply");
-		final JButton delButton = new JButton("Cancel");
-		buttonPanel.add(newButton);
+		final JButton applyButton = new JButton("Apply");
+		final JButton cancelButton = new JButton("Cancel");
+		buttonPanel.add(applyButton);
 		buttonPanel.add(Box.createRigidArea(new Dimension(5,0)));
-		buttonPanel.add(delButton);
+		buttonPanel.add(cancelButton);
+		
+		applyButton.addActionListener( this );
+		cancelButton.addActionListener( this );
 
 		JPanel cPanelOuter = new JPanel();
 		cPanelOuter.setLayout(new BoxLayout(cPanelOuter, BoxLayout.Y_AXIS));
@@ -182,7 +185,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	
 	private void loadTemplate(CritterTemplate template)
 	{
-		cTemplate = new CritterTemplate();
 		cTemplate = template; 
 		tempUuid = cTemplate.getUuid();
 		tempPrototype = cTemplate.getPrototype();
@@ -675,6 +677,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			Command mod = CommandFactory.getModifyTemplateCommand(cTemplate);
 			mod.execute();
 			
+			parentConfig.cancelTraits();
 		}
 		else if (e.getActionCommand().equals("Cancel"))
 		{
