@@ -101,6 +101,11 @@ public class SimulationProgressBar extends JPanel implements ChangeListener
 		model.setValue( 0 );
 	}
 	
+	public void setCurrentTick( int tick )
+	{
+		model.setValue( tick );
+	}
+	
 	/**
 	 * 
 	 * Overrides the setSize() method of the JPanel superclass to apply specifically 
