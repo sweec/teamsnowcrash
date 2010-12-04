@@ -54,11 +54,11 @@ public class SimResScreen extends JPanel
 	
 	public void goResults()
 	{
-		if (resultsPanel == null) {
+		//if (resultsPanel == null) {
 			resultsPanel = new ResultsPanel();
 			sRTabPane.setComponentAt(sRTabPane.indexOfTab("Results"), resultsPanel);
 			sRTabPane.setEnabledAt(sRTabPane.indexOfTab("Results"), true);
-		}
+		//}
 		sRTabPane.setSelectedIndex(sRTabPane.indexOfTab("Results"));
 	}
 	

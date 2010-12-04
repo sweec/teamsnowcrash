@@ -121,6 +121,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		isInConfiguration = true;
 		isInSimulation = false;
 		
+		World world = World.getInstance();
+		simPBar.setNumberOfTicks(world.getTurns());
+		simPBar.setCurrentTick(world.getCurrentTurn());
 		// For unknown reason, to correctly refresh the display upon window size changed before switch 
 		// Both repaint and revalidate are needed
 		repaint();
@@ -145,8 +148,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		playButton.setEnabled(true);
 		stopButton.setEnabled(true);
 		ffButton.setEnabled(true);
-		World world = World.getInstance();
-		simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
 		
 		isInConfiguration = false;
 		isInSimulation = true;
@@ -155,6 +156,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		// repaint has no effect here
 		simResScreen.revalidate();
+		World.removeObserver(this);
+		World.addObserver(this);
 	}
 	
 	public void goResults() {
@@ -195,6 +198,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		configScreen = new ConfigScreen();
 		*/
 		goConfiguration();
+		World.removeObserver(this);
+		World.addObserver(this);
 	}
 	
 	public void updateWorld( World world ) {
@@ -202,6 +207,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 			if (!skipToEnd) simResScreen.updateWorld(world);
 			simPBar.gotoNextTick();
 		}
+		System.out.println("update World in GUI");
 	}
 
 	public void update(Observable arg0, Object arg1)
@@ -342,9 +348,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Configuration");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			BaseGUI.getInstance().reset();
             			Command command = CommandFactory.getLoadConfigurationCommand(fc.getSelectedFile().getPath(), "");
             			command.execute();
+            			BaseGUI.getInstance().reset();
             		}
             	}
             	else if (e.getActionCommand().equals("Load Simulation"))
@@ -352,9 +358,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Simulation");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			BaseGUI.getInstance().reset();
              			Command command = CommandFactory.getLoadSimulationCommand(fc.getSelectedFile().getPath());
             			command.execute();
+            			BaseGUI.getInstance().reset();
             			// result in configuration screen
             			// because user may want to check the settings first before start
             			// need user click Play to continue simulation
@@ -365,9 +371,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Results");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-           				BaseGUI.getInstance().reset();
            				Command command = CommandFactory.getLoadResultsCommand(fc.getSelectedFile().getPath());
            				command.execute();
+           				BaseGUI.getInstance().reset();
            				// switch to results
            				BaseGUI.getInstance().goResults();
             		}
@@ -621,7 +627,10 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 			String message = "This will clear current simulation/results. Go ahead?";
 			int answer = JOptionPane.showConfirmDialog( this, message, "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
 			if (answer == JOptionPane.YES_OPTION) { 
-				if (!isInConfiguration) goConfiguration();
+				if (!isInConfiguration) {
+					goConfiguration();
+					World.getInstance().restart();
+				}
 				
 				timerCommand = CommandFactory.getStopSimulationCommand();
 			}
@@ -635,12 +644,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     	else if (e.getActionCommand().equals("Play/Pause")) // play/pause
     	{
     		if (isInConfiguration) {
-     			Command command = CommandFactory.getStartSimulationCommand();
+       			Command command = CommandFactory.getStartSimulationCommand();
     			command.execute();
-    			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());	// moved to goSimulation()
     			playButton.setIcon( pauseIcon );
       			goSimulation();
-     		}
+    		}
     		else if (isInSimulation) {
     			if (isPaused) {
     				isPaused = false;

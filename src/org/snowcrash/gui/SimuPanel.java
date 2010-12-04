@@ -27,7 +27,7 @@ public class SimuPanel extends JPanel {
 	final private int line_width = 2;
 	final private int offset = line_width;
     final private BasicStroke stroke = new BasicStroke(line_width);
-    final private int wUnit = 64, hUnit = 64;
+    final private int wUnit = 32, hUnit = 32;
     private Image plant = null;
     private Image prey = null;
     private Image predator = null;

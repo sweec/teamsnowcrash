@@ -2,7 +2,10 @@ package org.snowcrash.critter;
 
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Set;
 
+import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DAO;
 import org.snowcrash.dataaccess.DAOException;
@@ -12,6 +15,8 @@ import org.snowcrash.world.World;
 import org.snowcrash.world.WorldObserver;
 
 public class StatisticsCollector implements WorldObserver {
+	private HashMap<String, CritterPrototype> types;
+	private HashMap<String, Size> sizes;
 	private HashMap<String, Integer> startPopulation, endPopulation, totalPopulation;
 	private HashMap<String, Integer> minAge, maxAge, totalAge;
 	private HashMap<String, HashMap<Trait, Float>> startTraits, endTraits;
@@ -25,6 +30,8 @@ public class StatisticsCollector implements WorldObserver {
 	}
 	
 	public StatisticsCollector() {
+		types = new HashMap<String, CritterPrototype>();
+		sizes = new HashMap<String, Size>();
 		startPopulation = new HashMap<String, Integer>();
 		endPopulation = new HashMap<String, Integer>();
 		totalPopulation = new HashMap<String, Integer>();
@@ -37,6 +44,22 @@ public class StatisticsCollector implements WorldObserver {
 		instance = this;
 	}
 
+	public Set<String> getNameSet() {
+		return types.keySet();	// all HashMaps should have same keySet
+	}
+	
+	public CritterPrototype getPrototype(String name) {
+		if (types.containsKey(name))
+			return types.get(name);
+		return CritterPrototype.PLANT;	// if failed to read, return a dumb default type
+	}
+	
+	public Size getSize(String name) {
+		if (sizes.containsKey(name))
+			return sizes.get(name);
+		return Size.MEDIUM;	// if failed to read, return a dumb default size
+	}
+	
 	public int getStartPopulation(String name) {
 		if (startPopulation.containsKey(name))
 			return startPopulation.get(name);
@@ -184,9 +207,13 @@ public class StatisticsCollector implements WorldObserver {
 	public void calculateStatistics() {
 		// in case of loaded results
 		// no need to calculate again
-		if (isStatisticsAvailable) return;
+		System.out.println("Collector start.");
+		//if (isStatisticsAvailable) return;
 		Critter[][] map = World.getInstance().getInitMap();
-		if (map == null) return;
+		if (map == null) {
+			System.out.println("get initMap from world failed.");
+			return;
+		}
 		for (int i = 0;i < map.length;i++)
 		for (int j = 0;j < map[0].length;j++) {
 			Critter critter = map[i][j];
@@ -224,8 +251,12 @@ public class StatisticsCollector implements WorldObserver {
 			throw new RuntimeException( e );
 		}
 		if (objects != null) {
-			for (int i = 0;i < objects.length;i++)
-				setAverageStatistics(((CritterTemplate)objects[i]).getName());
+			for (int i = 0;i < objects.length;i++) {
+				CritterTemplate template = (CritterTemplate)objects[i];
+				types.put(template.getName(), template.getPrototype());
+				sizes.put(template.getName(), template.getSize());
+				setAverageStatistics(template.getName());
+			}
 		}
 		isStatisticsAvailable = true;
 	}
