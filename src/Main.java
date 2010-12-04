@@ -25,7 +25,7 @@ public class Main
 		BaseGUI screenManager = new BaseGUI();
 		
 		// -- Make BaseGUI observer to DAO
-		DAOFactory.getDAO().addObserver(screenManager);
+		DAOFactory.addObserver(screenManager);
 		
 		// -- Reset the world
 		Command command = CommandFactory.getResetCommand();

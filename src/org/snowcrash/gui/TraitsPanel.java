@@ -398,7 +398,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		lowEndurSlider.setValue(endurLower);
 		
 		int sNum = 10; // the total number of sliders
-		points = points + sNum - (visionUpper + visionLower + speedUpper + speedLower +
+		points = critterPoints + sNum - (visionUpper + visionLower + speedUpper + speedLower +
 					camoUpper + camoLower + combatUpper + combatLower + endurUpper +
 					endurLower);
 		remainingPoints.setText("Points Remaining:  " + points);
@@ -653,10 +653,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		}
 		else if (e.getActionCommand().equals("Apply"))
 		{
-			//CritterTemplate cTemplate = new CritterTemplate();
-			// call some method to set the uuid in CritterTemplate
-			//cTemplate.setPrototype(tempPrototype);
-			//cTemplate.setName(tempName);
 			cTemplate.setSize(tempSize);
 			
 			tempSliderVal = new Pair<Integer, Integer>(visionLower, visionUpper);
@@ -673,6 +669,18 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			
 			tempSliderVal = new Pair<Integer, Integer>(endurLower, endurUpper);
 			cTemplate.setTraitRange(Trait.ENDURANCE, tempSliderVal);
+			
+			String name = nameField.getText();
+			if ( !cTemplate.getName().equals( name ) )
+			{
+				Command delete = CommandFactory.getDeleteTemplateCommand(cTemplate);
+				delete.execute();
+				
+				cTemplate.setName(name);
+				
+				Command create = CommandFactory.getCreateTemplateCommand( cTemplate.getPrototype(), cTemplate.getName() );
+				create.execute();
+			}
 			
 			Command mod = CommandFactory.getModifyTemplateCommand(cTemplate);
 			mod.execute();

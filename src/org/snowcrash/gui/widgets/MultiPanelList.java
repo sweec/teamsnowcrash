@@ -63,14 +63,14 @@ public class MultiPanelList extends Box implements SelectionListener
 		selectionListeners.clear();
 	}
 	
-	public void addItemToList( String item, String listTitle )
+	public void addItemToList( String item, int count, String listTitle )
 	{
 		ComponentList<SelectableComponent<CritterTemplateWidget>> list = subLists.get( listTitle );
 		
 		if ( list != null )
 		{
 			SelectableComponent<CritterTemplateWidget> component = 
-				new SelectableComponent<CritterTemplateWidget>( new CritterTemplateWidget( item ) );
+				new SelectableComponent<CritterTemplateWidget>( new CritterTemplateWidget( item, count ) );
 			component.setAlignmentX( JComponent.LEFT_ALIGNMENT );
 			
 			component.setSelectionBehavior( CritterTemplateSelectionBehavior.getInstance() );

@@ -84,7 +84,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 				{
 					Map<Object,SessionedDAO> objectMap = objectLockMap.get( type );
 					
-					if ( objectMap != null && !objectMap.containsKey( key ) && objectMap.get( key ) == locker )
+					if ( objectMap != null && objectMap.containsKey( key ) && objectMap.get( key ) == locker )
 					{
 						objectMap.remove( key );
 					}
@@ -289,6 +289,8 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			{
 				setChanged();
 				notifyObservers();
+				
+				delegate.notifyObservers();
 			}
 			
 			isSessioned = false;
@@ -323,13 +325,21 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
+				boolean changed = false;
+				
 				try
 				{
 					delegate.create( o );
+					changed = true;
 				}
 				finally
 				{
 					unlock( o.getClass(), this );
+				}
+				
+				if ( changed )
+				{
+					delegate.notifyObservers();
 				}
 			}
 		}
@@ -494,13 +504,21 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
+				boolean changed = false;
+				
 				try
 				{
 					delegate.update( o );
+					changed = true;
 				}
 				finally
 				{
 					unlock( o.getClass(), o.getId(), this );
+				}
+				
+				if ( changed )
+				{
+					delegate.notifyObservers();
 				}
 			}
 		}
@@ -567,13 +585,21 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 				}
 				else
 				{
+					boolean changed = false;
+					
 					try
 					{
 						delegate.delete( type, id );
+						changed = true;
 					}
 					finally
 					{
 						unlock( type, this );
+					}
+					
+					if ( changed )
+					{
+						delegate.notifyObservers();
 					}
 				}
 			}
