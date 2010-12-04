@@ -31,11 +31,6 @@ public class CommandMediator
 	private static IConfigurationManager configManager = null;
 	
 	/*
-	 * Reference to the world.
-	 */
-	private static World world = World.getInstance();
-
-	/*
 	 * Private constructor enforces use as a static class.
 	 */
 	private CommandMediator()
@@ -70,14 +65,14 @@ public class CommandMediator
 	
 	/**
 	 * 
-	 * Sets the size of the simulation world.
+	 * Sets the size of the simulation World.getInstance().
 	 * 
-	 * @param worldSize the size of the simulation world
+	 * @param worldSize the size of the simulation World.getInstance()
 	 * 
 	 */
 	static void setWorldSize( int worldSize )
 	{
-		world.setSize(worldSize, worldSize);
+		World.getInstance().setSize(worldSize, worldSize);
 	}
 	
 	/**
@@ -89,7 +84,7 @@ public class CommandMediator
 	 */
 	static void setNumberOfTurns( int numberOfTurns )
 	{
-		world.setTurns(numberOfTurns);
+		World.getInstance().setTurns(numberOfTurns);
 		TimeEngine.setTimeLimit(numberOfTurns);
 	}
 	
@@ -130,7 +125,7 @@ public class CommandMediator
 	{
 		// need call World.getInstance().randomPopulate(list)
 		// to get critter numbers saved
-		fileManager.saveWorld(world, filename);
+		fileManager.saveWorld(World.getInstance(), filename);
 	}
 	
 	/**
@@ -144,52 +139,49 @@ public class CommandMediator
 	{
 		World newWorld = fileManager.loadWorld(filename);
 		if (newWorld == null) return;	// IO error, go back
-		TimeEngine.removeTimeListener(world);
+		TimeEngine.removeTimeListener(World.getInstance());
 		TimeEngine.stopTimer();
-		world = newWorld;
-		TimeEngine.addTimeListener(world);
+		TimeEngine.addTimeListener(World.getInstance());
 	}
 	
 	static void saveSimulation( String filename )
 	{
-		fileManager.saveWorld(world, filename);
+		fileManager.saveWorld(World.getInstance(), filename);
 	}
 	
 	static void loadSimulation( String filename )
 	{
 		World newWorld = fileManager.loadWorld(filename);
 		if (newWorld == null) return;	// IO error, go back
-		TimeEngine.removeTimeListener(world);
+		TimeEngine.removeTimeListener(World.getInstance());
 		TimeEngine.stopTimer();
-		world = newWorld;
-		TimeEngine.addTimeListener(world);
+		TimeEngine.addTimeListener(World.getInstance());
 	}
 	
 	static void saveResults( String filename )
 	{
-		fileManager.saveWorld(world, filename);
+		fileManager.saveWorld(World.getInstance(), filename);
 	}
 	
 	static void loadResults( String filename )
 	{
 		World newWorld = fileManager.loadWorld(filename);
 		if (newWorld == null) return;	// IO error, go back
-		TimeEngine.removeTimeListener(world);
+		TimeEngine.removeTimeListener(World.getInstance());
 		TimeEngine.stopTimer();
-		world = newWorld;
-		TimeEngine.addTimeListener(world);
+		TimeEngine.addTimeListener(World.getInstance());
 	}
 	
 	static void startSimulation()
 	{
-		if (world.getCurrentTurn() == 0) {
+		if (World.getInstance().getCurrentTurn() == 0) {
 			// first time to start the simulation
 			// need call World.getInstance().randomPopulate(list)
 			// to create critters first
 		}
 		// in case of load simulation/results
 		// timeLimit left need to be calculated
-		int timeLimit = world.getTurns() - world.getCurrentTurn();
+		int timeLimit = World.getInstance().getTurns() - World.getInstance().getCurrentTurn();
 		if (timeLimit <= 0) return;
 		TimeEngine.setTimeLimit(timeLimit);
 		TimeEngine.startTimer();
@@ -286,9 +278,8 @@ public class CommandMediator
 	}
 	
 	static void reset() {
-		TimeEngine.removeTimeListener(world);
+		TimeEngine.removeTimeListener(World.getInstance());
 		TimeEngine.stopTimer();
-		world = fileManager.resetWorld();
-		TimeEngine.addTimeListener(world);
+		TimeEngine.addTimeListener(World.getInstance());
 	}
 }
