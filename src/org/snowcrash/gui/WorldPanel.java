@@ -21,7 +21,7 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 {
 	public static final int SIZEMIN = 20;		// minimum value for each slider
 	public static final int SIZEMAX = 100;		// maximum value for each slider
-	public static final int SIZEINIT = 30;		// initial value for each slider
+	public static final int SIZEINIT = 50;		// initial value for each slider
 	public static final int TURNSINIT = 30;		// initial number of turns
 	
 	JSlider worldSlider;

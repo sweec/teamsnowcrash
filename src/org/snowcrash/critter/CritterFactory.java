@@ -74,6 +74,11 @@ public class CritterFactory {
 		return null;
 	}
 	
+	/**
+	 * Returns a clone of the critter.
+	 * @param critter
+	 * @return
+	 */
 	public static Critter getClone(Critter critter) {
 		Critter child = null;
 		try {
