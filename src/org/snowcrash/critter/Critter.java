@@ -131,6 +131,7 @@ public class Critter extends CritterTemplate implements Cloneable {
 	public void die(String killer) {
 		this.isAlive = false;
 		World.getInstance().addTurnLogEntry(this.critterName + " was killed by " + killer + ".");
+		World.getInstance().reportDeath(this);
 	}
 	
 	public int getActionCost() {

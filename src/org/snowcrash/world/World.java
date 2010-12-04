@@ -82,6 +82,7 @@ public class World implements DatabaseObject, TimeListener {
 	private static Set<WorldObserver> observers = new HashSet<WorldObserver>();
 	private ArrayList<Pair<CritterTemplate,Integer>> initTemplateList = null;
 	private Critter[][] initMap = null;
+	private ArrayList<Critter> turnDeaths = null;
 	
 	public static void addObserver(WorldObserver observer) {
 		observers.add(observer);
@@ -102,11 +103,16 @@ public class World implements DatabaseObject, TimeListener {
 		this.turns = 1;
 		this.currentPos = new Pair<Integer, Integer> (0,0);
 		this.turnLog = new LinkedList<String>();
+		this.turnDeaths = new ArrayList<Critter>();
 		instance = this;	// needed for load simulation since instance is not saved
 	}
 	
-	public void resetTurnLog() {
+	private void resetTurnLog() {
 		this.turnLog = new LinkedList<String>();
+	}
+	
+	private void resetTurnDeaths() {
+		this.turnDeaths = new ArrayList<Critter>();
 	}
 	
 	public void addTurnLogEntry(String entry) {
@@ -202,6 +208,7 @@ public class World implements DatabaseObject, TimeListener {
 			}
 		}
 		resetTurnLog();
+		resetTurnDeaths();
 	}
 	
 	/**
@@ -467,6 +474,9 @@ public class World implements DatabaseObject, TimeListener {
 	@Override
 	public void timeExpired() {
 		// TODO Auto-generated method stub
+		for (WorldObserver observer : observers) {
+			observer.notifyTheEnd();
+		}
 		
 	}
 
@@ -488,5 +498,9 @@ public class World implements DatabaseObject, TimeListener {
 	
 	public Critter[][] getInitMap() {
 		return initMap;
+	}
+	
+	public void reportDeath(Critter critter) {
+		this.turnDeaths.add(critter);
 	}
 }
