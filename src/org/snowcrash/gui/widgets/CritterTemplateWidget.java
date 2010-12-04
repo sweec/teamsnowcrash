@@ -1,5 +1,6 @@
 package org.snowcrash.gui.widgets;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -14,6 +15,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import org.snowcrash.commands.Command;
+import org.snowcrash.commands.CommandFactory;
+import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.utilities.Callback;
 
 /**
  * 
@@ -42,6 +48,8 @@ import javax.swing.JTextField;
 public class CritterTemplateWidget extends Box implements ActionListener, 
 		MouseListener, FocusListener
 {
+	private static final Color BACKGROUND_COLOR = new Color( 184, 207, 229 );
+	
 	// -- Keeps track of the current critter count across all instances of this widget.
 	private static int critterCount = 0;
 	
@@ -88,10 +96,13 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 	 * @param critterTemplateName the name of the critter template
 	 * 
 	 */
-	public CritterTemplateWidget( String critterTemplateName )
+	public CritterTemplateWidget( String critterTemplateName, int critterTemplateCount )
 	{
 		super( BoxLayout.X_AXIS );
 		setAlignmentX( LEFT_ALIGNMENT );
+		setBackground( BACKGROUND_COLOR );
+		
+		numCritters = critterTemplateCount;
 		
 		/*
 		 * Using a Box so I don't have to mess with layouts.
@@ -316,6 +327,24 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 			critterCount -= numCritters;
 			numCritters = Integer.parseInt( txtNumCritters.getText() );
 			critterCount += numCritters;
+			
+			// -- Execute command to update the appropriate CritterTemplate.
+			Command command = CommandFactory.getRetrieveTemplateCommand( lblCritterTemplateName.getText(), 
+					new Callback()
+			{
+				public void callback( Object ... results )
+				{
+					if ( results.length == 1 && results[0] instanceof CritterTemplate )
+					{
+						CritterTemplate template = (CritterTemplate) results[0];
+						template.setStartingInstancesCount( numCritters );
+						
+						Command command = CommandFactory.getModifyTemplateCommand(template);
+						command.execute();
+					}
+				}
+			});
+			command.execute();
 			
 			// -- Prevent the user from editing the text field.
 			setDisabled();

@@ -92,6 +92,7 @@ public class CritterPanel extends JPanel implements SelectionListener
 		{
 			CritterPrototype prototype = template.getPrototype();
 			String name = template.getName();
+			int count = template.getStartingInstancesCount();
 			String listTitle = null;
 			
 			switch ( prototype )
@@ -111,7 +112,7 @@ public class CritterPanel extends JPanel implements SelectionListener
 			default:
 			}
 			
-			list.addItemToList( name, listTitle );
+			list.addItemToList( name, count, listTitle );
 		}
 	}
 	
@@ -183,7 +184,7 @@ public class CritterPanel extends JPanel implements SelectionListener
 					default:
 					}
 					
-					list.addItemToList( name, listTitle );
+					list.addItemToList( name, 0, listTitle );
 				}
 				
 				CritterPanel.this.validate();
