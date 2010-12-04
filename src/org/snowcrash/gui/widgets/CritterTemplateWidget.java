@@ -48,6 +48,8 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 	// -- Keeps track of the maximum critter count.
 	private static int maxCritterCount = 0;
 	
+	private static boolean validate = true;
+	
 	/**
 	 * 
 	 * Updates the maximum number of critters that can inhabit the world.
@@ -58,6 +60,11 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 	public static void setMaxCritterCount( int maxCritterCount )
 	{
 		CritterTemplateWidget.maxCritterCount = maxCritterCount;
+	}
+	
+	public static void setValidate( boolean validate )
+	{
+		CritterTemplateWidget.validate = validate;
 	}
 	
 	
@@ -328,7 +335,7 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 		{
 			Integer i = (Integer) o;
 			
-			if ( i >= 0 && ( critterCount - numCritters + i ) <= maxCritterCount )
+			if ( validate && i >= 0 && ( critterCount - numCritters + i ) <= maxCritterCount )
 			{
 				valid = true;
 			}

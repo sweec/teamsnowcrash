@@ -323,6 +323,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			else
 			{
 				delegate.create( o );
+				unlock( o.getClass(), this );
 			}
 		}
 		else
@@ -335,7 +336,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				throw new LockingException( CANNOT_LOCK_TABLE_MESSAGE );
+				throw new LockingException( String.format( CANNOT_LOCK_TABLE_MESSAGE, o.getClass() ) );
 			}
 		}
 	}
@@ -375,6 +376,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			else
 			{
 				results = delegate.read( type );
+				unlock( type, READ_LOCK_SESSION );
 			}
 		}
 		else
@@ -387,7 +389,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				throw new LockingException( CANNOT_LOCK_TABLE_MESSAGE );
+				throw new LockingException( String.format( CANNOT_LOCK_TABLE_MESSAGE, type ) );
 			}
 		}
 		
@@ -424,6 +426,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			else
 			{
 				result = delegate.read( type, id );
+				unlock( type, id, READ_LOCK_SESSION );
 			}
 		}
 		else
@@ -436,7 +439,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				throw new LockingException( CANNOT_LOCK_OBJECT_MESSAGE );
+				throw new LockingException( String.format( CANNOT_LOCK_OBJECT_MESSAGE, type ) );
 			}
 		}
 		
@@ -473,6 +476,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			else
 			{
 				delegate.update( o );
+				unlock( o.getClass(), o.getId(), this );
 			}
 		}
 		else
@@ -485,7 +489,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				throw new LockingException( CANNOT_LOCK_OBJECT_MESSAGE );
+				throw new LockingException( String.format( CANNOT_LOCK_OBJECT_MESSAGE, o.getClass() ) );
 			}
 		}
 	}
@@ -539,6 +543,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 				else
 				{
 					delegate.delete( type, id );
+					unlock( type, this );
 				}
 			}
 		}
@@ -552,7 +557,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			}
 			else
 			{
-				throw new LockingException( CANNOT_LOCK_TABLE_MESSAGE );
+				throw new LockingException( String.format( CANNOT_LOCK_TABLE_MESSAGE, type ) );
 			}
 		}
 	}
@@ -568,7 +573,20 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 	
 	private boolean isInDatabase( Class<?> type, Object id ) throws DAOException
 	{
-		return ( delegate.read( type, id ) != null );
+		boolean isInDatabase = false;
+		
+		try
+		{
+			DatabaseObject object = delegate.read( type, id );
+			isInDatabase = ( object != null );
+		}
+		catch ( InvalidInputDAOException e )
+		{
+			// -- Type not defined in the database yet.
+			isInDatabase = false;
+		}
+		
+		return isInDatabase;
 	}
 	
 	private boolean isDeleted( Class<?> type, Object id ) throws DAOException
@@ -576,7 +594,19 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 		boolean isDeleted = false;
 		
 		CachedTable<? extends DatabaseObject> table = deleted.get( type );
-		isDeleted = ( table != null ) && ( table.read( type, id ) != null );
+		
+		if ( table != null )
+		{
+			try
+			{
+				DatabaseObject object = table.read( type, id );
+				isDeleted = ( object != null );
+			}
+			catch ( InvalidInputDAOException e )
+			{
+				isDeleted = false;
+			}
+		}
 		
 		return isDeleted;
 	}
@@ -586,7 +616,19 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 		boolean isCached = false;
 		
 		CachedTable<? extends DatabaseObject> table = cache.get( type );
-		isCached = ( table != null ) && ( table.read( type, id ) != null );
+		
+		if ( table != null )
+		{
+			try
+			{
+				DatabaseObject object = table.read( type, id );
+				isCached = ( object != null );
+			}
+			catch ( InvalidInputDAOException e )
+			{
+				isCached = false;
+			}
+		}
 		
 		return isCached;
 	}
