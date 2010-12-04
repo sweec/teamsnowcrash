@@ -110,7 +110,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		try {
 			objects = dao.read( CritterTemplate.class );
 		} catch (DAOException e) {
-			//Do nothing
+			// Do nothing
 		}
 		Collection<CritterTemplate> critterTemplates = new ArrayList<CritterTemplate>();
 		if (objects != null) {
@@ -119,6 +119,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		}
 		CritterPanel cPanel = new CritterPanel();
 		cPanel.addData(critterTemplates);
+		cPanel.addSelectionListener( this );
 		cPanel.setParent( this );
 		tabPane1.setComponentAt(tabPane1.indexOfTab("Critters"), cPanel);
 		// shall we replace traitsPanel?
@@ -190,11 +191,4 @@ public class ConfigScreen extends JPanel implements SelectionListener
 			}
 		}
 	}
-	
-	public static void main(String[] args)
-	{
-		ConfigScreen scconfig = new ConfigScreen();
-		scconfig.setVisible(true);
-	}
-	
 }

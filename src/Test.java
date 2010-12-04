@@ -69,7 +69,7 @@ public class Test {
 		JFrame frame = new JFrame();
 		frame.setSize( 800, 600 );
 		
-		CritterTemplateWidget ctw = new CritterTemplateWidget( "Test Critter" );
+		CritterTemplateWidget ctw = new CritterTemplateWidget( "Test Critter", 0 );
 		frame.add( ctw );
 		
 		CritterTemplateWidget.setMaxCritterCount( 50 );
