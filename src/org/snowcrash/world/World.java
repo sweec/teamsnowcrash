@@ -35,6 +35,7 @@ import org.snowcrash.critter.NameGenerator;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DatabaseObject;
+import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.state.Searching;
 import org.snowcrash.timeengine.TimeListener;
 import org.snowcrash.utilities.Pair;
@@ -83,6 +84,7 @@ public class World implements DatabaseObject, TimeListener {
 	private ArrayList<Pair<CritterTemplate,Integer>> initTemplateList = null;
 	private Critter[][] initMap = null;
 	private ArrayList<Critter> turnDeaths = null;
+	private FileManager logFile = null;
 	
 	public static void addObserver(WorldObserver observer) {
 		observers.add(observer);
@@ -309,6 +311,7 @@ public class World implements DatabaseObject, TimeListener {
 	 */
 	public void processTurn() {
 		System.out.println("Turn: " + currentTurn);
+		this.logFile.logMessage("Turn: " + (currentTurn + 1));
 		while (hasNext()) {
 			Pair<Integer, Integer> next = next();
 			Critter critter = get(next);
@@ -357,6 +360,8 @@ public class World implements DatabaseObject, TimeListener {
 		}
 		randomPopulate(critterList.iterator());
 		initMap = map;
+		logFile = new FileManager(); 
+		logFile.setLogger();
 	}
 
 	/**
@@ -469,12 +474,12 @@ public class World implements DatabaseObject, TimeListener {
 		for (WorldObserver observer : observers) {
 			observer.updateWorld(this);
 		}
+		this.logTurn();
 		this.turnCleanUp();
 	}
 
 	@Override
 	public void timeExpired() {
-		// TODO Auto-generated method stub
 		for (WorldObserver observer : observers) {
 			observer.notifyTheEnd();
 		}
@@ -503,5 +508,11 @@ public class World implements DatabaseObject, TimeListener {
 	
 	public void reportDeath(Critter critter) {
 		this.turnDeaths.add(critter);
+	}
+	
+	public void logTurn() {
+		for (String message: turnLog) {
+			this.logFile.logMessage(message);
+		}
 	}
 }
