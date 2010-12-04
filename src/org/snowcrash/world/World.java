@@ -99,16 +99,24 @@ public class World implements DatabaseObject, TimeListener {
 	}
 	
 	public World() {
-		this.currentTurn = 0;
+		restart();
 		this.sizeX = 50;
 		this.sizeY = 50;
 		this.turns = 30;
-		this.currentPos = new Pair<Integer, Integer> (0,0);
-		this.turnLog = new LinkedList<String>();
-		this.turnDeaths = new ArrayList<Critter>();
-		this.map = new Critter[sizeX][sizeY];
 		this.logFile = new FileManager(); 
 		instance = this;	// needed for load simulation since instance is not saved
+	}
+	
+	public void restart()
+	{
+		NameGenerator.reset();
+		currentTurn = 0;
+		isNext = false;
+		map = new Critter[sizeX][sizeY];
+		initMap = null;
+		currentPos = new Pair<Integer,Integer>(0,0);
+		turnLog = new LinkedList<String>();
+		turnDeaths = new ArrayList<Critter>();
 	}
 	
 	private void resetTurnLog() {
