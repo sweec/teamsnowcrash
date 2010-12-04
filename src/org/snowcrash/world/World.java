@@ -68,7 +68,6 @@ public class World implements DatabaseObject, TimeListener {
 	}
 	
 	public static World reset() {
-		TimeEngine.removeTimeListener( instance );
 		instance = null;
 		NameGenerator.reset();
 		return getInstance();
@@ -106,7 +105,6 @@ public class World implements DatabaseObject, TimeListener {
 		this.turns = 30;
 		restart();
 		this.logFile = new FileManager(); 
-		TimeEngine.addTimeListener( this );
 		instance = this;	// needed for load simulation since instance is not saved
 	}
 	

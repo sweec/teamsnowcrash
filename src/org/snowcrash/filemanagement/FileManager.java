@@ -398,19 +398,20 @@ public class FileManager implements IFileManager {
 			}
 		// test viewLogFile
 		
+		
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("This is line "+i);
 		}
 		mgr.viewLogFile();
-		/*
+		
 		// test erase log file
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("Now we have new line "+i);
 		}
 		mgr.viewLogFile();
-		*/
+		
 	}
 
 	private class StateSerializer implements JsonSerializer<State> {

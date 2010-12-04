@@ -1,9 +1,16 @@
 package org.snowcrash.commands;
 
+import java.util.ArrayList;
+
 import org.snowcrash.configurationservice.IConfigurationManager;
 import org.snowcrash.critter.CritterTemplate;
+import org.snowcrash.dataaccess.DAO;
+import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.dataaccess.DAOFactory;
+import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.timeengine.TimeEngine;
+import org.snowcrash.utilities.Pair;
 import org.snowcrash.world.World;
 
 
@@ -137,11 +144,12 @@ public class CommandMediator
 	 */
 	static void loadConfiguration( String filename )
 	{
+		World oldWorld = World.getInstance();
 		World newWorld = fileManager.loadWorld(filename);
 		if (newWorld == null) return;	// IO error, go back
-		TimeEngine.removeTimeListener(World.getInstance());
+		TimeEngine.removeTimeListener(oldWorld);
 		TimeEngine.stopTimer();
-		TimeEngine.addTimeListener(World.getInstance());
+		TimeEngine.addTimeListener(newWorld);
 	}
 	
 	static void saveSimulation( String filename )
@@ -151,11 +159,12 @@ public class CommandMediator
 	
 	static void loadSimulation( String filename )
 	{
+		World oldWorld = World.getInstance();
 		World newWorld = fileManager.loadWorld(filename);
 		if (newWorld == null) return;	// IO error, go back
-		TimeEngine.removeTimeListener(World.getInstance());
+		TimeEngine.removeTimeListener(oldWorld);
 		TimeEngine.stopTimer();
-		TimeEngine.addTimeListener(World.getInstance());
+		TimeEngine.addTimeListener(newWorld);
 	}
 	
 	static void saveResults( String filename )
@@ -165,26 +174,47 @@ public class CommandMediator
 	
 	static void loadResults( String filename )
 	{
+		World oldWorld = World.getInstance();
 		World newWorld = fileManager.loadWorld(filename);
 		if (newWorld == null) return;	// IO error, go back
-		TimeEngine.removeTimeListener(World.getInstance());
+		TimeEngine.removeTimeListener(oldWorld);
 		TimeEngine.stopTimer();
-		TimeEngine.addTimeListener(World.getInstance());
+		TimeEngine.addTimeListener(newWorld);
 	}
 	
 	static void startSimulation()
 	{
-		if (World.getInstance().getCurrentTurn() == 0) {
-			// first time to start the simulation
-			// need call World.getInstance().randomPopulate(list)
-			// to create critters first
+		World world = World.getInstance();
+		if (world.getCurrentTurn() == 0) {
+			DAO dao = DAOFactory.getDAO();
+			DatabaseObject[] objects = null;
+			try {
+				objects = dao.read(CritterTemplate.class);
+			} catch (DAOException e) {
+				throw new RuntimeException(e) ;
+			}
+			ArrayList<Pair<CritterTemplate,Integer>> list = new ArrayList<Pair<CritterTemplate,Integer>>();
+			for (int i = 0;i < objects.length;i++) {
+				CritterTemplate template = (CritterTemplate)objects[i];
+				int count = template.getStartingInstancesCount();
+				if (count != 0)
+					list.add(new Pair<CritterTemplate, Integer>(template, count));
+			}
+			if (list.isEmpty()) {
+				System.out.println("no critterTemplate is selected.");
+				return;
+			}
+			world.randomPopulate(list);
 		}
 		// in case of load simulation/results
 		// timeLimit left need to be calculated
-		int timeLimit = World.getInstance().getTurns() - World.getInstance().getCurrentTurn();
+		int timeLimit = world.getTurns() - world.getCurrentTurn();
 		if (timeLimit <= 0) return;
+		TimeEngine.removeTimeListener(world);
+		TimeEngine.addTimeListener(world);
 		TimeEngine.setTimeLimit(timeLimit);
 		TimeEngine.startTimer();
+		System.out.println("Simulation Started");
 	}
 	
 	static void pauseSimulation()
@@ -278,7 +308,10 @@ public class CommandMediator
 	}
 	
 	static void reset() {
+		World oldWorld = World.getInstance();
+		World newWorld = fileManager.resetWorld();
 		TimeEngine.stopTimer();
-		fileManager.resetWorld();
+		TimeEngine.removeTimeListener(oldWorld);
+		TimeEngine.addTimeListener(newWorld);
 	}
 }

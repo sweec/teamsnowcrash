@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -27,15 +29,11 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
-import org.snowcrash.dataaccess.DAO;
-import org.snowcrash.dataaccess.DAOException;
-import org.snowcrash.dataaccess.DAOFactory;
-import org.snowcrash.dataaccess.DatabaseObject;
+import org.snowcrash.world.World;
 
 /**
  * @author dong
@@ -87,29 +85,25 @@ public class ResultsPanel extends JPanel {
 		StatisticsCollector sc = StatisticsCollector.getInstance();
 		sc.calculateStatistics();
 		
-		DAO dao = DAOFactory.getDAO();
-		DatabaseObject[] objects = null;
-		try {
-			objects = dao.read(CritterTemplate.class);
-		} catch (DAOException e) {
-			e.printStackTrace();
-		}
-		if (objects == null) return;
-		int i;
-		for (i = 0;i < objects.length;i++) {
-			CritterTemplate template = (CritterTemplate) (objects[i]);
-			String name = template.getName();
+		System.out.println("now calculate statistics.");
+		Set<String> names = sc.getNameSet();
+		Iterator<String> itr = names.iterator();
+		while(itr.hasNext()) {
+			String name = itr.next();
 			if (sc.getStartPopulation(name) == 0) continue;
-			CritterPrototype type = template.getPrototype();
+			CritterPrototype type = sc.getPrototype(name);
 			switch (type) {
 			case PLANT:
 				plantTemplates.add(name);
+				System.out.println("added a plant.");
 				break;
 			case PREY:
 				preyTemplates.add(name);
+				System.out.println("added a prey.");
 				break;
 			case PREDATOR:
 				predatorTemplates.add(name);
+				System.out.println("added a predator.");
 				break;
 			}
 		}
@@ -233,11 +227,16 @@ public class ResultsPanel extends JPanel {
 		cScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		cScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JPanel namePanel = this.namePanel();
+		JPanel worldName = new JPanel();
+		worldName.setLayout(new BoxLayout(worldName, BoxLayout.Y_AXIS));
+		worldName.add(worldPanel());
+		this.traitSeparator(worldName);
+		worldName.add(namePanel());
+		
 		JPanel oPanel = new JPanel();
-		oPanel.setLayout(new BoxLayout(oPanel, BoxLayout.Y_AXIS));
-		oPanel.add(namePanel);
-		oPanel.add(cScroll);
+		oPanel.setLayout(new BorderLayout());
+		oPanel.add(worldName, BorderLayout.PAGE_START);
+		oPanel.add(cScroll, BorderLayout.CENTER);
 		
 		return oPanel;
 	}
@@ -267,18 +266,10 @@ public class ResultsPanel extends JPanel {
 			name = predatorTemplates.get(predatorList.getSelectedIndex());
 			break;
 		}
-		
-		DAO dao = DAOFactory.getDAO();
-		CritterTemplate template = null;
-		try {
-			template = (CritterTemplate) dao.read(CritterTemplate.class, name);
-		} catch (DAOException e) {
-			e.printStackTrace();
-		}
-		if (template == null) return;
-		
+
 		critterName.setText("Name: " + name);
-		Size size = template.getSize();
+		StatisticsCollector sc = StatisticsCollector.getInstance();
+		Size size = sc.getSize(name);
 		switch (size) {
 		case SMALL:
 			critterSize.setText("Size: Small");
@@ -291,7 +282,6 @@ public class ResultsPanel extends JPanel {
 			break;
 		}
 		
-		StatisticsCollector sc = StatisticsCollector.getInstance();
 		startPopulation.setText("Start: " + sc.getStartPopulation(name));
 		endPopulation.setText("End: " + sc.getEndPopulation(name));
 		totalPopulation.setText("Total: " + sc.getTotalPopulation(name));
@@ -319,6 +309,23 @@ public class ResultsPanel extends JPanel {
 		ImageIcon newIcon = new ImageIcon(newImage);
 		return newIcon;
 	}
+
+	private JPanel worldPanel() {
+		World world = World.getInstance();
+		if (world == null) return null;
+		JPanel cPanel = new JPanel();
+		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
+		cPanel.setAlignmentX(CENTER_ALIGNMENT);
+		JLabel title = new JLabel("World");
+		title.setAlignmentX(CENTER_ALIGNMENT);
+		cPanel.add(title);
+		Box box = new Box(BoxLayout.X_AXIS);
+		box.add(new JLabel("Size: "+world.getSizeX()+" X "+world.getSizeY()));
+		box.add(Box.createHorizontalStrut(10));
+		box.add(new JLabel("Turns: "+world.getCurrentTurn()+" of "+world.getTurns()));
+		cPanel.add(box);
+		return cPanel;
+	}
 	
 	// create a namePanel with default setting
 	private JPanel namePanel()
@@ -338,6 +345,7 @@ public class ResultsPanel extends JPanel {
 		box.add(critterSize);
 		cPanel.add(box);
 		
+		cPanel.add(Box.createRigidArea(new Dimension(20,0)));
 		return cPanel;
 	}
 
