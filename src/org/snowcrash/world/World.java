@@ -37,6 +37,7 @@ import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.state.Searching;
+import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.timeengine.TimeListener;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.utilities.RandomNumbers;
@@ -67,6 +68,7 @@ public class World implements DatabaseObject, TimeListener {
 	}
 	
 	public static World reset() {
+		TimeEngine.removeTimeListener( instance );
 		instance = null;
 		NameGenerator.reset();
 		return getInstance();
@@ -99,11 +101,12 @@ public class World implements DatabaseObject, TimeListener {
 	}
 	
 	public World() {
-		restart();
 		this.sizeX = 50;
 		this.sizeY = 50;
 		this.turns = 30;
+		restart();
 		this.logFile = new FileManager(); 
+		TimeEngine.addTimeListener( this );
 		instance = this;	// needed for load simulation since instance is not saved
 	}
 	

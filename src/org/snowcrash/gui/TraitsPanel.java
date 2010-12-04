@@ -678,9 +678,6 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 				Command create = CommandFactory.getCreateTemplateCommand( cTemplate.getPrototype(), name );
 				Command delete = CommandFactory.getDeleteTemplateCommand(cTemplate);
 				
-				String oldName = cTemplate.getName();
-				cTemplate.setName(name);
-				
 				try
 				{
 					create.execute();
@@ -693,13 +690,14 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 								parentConfig, "That name is already in use.", "Invalid Input", 
 								JOptionPane.ERROR_MESSAGE );
 						
-						cTemplate.setName( oldName );
-						nameField.setText( oldName );
+						nameField.setText( cTemplate.getName() );
 						return;
 					}
 				}
 				
 				delete.execute();
+				
+				cTemplate.setName(name);
 			}
 			
 			Command mod = CommandFactory.getModifyTemplateCommand(cTemplate);
