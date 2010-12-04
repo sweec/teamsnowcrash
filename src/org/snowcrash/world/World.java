@@ -100,7 +100,7 @@ public class World implements DatabaseObject, TimeListener {
 		this.currentTurn = 0;
 		this.sizeX = 50;
 		this.sizeY = 50;
-		this.turns = 1;
+		this.turns = 30;
 		this.currentPos = new Pair<Integer, Integer> (0,0);
 		this.turnLog = new LinkedList<String>();
 		this.turnDeaths = new ArrayList<Critter>();
