@@ -45,6 +45,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		JPanel cPanel = null;
 		CritterPanel critterPanel = new CritterPanel();
 		critterPanel.addSelectionListener( this );
+		critterPanel.setParent( this );
 		tabPane1 = new JTabbedPane();
 		tabPane1.addTab("Critters", critterPanel);
 		tabPane1.setAlignmentY(BOTTOM_ALIGNMENT);
@@ -118,6 +119,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		}
 		CritterPanel cPanel = new CritterPanel();
 		cPanel.addData(critterTemplates);
+		cPanel.setParent( this );
 		tabPane1.setComponentAt(tabPane1.indexOfTab("Critters"), cPanel);
 		// shall we replace traitsPanel?
 		//JPanel tPanel = (new TraitsPanel()).TraitsPanel();
