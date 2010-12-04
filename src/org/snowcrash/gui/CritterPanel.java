@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -18,6 +19,7 @@ import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.gui.widgets.CritterTemplateWidget;
 import org.snowcrash.gui.widgets.MultiPanelList;
 import org.snowcrash.gui.widgets.SelectableComponent;
@@ -163,7 +165,22 @@ public class CritterPanel extends JPanel implements SelectionListener
 				if ( prototype != null && name != null )
 				{
 					Command createCommand = CommandFactory.getCreateTemplateCommand(prototype, name);
-					createCommand.execute();
+					
+					try
+					{
+						createCommand.execute();
+					}
+					catch ( RuntimeException re )
+					{
+						if ( re.getCause() instanceof DAOException )
+						{
+							JOptionPane.showMessageDialog(
+									parentRef, "That name is already in use.", "Invalid Input", 
+									JOptionPane.ERROR_MESSAGE );
+							
+							return;
+						}
+					}
 					
 					String listTitle = null;
 					

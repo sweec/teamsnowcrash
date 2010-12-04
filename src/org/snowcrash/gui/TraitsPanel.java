@@ -12,6 +12,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -28,6 +29,7 @@ import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.utilities.Pair;
 
 public class TraitsPanel extends JPanel implements ChangeListener, ActionListener
@@ -673,13 +675,31 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 			String name = nameField.getText();
 			if ( !cTemplate.getName().equals( name ) )
 			{
+				Command create = CommandFactory.getCreateTemplateCommand( cTemplate.getPrototype(), name );
 				Command delete = CommandFactory.getDeleteTemplateCommand(cTemplate);
-				delete.execute();
 				
+				String oldName = cTemplate.getName();
 				cTemplate.setName(name);
 				
-				Command create = CommandFactory.getCreateTemplateCommand( cTemplate.getPrototype(), cTemplate.getName() );
-				create.execute();
+				try
+				{
+					create.execute();
+				}
+				catch ( RuntimeException re )
+				{
+					if ( re.getCause() instanceof DAOException )
+					{
+						JOptionPane.showMessageDialog(
+								parentConfig, "That name is already in use.", "Invalid Input", 
+								JOptionPane.ERROR_MESSAGE );
+						
+						cTemplate.setName( oldName );
+						nameField.setText( oldName );
+						return;
+					}
+				}
+				
+				delete.execute();
 			}
 			
 			Command mod = CommandFactory.getModifyTemplateCommand(cTemplate);
