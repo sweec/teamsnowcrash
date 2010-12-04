@@ -214,14 +214,12 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 				mouseListener.mouseClicked( e );
 			}
 		}
-		else if ( e.getSource() != txtNumCritters )
+		
+		// -- Re-dispatch the event.
+		for ( MouseListener mouseListener : mouseListeners )
 		{
-			// -- Re-dispatch the event.
-			for ( MouseListener mouseListener : mouseListeners )
-			{
-				e.setSource( this );
-				mouseListener.mouseClicked( e );
-			}
+			e.setSource( this );
+			mouseListener.mouseClicked( e );
 		}
 	}
 	
@@ -329,15 +327,15 @@ public class CritterTemplateWidget extends Box implements ActionListener,
 	 */
 	private boolean isValid( Object o )
 	{
-		boolean valid = false;
+		boolean valid = true;
 		
 		if ( o instanceof Integer )
 		{
 			Integer i = (Integer) o;
 			
-			if ( validate && i >= 0 && ( critterCount - numCritters + i ) <= maxCritterCount )
+			if ( validate && i < 0 && ( critterCount - numCritters + i ) > maxCritterCount )
 			{
-				valid = true;
+				valid = false;
 			}
 		}
 		else if ( o instanceof String )

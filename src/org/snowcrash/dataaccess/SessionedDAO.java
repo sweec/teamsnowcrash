@@ -158,7 +158,7 @@ public class SessionedDAO extends Observable implements DAO, DAOExceptionMessage
 			{
 				Map<Object,SessionedDAO> objectMap = objectLockMap.get( type );
 				
-				isAvailable = isLockAvailable( type ) && ( objectMap != null && !objectMap.containsKey( key ) );
+				isAvailable = isLockAvailable( type ) && ( objectMap == null || !objectMap.containsKey( key ) );
 			}
 		}
 		

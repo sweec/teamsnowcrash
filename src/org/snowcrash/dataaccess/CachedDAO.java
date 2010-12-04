@@ -60,6 +60,11 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 		if ( table != null )
 		{
 			results = table.read(type);
+			
+			for ( DatabaseObject result : results )
+			{
+				result = CloningUtility.clone( result );
+			}
 		}
 		else
 		{
@@ -86,6 +91,7 @@ class CachedDAO extends Observable implements DAO, DAOExceptionMessages
 			 * Any exceptions from the table are automatically passed up.
 			 */
 			object = table.read(type, id);
+			object = CloningUtility.clone( object );
 		}
 		else
 		{

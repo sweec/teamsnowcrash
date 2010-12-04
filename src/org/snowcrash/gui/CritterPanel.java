@@ -169,6 +169,9 @@ public class CritterPanel extends JPanel implements SelectionListener
 					
 					list.addItemToList( name, listTitle );
 				}
+				
+				CritterPanel.this.validate();
+				CritterPanel.this.repaint();
 			}
 		};
 	}
@@ -193,6 +196,9 @@ public class CritterPanel extends JPanel implements SelectionListener
 						list.removeItemFromList( critterTemplateName );
 					}
 				}
+				
+				CritterPanel.this.validate();
+				CritterPanel.this.repaint();
 			}
 		};
 	}

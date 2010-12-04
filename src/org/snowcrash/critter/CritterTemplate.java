@@ -54,12 +54,20 @@ public class CritterTemplate implements DatabaseObject {
 	 */
 	public CritterTemplate() {
 		this.traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
+		
+		// -- Set default values.
+		for ( Trait trait : Trait.values() )
+		{
+			traitRange.put( trait, new Pair<Integer,Integer>( 1, 1 ) );
+		}
+		
+		size = Size.SMALL;
 	}
 	
 	public CritterTemplate(CritterPrototype prototype, String name) {
+		this();
 		this.prototype = prototype;
 		this.name = name;
-		this.traitRange = new HashMap<Trait, Pair<Integer,Integer>>();
 		this.uuid = UUID.randomUUID().toString();
 	}
 	
