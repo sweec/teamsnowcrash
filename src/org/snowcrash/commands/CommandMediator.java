@@ -213,8 +213,7 @@ public class CommandMediator
 		if (timeLimit <= 0) return;
 		TimeEngine.setTimeLimit(timeLimit);
 		TimeEngine.startTimer();
-		System.out.println("Simulation Started");
-		World.addObserver(BaseGUI.getInstance());
+		System.out.println("Simulation will run "+timeLimit+" turns");
 	}
 	
 	static void pauseSimulation()
@@ -308,10 +307,7 @@ public class CommandMediator
 	}
 	
 	static void reset() {
-		World oldWorld = World.getInstance();
-		World newWorld = fileManager.resetWorld();
 		TimeEngine.stopTimer();
-		TimeEngine.removeTimeListener(oldWorld);
-		TimeEngine.addTimeListener(newWorld);
+		World.getInstance().restart();
 	}
 }

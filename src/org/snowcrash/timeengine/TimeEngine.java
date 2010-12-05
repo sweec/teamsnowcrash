@@ -41,6 +41,7 @@ public final class TimeEngine {
 	public static void stopTimer() {
 		stopped = true;
 		paused = false;
+		currTime = 0; 
 	}
 
 	public static void pauseTimer() {

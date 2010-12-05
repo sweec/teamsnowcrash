@@ -1,5 +1,3 @@
-import org.snowcrash.commands.Command;
-import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.commands.CommandMediator;
 import org.snowcrash.configurationservice.ConfigurationManager;
 import org.snowcrash.configurationservice.IConfigurationManager;
@@ -7,6 +5,7 @@ import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.filemanagement.IFileManager;
 import org.snowcrash.gui.BaseGUI;
+import org.snowcrash.timeengine.TimeEngine;
 
 
 public class Main
@@ -28,7 +27,6 @@ public class Main
 		DAOFactory.addObserver(screenManager);
 		
 		// -- Reset the world
-		Command command = CommandFactory.getResetCommand();
-		command.execute();
+		TimeEngine.addTimeListener(fileManager.resetWorld());
 	}
 }

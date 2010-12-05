@@ -202,8 +202,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		configScreen = new ConfigScreen();
 		*/
 		goConfiguration();
-		World.removeObserver(this);
-		World.addObserver(this);
 	}
 	
 	public void updateWorld( World world ) {
@@ -248,9 +246,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	else if (e.getActionCommand().equals("Reset"))
             	{
             		BaseGUI.getInstance().reset();
-            		World.getInstance().restart();
-            		//Command command = CommandFactory.getResetCommand();
-            		//command.execute();
+            		//World.getInstance().restart();
+            		Command command = CommandFactory.getResetCommand();
+            		command.execute();
            	}
             	else
             	{
