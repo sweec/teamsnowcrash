@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.SliderUI;
 import javax.swing.plaf.metal.MetalSliderUI;
 
 /**
@@ -38,6 +39,8 @@ public class SimulationProgressBar extends JPanel implements ChangeListener
 	// -- Keeps track of the display of this component.
 	private final JSlider slider = new JSlider( model );
 	
+	private final SliderUI UNSCROLLABLE_SLIDER_UI = new UneditableSliderUI( slider );
+	
 	/**
 	 * 
 	 * Constructor.
@@ -56,7 +59,7 @@ public class SimulationProgressBar extends JPanel implements ChangeListener
 		 */
 		slider.setMajorTickSpacing( 1 );
 		
-		slider.setUI( new UneditableSliderUI( slider ) );
+		slider.setUI( UNSCROLLABLE_SLIDER_UI );
 		
 		/*
 		 * Add this class as a listener for events to the slider.
@@ -161,17 +164,7 @@ public class SimulationProgressBar extends JPanel implements ChangeListener
 		 */
 		protected void installListeners( JSlider slider )
 		{
-			// -- No listeners.
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.plaf.basic.BasicSliderUI#createScrollListener(javax.swing.JSlider)
-		 */
-		protected ScrollListener createScrollListener( JSlider slider )
-		{
-			class NoScrollListener extends ScrollListener {}
-			return new NoScrollListener();
+			slider.getModel().addChangeListener( super.changeListener );
 		}
 	}
 }

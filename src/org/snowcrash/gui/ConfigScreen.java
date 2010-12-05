@@ -34,8 +34,12 @@ public class ConfigScreen extends JPanel implements SelectionListener
 	
 	TraitsPanel traitsConfig = new TraitsPanel(this);
 	
-	public ConfigScreen()
+	private BaseGUI parent;
+	
+	public ConfigScreen( BaseGUI parent )
 	{
+		this.parent = parent;
+		
 		JPanel configPanel = this;
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.X_AXIS));
 		
@@ -69,7 +73,7 @@ public class ConfigScreen extends JPanel implements SelectionListener
 		
 		// get the world panel and add a tab
 		JScrollPane cScroll = new JScrollPane();
-		worldConfig = new WorldPanel();
+		worldConfig = new WorldPanel( this );
 		cScroll = worldConfig.WorldPanel();
 		tabPane3 = new JTabbedPane();
 		tabPane3.addTab("World Settings", cScroll);
@@ -164,6 +168,11 @@ public class ConfigScreen extends JPanel implements SelectionListener
     			   ((currentWidth - 20) / 3, Short.MAX_VALUE));
        }
     }
+	
+	public void receiveNumTurns(int worldTurns)
+	{
+		parent.receiveNumTurns( worldTurns );
+	}
 	
 	public void selectionOccurred( SelectionEvent e )
 	{
