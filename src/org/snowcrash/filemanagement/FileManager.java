@@ -343,10 +343,10 @@ public class FileManager implements IFileManager {
 
 		templates[2] = new CritterTemplate(CritterPrototype.PREDATOR, "Predator1");
 		templates[2].setSize(Size.LARGE);
-		templates[2].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
-		templates[2].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(3), new Integer(5)));
-		templates[2].setTraitRange(Trait.ENDURANCE, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
-		templates[2].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
+		templates[2].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(1), new Integer(4)));
+		templates[2].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
+		templates[2].setTraitRange(Trait.ENDURANCE, new Pair<Integer, Integer>(new Integer(1), new Integer(4)));
+		templates[2].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(1), new Integer(5)));
 		templates[2].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
 
 		templates[3] = new CritterTemplate(CritterPrototype.PLANT, "Plant2");
@@ -368,10 +368,10 @@ public class FileManager implements IFileManager {
 		templates[5] = new CritterTemplate(CritterPrototype.PREDATOR, "Predator2");
 		templates[5].setSize(Size.SMALL);
 		templates[5].setTraitRange(Trait.CAMO, new Pair<Integer, Integer>(new Integer(2), new Integer(5)));
-		templates[5].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(3), new Integer(4)));
-		templates[5].setTraitRange(Trait.ENDURANCE, new Pair<Integer, Integer>(new Integer(2), new Integer(3)));
-		templates[5].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
-		templates[5].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
+		templates[5].setTraitRange(Trait.COMBAT, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
+		templates[5].setTraitRange(Trait.ENDURANCE, new Pair<Integer, Integer>(new Integer(2), new Integer(4)));
+		templates[5].setTraitRange(Trait.SPEED, new Pair<Integer, Integer>(new Integer(1), new Integer(4)));
+		templates[5].setTraitRange(Trait.VISION, new Pair<Integer, Integer>(new Integer(1), new Integer(4)));
 
 		FileManager mgr = new FileManager();
 		mgr.saveCritterTemplates(templates, "testCritterTemplates.Json");
@@ -396,9 +396,9 @@ public class FileManager implements IFileManager {
 				if (critters[i][j] != null)
 					System.out.println(critters[i][j]);
 			}
+		
+		/*
 		// test viewLogFile
-		
-		
 		mgr.setLogger();
 		for (i = 0;i < 1000;i++) {
 			mgr.logMessage("This is line "+i);
@@ -411,7 +411,7 @@ public class FileManager implements IFileManager {
 			mgr.logMessage("Now we have new line "+i);
 		}
 		mgr.viewLogFile();
-		
+		*/
 	}
 
 	private class StateSerializer implements JsonSerializer<State> {
