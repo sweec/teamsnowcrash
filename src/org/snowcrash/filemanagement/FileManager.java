@@ -133,7 +133,7 @@ public class FileManager implements IFileManager {
 	public World loadWorld(String filename) {
 		World world = null;
 		CritterTemplate[] templates = null;
-		StatisticsCollector old = StatisticsCollector.getInstance();
+		StatisticsCollector old = null;
 		StatisticsCollector sc = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filename)); 
@@ -151,6 +151,7 @@ public class FileManager implements IFileManager {
 				if (world == null) return null;
 			}
 			if (parser.hasNext()) {
+				old = StatisticsCollector.getInstance();
 				sc = gson.fromJson(parser.next(), StatisticsCollector.class);
 				if (sc == null) return null;
 			}
