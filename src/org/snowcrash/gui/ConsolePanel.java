@@ -22,19 +22,19 @@
 
 package org.snowcrash.gui;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+@SuppressWarnings("serial")
 public class ConsolePanel extends JPanel
 {
 	private JScrollPane consoleScroll = null;
 	private JTextArea consoleArea = new JTextArea(80, 20);
-	private Queue<String> messageQueue = new LinkedList<String>();
-	private int turnNum = 0;
+	private ArrayList<LinkedList<String>> consoleList = new ArrayList<LinkedList<String>>();
 	
 	// universal cross-platform newline
 	public static String newline = System.getProperty("line.separator");
@@ -60,41 +60,32 @@ public class ConsolePanel extends JPanel
 	}
 	
 	/**
-	 * Adds a message-queue and increment the turn counter.
+	 * Adds message list to the Console. Always keeps the number of turn entries to 10.
 	 */
-	public void addMessage(Queue<String> mQueue)
+	public void addMessage(LinkedList<String> mQueue)
 	{
-		turnNum++;
-		if (turnNum == 11)
-		{
-			this.wipeConsole();
+		if (consoleList.size() == 10) {
+			consoleList.remove(0);
 		}
-		messageQueue = mQueue;
-		this.dumpToConsole();
+		
+		consoleList.add(mQueue);
+		this.refreshConsole();
 	}	
 	
 	/**
-	 * If the console panel is full (eleven turns), wipe 
-	 * the console and reset the turn counter to 1.
+	 * Refresh the console.
 	 */
-	private void wipeConsole()
-	{
-		consoleArea.setText("");
-		turnNum = 1;
-	}
-	
-	/**
-	 * Dequeue messages and append to the Console.
-	 */
-	private void dumpToConsole()
+	private void refreshConsole()
 	{	
-		while (messageQueue.peek() != null)
-		{
-			String mtext = messageQueue.poll();
-			consoleArea.append(mtext + newline);
-			consoleArea.repaint();
-			consoleScroll.repaint();
+		consoleArea.setText("");
+		for (LinkedList<String> list: consoleList) {
+			for (String message: list) {
+				consoleArea.append(message + newline);
+			}
 		}
+		consoleArea.repaint();
+		consoleArea.setCaretPosition(consoleArea.getText().length());
+		consoleScroll.repaint();
 		
 	}
 }
