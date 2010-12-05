@@ -86,9 +86,21 @@ public class Test {
 		frame.add( spb );
 		
 		spb.setSize( 600, 20 );
-		spb.setNumberOfTicks( 28 );
+		spb.setNumberOfTicks( 30 );
 		
 		frame.setVisible( true );
+		
+		for ( int i = 0; i < 30; i++ )
+		{
+			try {
+				Thread.sleep( 1000 );
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			spb.gotoNextTick();
+		}
 	}
 	
 	private static void testDatabase() throws DAOException

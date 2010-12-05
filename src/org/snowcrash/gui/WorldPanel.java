@@ -30,6 +30,13 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 	int worldTurns = TURNSINIT;
 	int worldSize = SIZEINIT;
 	
+	private ConfigScreen parent;
+	
+	public WorldPanel( ConfigScreen parent )
+	{
+		this.parent = parent;
+	}
+	
 	public JScrollPane WorldPanel()
 	{
 		JPanel cPanel = new JPanel();
@@ -129,6 +136,8 @@ public class WorldPanel extends JPanel implements ChangeListener, ActionListener
 				TurnsField.setText("");
 				Command command = CommandFactory.getSetNumberOfTurnsCommand(worldTurns);
     			command.execute();
+    			
+    			parent.receiveNumTurns( worldTurns );
 			}
 			else
 			{
