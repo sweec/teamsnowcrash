@@ -32,6 +32,7 @@ import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.CritterFactory;
 import org.snowcrash.critter.CritterTemplate;
 import org.snowcrash.critter.NameGenerator;
+import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DatabaseObject;
@@ -117,6 +118,9 @@ public class World implements DatabaseObject, TimeListener {
 		currentPos = new Pair<Integer,Integer>(0,0);
 		turnLog = new LinkedList<String>();
 		turnDeaths = new ArrayList<Critter>();
+		
+		World.removeObserver(StatisticsCollector.getInstance());
+		World.addObserver(new StatisticsCollector());
 	}
 	
 	private void resetTurnLog() {

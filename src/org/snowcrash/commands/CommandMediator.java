@@ -308,6 +308,7 @@ public class CommandMediator
 	
 	static void reset() {
 		TimeEngine.stopTimer();
-		World.getInstance().restart();
+		TimeEngine.removeTimeListener(World.getInstance());
+		TimeEngine.addTimeListener(fileManager.resetWorld());
 	}
 }

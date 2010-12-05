@@ -122,9 +122,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		isInConfiguration = true;
 		isInSimulation = false;
 		
-		World world = World.getInstance();
-		simPBar.setNumberOfTicks(world.getTurns());
-		simPBar.setCurrentTick(world.getCurrentTurn());
 		// For unknown reason, to correctly refresh the display upon window size changed before switch 
 		// Both repaint and revalidate are needed
 		repaint();
@@ -195,12 +192,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	
 	public void reset() {
 		// this clears configuration screen
-		/* if configScreen get update from DAO, below is not needed
 		if ((configScreen != null)
 				&& isAncestorOf(configScreen))
 		remove(configScreen);
-		configScreen = new ConfigScreen();
-		*/
+		configScreen = new ConfigScreen(this);
+		
 		goConfiguration();
 	}
 	
@@ -215,6 +211,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	public void update(Observable arg0, Object arg1)
 	{
 		if (isInConfiguration && (configScreen != null)) {
+			World world = World.getInstance();
+			simPBar.setNumberOfTicks(world.getTurns());
+			simPBar.setCurrentTick(world.getCurrentTurn());
 			configScreen.update();
 			repaint();
 			configScreen.revalidate();
@@ -246,7 +245,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	else if (e.getActionCommand().equals("Reset"))
             	{
             		BaseGUI.getInstance().reset();
-            		//World.getInstance().restart();
             		Command command = CommandFactory.getResetCommand();
             		command.execute();
            	}

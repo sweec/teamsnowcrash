@@ -187,8 +187,9 @@ public class FileManager implements IFileManager {
 		}*/
 		// database change will notifyObserver here
 		loadCritterTemplates(defaultCritterTemplatesFile);
-		World.removeObserver(StatisticsCollector.getInstance());
-		World.addObserver(new StatisticsCollector());
+		// below moved to World's restart method
+		//World.removeObserver(StatisticsCollector.getInstance());
+		//World.addObserver(new StatisticsCollector());
 		return world;
 	}
 	
