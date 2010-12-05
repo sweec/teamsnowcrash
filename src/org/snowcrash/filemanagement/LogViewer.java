@@ -228,6 +228,5 @@ public class LogViewer extends JPanel {
         setPreferredSize(new Dimension(sizeX, sizeY));
         frame.pack();
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      }
 }

@@ -9,6 +9,7 @@ import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.filemanagement.IFileManager;
+import org.snowcrash.gui.BaseGUI;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.world.World;
@@ -210,11 +211,10 @@ public class CommandMediator
 		// timeLimit left need to be calculated
 		int timeLimit = world.getTurns() - world.getCurrentTurn();
 		if (timeLimit <= 0) return;
-		TimeEngine.removeTimeListener(world);
-		TimeEngine.addTimeListener(world);
 		TimeEngine.setTimeLimit(timeLimit);
 		TimeEngine.startTimer();
 		System.out.println("Simulation Started");
+		World.addObserver(BaseGUI.getInstance());
 	}
 	
 	static void pauseSimulation()
