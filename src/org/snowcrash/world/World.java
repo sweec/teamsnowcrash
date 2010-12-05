@@ -373,6 +373,10 @@ public class World implements DatabaseObject, TimeListener {
 			for (int j = 0;j < sizeY;j++)
 				initMap[i][j] = map[i][j];
 		logFile.setLogger();
+		// display the initial map
+		for (WorldObserver observer : observers) {
+			observer.updateWorld(this);
+		}
 	}
 
 	/**
