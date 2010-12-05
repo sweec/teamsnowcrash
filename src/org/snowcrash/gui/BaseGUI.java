@@ -101,7 +101,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 				&& isAncestorOf(simResScreen))
 			remove(simResScreen);
 		if (configScreen == null)
-			configScreen = new ConfigScreen();
+			configScreen = new ConfigScreen( this );
 		if (!isAncestorOf(configScreen))
 			add(configScreen);
 
@@ -146,7 +146,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		stopButton.setEnabled(true);
 		ffButton.setEnabled(true);
 		World world = World.getInstance();
-		simPBar.setNumberOfTicks(world.getTurns() - world.getCurrentTurn());
+		simPBar.setNumberOfTicks(world.getTurns());
+		simPBar.setCurrentTick(world.getCurrentTurn());
 		
 		isInConfiguration = false;
 		isInSimulation = true;
@@ -385,8 +386,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	{
          			Command command = CommandFactory.getStartSimulationCommand();
         			command.execute();
-        			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());	// moved to goSimulation()
-            		BaseGUI.getInstance().goSimulation();
+            		goSimulation();
             	}
             	else
             	{
@@ -587,9 +587,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		// simulation progress bar
 		simPBar = new SimulationProgressBar();
-		simPBar.setSize(100,20);
 		simPBar.setSize(WIDTH-300, 35);
 		simPBar.setAlignmentY(TOP_ALIGNMENT);
+		simPBar.setNumberOfTicks(World.getInstance().getTurns());
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(5,10)));
 		buttonPanel.add(rewindButton);
@@ -637,7 +637,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
     		if (isInConfiguration) {
      			Command command = CommandFactory.getStartSimulationCommand();
     			command.execute();
-    			//simPBar.setNumberOfTicks(configScreen.getTotalTurns());	// moved to goSimulation()
     			playButton.setIcon( pauseIcon );
       			goSimulation();
      		}
@@ -717,5 +716,10 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		if (isInSimulation && (simResScreen != null)) {
 			goResults();
 		}
+	}
+
+	public void receiveNumTurns(int worldTurns)
+	{
+		simPBar.setNumberOfTicks(worldTurns);
 	}
 }
