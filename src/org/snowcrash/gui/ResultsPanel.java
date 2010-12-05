@@ -290,15 +290,15 @@ public class ResultsPanel extends JPanel {
 		averageAge.setText("Average age: " + sc.getAverageAge(name));
 		
 		startTraitsLabel.get(Trait.CAMO).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.CAMO)));
-		endTraitsLabel.get(Trait.CAMO).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.CAMO)));
+		endTraitsLabel.get(Trait.CAMO).setText(String.format("End: %1.1f", sc.getEndTrait(name, Trait.CAMO)));
 		startTraitsLabel.get(Trait.COMBAT).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.COMBAT)));
-		endTraitsLabel.get(Trait.COMBAT).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.COMBAT)));
+		endTraitsLabel.get(Trait.COMBAT).setText(String.format("End: %1.1f", sc.getEndTrait(name, Trait.COMBAT)));
 		startTraitsLabel.get(Trait.ENDURANCE).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.ENDURANCE)));
-		endTraitsLabel.get(Trait.ENDURANCE).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.ENDURANCE)));
+		endTraitsLabel.get(Trait.ENDURANCE).setText(String.format("End: %1.1f", sc.getEndTrait(name, Trait.ENDURANCE)));
 		startTraitsLabel.get(Trait.SPEED).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.SPEED)));
-		endTraitsLabel.get(Trait.SPEED).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.SPEED)));
+		endTraitsLabel.get(Trait.SPEED).setText(String.format("End: %1.1f", sc.getEndTrait(name, Trait.SPEED)));
 		startTraitsLabel.get(Trait.VISION).setText(String.format("Start: %1.1f", sc.getStartTrait(name, Trait.SPEED)));
-		endTraitsLabel.get(Trait.VISION).setText(String.format("End: %1.1f", sc.getStartTrait(name, Trait.VISION)));
+		endTraitsLabel.get(Trait.VISION).setText(String.format("End: %1.1f", sc.getEndTrait(name, Trait.VISION)));
 	}
 	
 	private ImageIcon resizeIcon(ImageIcon origIcon) // resizes the critter icon

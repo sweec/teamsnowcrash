@@ -37,7 +37,6 @@ import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.filemanagement.FileManager;
 import org.snowcrash.state.Searching;
-import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.timeengine.TimeListener;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.utilities.RandomNumbers;
@@ -369,8 +368,10 @@ public class World implements DatabaseObject, TimeListener {
 			}
 		}
 		randomPopulate(critterList.iterator());
-		initMap = map;
-		logFile = new FileManager(); 
+		initMap = new Critter[sizeX][sizeY];
+		for(int i=0;i < sizeX;i++)
+			for (int j = 0;j < sizeY;j++)
+				initMap[i][j] = map[i][j];
 		logFile.setLogger();
 	}
 
@@ -481,10 +482,11 @@ public class World implements DatabaseObject, TimeListener {
 	@Override
 	public void tickOccurred() {
 		this.processTurn();
+		this.logTurn();
 		for (WorldObserver observer : observers) {
 			observer.updateWorld(this);
+			observer.updateStatistics(turnDeaths);
 		}
-		this.logTurn();
 		this.turnCleanUp();
 	}
 
@@ -521,8 +523,9 @@ public class World implements DatabaseObject, TimeListener {
 	}
 	
 	public void logTurn() {
-		for (String message: turnLog) {
-			this.logFile.logMessage(message);
+		Iterator<String> iterator = turnLog.iterator();
+		while (iterator.hasNext()) {
+			this.logFile.logMessage(iterator.next());
 		}
 	}
 }

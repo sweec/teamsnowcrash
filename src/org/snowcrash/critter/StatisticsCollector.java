@@ -1,5 +1,6 @@
 package org.snowcrash.critter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Set;
@@ -232,6 +233,7 @@ public class StatisticsCollector implements WorldObserver {
 			for (int j = 0;j < map[0].length;j++) {
 				Critter critter = map[i][j];
 				if (critter == null) continue;
+				if (!critter.isAlive()) continue;
 				String name = critter.getName();
 				incrEndPopulation(name, 1);
 				incrTotalPopulation(name, 1);
@@ -262,10 +264,11 @@ public class StatisticsCollector implements WorldObserver {
 	}
 	
 	@Override
-	public void updateStatistics(Critter[] critters) {
+	public void updateStatistics(ArrayList<Critter> critters) {
 		if (critters == null) return;
-		for (int i = 0;i < critters.length;i++) {
-			Critter critter = critters[i];
+		System.out.println("upadte statistics now.");
+		for (int i = 0;i < critters.size();i++) {
+			Critter critter = critters.get(i);
 			String name = critter.getName();
 			incrTotalPopulation(name, 1);
 			updateAges(name, critter.getAge());

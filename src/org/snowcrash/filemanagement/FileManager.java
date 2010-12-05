@@ -281,7 +281,7 @@ public class FileManager implements IFileManager {
 	    			logger.removeHandler(fh);
 	    		}
 	    	}
-	    	File file = new File(filepath);
+	    	File file = new File(filepath+filename);
 	    	if (file.exists()) {
 	    		file.delete();
 	    	}
