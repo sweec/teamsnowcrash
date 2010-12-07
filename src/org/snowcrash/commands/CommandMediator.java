@@ -9,7 +9,6 @@ import org.snowcrash.dataaccess.DAOException;
 import org.snowcrash.dataaccess.DAOFactory;
 import org.snowcrash.dataaccess.DatabaseObject;
 import org.snowcrash.filemanagement.IFileManager;
-import org.snowcrash.gui.BaseGUI;
 import org.snowcrash.timeengine.TimeEngine;
 import org.snowcrash.utilities.Pair;
 import org.snowcrash.world.World;
@@ -162,7 +161,7 @@ public class CommandMediator
 	{
 		World oldWorld = World.getInstance();
 		World newWorld = fileManager.loadWorld(filename);
-		if (newWorld == null) return;	// IO error, go back
+		if (newWorld == null) return;
 		TimeEngine.removeTimeListener(oldWorld);
 		TimeEngine.stopTimer();
 		TimeEngine.addTimeListener(newWorld);
@@ -213,7 +212,6 @@ public class CommandMediator
 		if (timeLimit <= 0) return;
 		TimeEngine.setTimeLimit(timeLimit);
 		TimeEngine.startTimer();
-		System.out.println("Simulation will run "+timeLimit+" turns");
 	}
 	
 	static void pauseSimulation()

@@ -85,7 +85,6 @@ public class ResultsPanel extends JPanel {
 		StatisticsCollector sc = StatisticsCollector.getInstance();
 		sc.calculateStatistics();
 		
-		System.out.println("now calculate statistics.");
 		Set<String> names = sc.getNameSet();
 		Iterator<String> itr = names.iterator();
 		while(itr.hasNext()) {
@@ -95,15 +94,12 @@ public class ResultsPanel extends JPanel {
 			switch (type) {
 			case PLANT:
 				plantTemplates.add(name);
-				System.out.println("added a plant.");
 				break;
 			case PREY:
 				preyTemplates.add(name);
-				System.out.println("added a prey.");
 				break;
 			case PREDATOR:
 				predatorTemplates.add(name);
-				System.out.println("added a predator.");
 				break;
 			}
 		}
