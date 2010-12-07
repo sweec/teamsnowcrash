@@ -162,8 +162,10 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	}
 	
 	public void goResults() {
-		if (simResScreen == null)
+		if (simResScreen == null) {
 			goSimulation();
+			simResScreen.updateWorld(World.getInstance());
+		}
 		if (simResScreen != null)
 			simResScreen.goResults();
 		
@@ -349,9 +351,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Configuration");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-            			Command command = CommandFactory.getLoadConfigurationCommand(fc.getSelectedFile().getPath(), "");
+            			Command command = CommandFactory.getResetCommand();
             			command.execute();
             			BaseGUI.getInstance().reset();
+            			command = CommandFactory.getLoadConfigurationCommand(fc.getSelectedFile().getPath(), "");
+            			command.execute();
             		}
             	}
             	else if (e.getActionCommand().equals("Load Simulation"))
@@ -359,9 +363,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Simulation");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-             			Command command = CommandFactory.getLoadSimulationCommand(fc.getSelectedFile().getPath());
+            			Command command = CommandFactory.getResetCommand();
             			command.execute();
             			BaseGUI.getInstance().reset();
+             			command = CommandFactory.getLoadSimulationCommand(fc.getSelectedFile().getPath());
+            			command.execute();
             			// result in configuration screen
             			// because user may want to check the settings first before start
             			// need user click Play to continue simulation
@@ -372,9 +378,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             		fc.setDialogTitle("Load Results");
             		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             		{
-           				Command command = CommandFactory.getLoadResultsCommand(fc.getSelectedFile().getPath());
-           				command.execute();
+            			Command command = CommandFactory.getResetCommand();
+            			command.execute();
            				BaseGUI.getInstance().reset();
+           				command = CommandFactory.getLoadResultsCommand(fc.getSelectedFile().getPath());
+           				command.execute();
            				// switch to results
            				BaseGUI.getInstance().goResults();
             		}
