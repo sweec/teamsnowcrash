@@ -133,8 +133,6 @@ public class FileManager implements IFileManager {
 	public World loadWorld(String filename) {
 		World world = null;
 		CritterTemplate[] templates = null;
-		StatisticsCollector old = null;
-		StatisticsCollector sc = null;
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(filename)); 
 			JsonStreamParser parser = new JsonStreamParser(in);
@@ -151,9 +149,11 @@ public class FileManager implements IFileManager {
 				if (world == null) return null;
 			}
 			if (parser.hasNext()) {
-				old = StatisticsCollector.getInstance();
-				sc = gson.fromJson(parser.next(), StatisticsCollector.class);
+				StatisticsCollector old = StatisticsCollector.getInstance();
+				StatisticsCollector sc = gson.fromJson(parser.next(), StatisticsCollector.class);
 				if (sc == null) return null;
+				World.removeObserver(old);
+				World.addObserver(sc);
 			}
 			in.close(); 
 		} catch (IOException e) { 
@@ -166,13 +166,12 @@ public class FileManager implements IFileManager {
 			dao.startSession();
 			for (int i = 0;i < templates.length;i++)
 				dao.create( templates[i] );
-			dao.create( world );
 			dao.endSession(true);
 		} catch (DAOException e) {
 			throw new RuntimeException( e );
 		}
-		World.removeObserver(old);
-		World.addObserver(sc);
+		if (world.getCurrentTurn() != 0)
+			setLogger("", defaultLogFile, false);
 		return world;
 	}
 	
@@ -181,16 +180,9 @@ public class FileManager implements IFileManager {
 		dao.nuke();
 		
 		World world = World.reset();
-		/*try {
-			dao.create( world );
-		} catch (DAOException e) {
-			throw new RuntimeException( e );
-		}*/
-		// database change will notifyObserver here
+
 		loadCritterTemplates(defaultCritterTemplatesFile);
-		// below moved to World's restart method
-		//World.removeObserver(StatisticsCollector.getInstance());
-		//World.addObserver(new StatisticsCollector());
+
 		return world;
 	}
 	
@@ -273,7 +265,7 @@ public class FileManager implements IFileManager {
 		JOptionPane.showMessageDialog(BaseGUI.getInstance(), message);
 	}
 	
-	public void setLogger(String filepath, String filename) {
+	public void setLogger(String filepath, String filename, boolean clear) {
 	    try {
 	    	// clear old log
 	    	if (fh != null) {
@@ -283,9 +275,11 @@ public class FileManager implements IFileManager {
 	    			logger.removeHandler(fh);
 	    		}
 	    	}
-	    	File file = new File(filepath+filename);
-	    	if (file.exists()) {
-	    		file.delete();
+	    	if (clear) {
+		    	File file = new File(filepath+filename);
+		    	if (file.exists()) {
+		    		file.delete();
+		    	}
 	    	}
 	    	boolean append = true;
 	    	fh = new FileHandler(filepath + filename, append);
@@ -301,7 +295,7 @@ public class FileManager implements IFileManager {
 	}
 
 	public void setLogger() {
-		setLogger("", defaultLogFile);
+		setLogger("", defaultLogFile, true);
 	}
 
 	public void logMessage(String message) {

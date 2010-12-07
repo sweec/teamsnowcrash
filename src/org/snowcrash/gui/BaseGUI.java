@@ -100,7 +100,10 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	public void goConfiguration() {
 		if ((simResScreen != null)
 				&& isAncestorOf(simResScreen))
+		{
 			remove(simResScreen);
+			simResScreen = null;
+		}
 		if (configScreen == null)
 			configScreen = new ConfigScreen( this );
 		if (!isAncestorOf(configScreen))
@@ -149,6 +152,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		World world = World.getInstance();
 		simPBar.setNumberOfTicks(world.getTurns());
 		simPBar.setCurrentTick(world.getCurrentTurn());
+		simResScreen.updateWorld(world);
 		
 		isInConfiguration = false;
 		isInSimulation = true;
@@ -162,12 +166,11 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	}
 	
 	public void goResults() {
-		if (simResScreen == null) {
+		if (simResScreen == null)
 			goSimulation();
+		else
 			simResScreen.updateWorld(World.getInstance());
-		}
-		if (simResScreen != null)
-			simResScreen.goResults();
+		simResScreen.goResults();
 		
 		rewind.setEnabled(true);
 		play.setEnabled(false);
@@ -196,7 +199,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		// this clears configuration screen
 		if ((configScreen != null)
 				&& isAncestorOf(configScreen))
-		remove(configScreen);
+			remove(configScreen);
 		configScreen = new ConfigScreen(this);
 		
 		goConfiguration();
@@ -207,7 +210,6 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 			if (!skipToEnd) simResScreen.updateWorld(world);
 			simPBar.gotoNextTick();
 		}
-		System.out.println("update World in GUI");
 	}
 
 	public void update(Observable arg0, Object arg1)
@@ -368,9 +370,15 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             			BaseGUI.getInstance().reset();
              			command = CommandFactory.getLoadSimulationCommand(fc.getSelectedFile().getPath());
             			command.execute();
-            			// result in configuration screen
-            			// because user may want to check the settings first before start
-            			// need user click Play to continue simulation
+            			
+            			// SRS required to switch to saved simulation state and pause there
+            			// but timeEngine will start a new timer that will at least run 1 turn
+            			BaseGUI.getInstance().goSimulation();
+             			command = CommandFactory.getStartSimulationCommand();
+            			command.execute();
+            			command = CommandFactory.getPauseSimulationCommand();
+            			command.execute();
+            			isPaused = true;
             		}
             	}
             	else if (e.getActionCommand().equals("Load Results"))
@@ -400,6 +408,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
             	{
          			Command command = CommandFactory.getStartSimulationCommand();
         			command.execute();
+        			playButton.setIcon( pauseIcon );
             		goSimulation();
             	}
             	else

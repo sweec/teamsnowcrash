@@ -206,15 +206,9 @@ public class StatisticsCollector implements WorldObserver {
 	}
 	
 	public void calculateStatistics() {
-		// in case of loaded results
-		// no need to calculate again
-		System.out.println("Collector start.");
-		//if (isStatisticsAvailable) return;
 		Critter[][] map = World.getInstance().getInitMap();
-		if (map == null) {
-			System.out.println("get initMap from world failed.");
-			return;
-		}
+		if (map == null) return;
+		
 		for (int i = 0;i < map.length;i++)
 		for (int j = 0;j < map[0].length;j++) {
 			Critter critter = map[i][j];
@@ -266,7 +260,6 @@ public class StatisticsCollector implements WorldObserver {
 	@Override
 	public void updateStatistics(ArrayList<Critter> critters) {
 		if (critters == null) return;
-		System.out.println("upadte statistics now.");
 		for (int i = 0;i < critters.size();i++) {
 			Critter critter = critters.get(i);
 			String name = critter.getName();
