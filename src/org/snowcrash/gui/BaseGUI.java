@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -27,6 +28,7 @@ import org.snowcrash.commands.Command;
 import org.snowcrash.commands.CommandFactory;
 import org.snowcrash.critter.Critter;
 import org.snowcrash.gui.widgets.SimulationProgressBar;
+import org.snowcrash.utilities.Constants;
 import org.snowcrash.world.World;
 import org.snowcrash.world.WorldObserver;
 
@@ -41,8 +43,8 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 	public static final int WIDTH = 800;	// minimum window width
 	public static final int HEIGHT = 600;	// minimum window height
 	
-	private static final Icon playIcon = new ImageIcon( "images/Play24.gif" );
-	private static final Icon pauseIcon = new ImageIcon( "images/Pause24.gif" );
+	private static final Icon playIcon = new ImageIcon( Constants.SYSTEM_PATH + "images/Play24.gif" );
+	private static final Icon pauseIcon = new ImageIcon( Constants.SYSTEM_PATH + "images/Pause24.gif" );
 	
 	// objects for the menus and media panel
 	private JMenuItem rewind, play, stop, ff, saveSim;
@@ -438,7 +440,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		JMenu simulation = new JMenu("Simulation");
 		
 		// menu item - "Back to Configuration"
-		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
+		ImageIcon rewindIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/Rewind24.gif");
 		rewind = new JMenuItem("Back to Configuration", rewindIcon);
 		simulation.add(rewind);
 		
@@ -447,12 +449,12 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		simulation.add(play);
 		
 		// menu item - "Abort to Results"
-		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
+		ImageIcon stopIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/Stop24.gif");
 		stop = new JMenuItem("Abort to Results", stopIcon);
 		simulation.add(stop);
 		
 		// menu item - "Simulate to End"
-		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
+		ImageIcon ffIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/FastForward24.gif");
 		ff = new JMenuItem("Simulate to End", ffIcon);
 		simulation.add(ff);
 		
@@ -556,8 +558,9 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
         {
             public void actionPerformed( ActionEvent e )
             {
-            	ImageIcon raptorIcon = new ImageIcon("images/predator-right.png");
-            			
+            	//this.getClass().getResource("images/predator-right.png");
+            	// ImageIcon raptorIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/predator-right.png");
+            	ImageIcon raptorIcon = new ImageIcon(this.getClass().getResource("/images/predator-right.png"));
             	JOptionPane.showMessageDialog(null, "SnowCrash - A Simulation" + newline + 
             			newline + "Developed by:" + newline + "Dale Earnest, Jeff Dunn," +
             			newline + "Dong Luo, Mike McWilliams" + newline +
@@ -579,7 +582,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		// rewind button, aka "Back to Configuration"
 		rewindButton = new JButton();
-		ImageIcon rewindIcon = new ImageIcon("images/Rewind24.gif");
+		ImageIcon rewindIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/Rewind24.gif");
 		rewindButton.setIcon(rewindIcon);
 		rewindButton.setActionCommand("Back to Configuration");
 		rewindButton.setToolTipText("Back to Configuration");
@@ -594,7 +597,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		// stop button, aka "Abort to Results"
 		stopButton = new JButton();
-		ImageIcon stopIcon = new ImageIcon("images/Stop24.gif");
+		ImageIcon stopIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/Stop24.gif");
 		stopButton.setIcon(stopIcon);
 		stopButton.setActionCommand("Abort to Results");
 		stopButton.setToolTipText("Abort to Results");
@@ -602,7 +605,7 @@ public class BaseGUI extends JFrame implements ActionListener, ComponentListener
 		
 		// fast-forward button, aka "Simulate to End"
 		ffButton = new JButton();
-		ImageIcon ffIcon = new ImageIcon("images/FastForward24.gif");
+		ImageIcon ffIcon = new ImageIcon(Constants.SYSTEM_PATH + "images/FastForward24.gif");
 		ffButton.setIcon(ffIcon);
 		ffButton.setActionCommand("Simulate to End");
 		ffButton.setToolTipText("Simulate to End");
