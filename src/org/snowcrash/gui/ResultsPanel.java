@@ -33,6 +33,7 @@ import org.snowcrash.critter.StatisticsCollector;
 import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
+import org.snowcrash.utilities.Constants;
 import org.snowcrash.world.World;
 
 /**
@@ -180,11 +181,11 @@ public class ResultsPanel extends JPanel {
 	
 	private JPanel statisticsPanel() {
 		// initialize resource
-		ImageIcon critterIcon = new ImageIcon ("images/plant.png");
+		ImageIcon critterIcon = new ImageIcon (Constants.SYSTEM_PATH + "images/plant.png");
 		plant = this.resizeIcon(critterIcon);
-		critterIcon = new ImageIcon ("images/prey-right.png");
+		critterIcon = new ImageIcon (Constants.SYSTEM_PATH + "images/prey-right.png");
 		prey = this.resizeIcon(critterIcon);
-		critterIcon = new ImageIcon ("images/predator-right.png");
+		critterIcon = new ImageIcon (Constants.SYSTEM_PATH + "images/predator-right.png");
 		predator = this.resizeIcon(critterIcon);
 
 		JPanel cPanel = new JPanel();
@@ -413,7 +414,7 @@ public class ResultsPanel extends JPanel {
 		String critterTrait = null;
 		switch (trait) {
 		case CAMO:
-			critterTrait = new String("Camoflage");
+			critterTrait = new String("Camouflage");
 			break;
 		case COMBAT:
 			critterTrait = new String("Combat");

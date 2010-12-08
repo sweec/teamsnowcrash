@@ -32,5 +32,5 @@ package org.snowcrash.utilities;
 public class Constants {
 
 	// public static final int PLANT_REGEN = 5;
-	
+	public static final String SYSTEM_PATH = "c:/SnowCrash/";
 }

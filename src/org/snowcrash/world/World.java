@@ -56,7 +56,7 @@ import org.snowcrash.utilities.RandomNumbers;
  * 
  */
 
-public class World implements DatabaseObject, TimeListener {
+public class World implements TimeListener {
 
 	private static World instance;
 
@@ -360,16 +360,32 @@ public class World implements DatabaseObject, TimeListener {
 	 * Populates the world.  Accepts an ArrayList of Pair containing the critter template
 	 * and the number of critters of that template to put in the world.
 	 * @param list
+	 * @throws NotEnoughCrittersException 
+	 * @throws TooManyCrittersException 
 	 */
-	public void randomPopulate(ArrayList<Pair<CritterTemplate,Integer>> list) {
+	public void randomPopulate(ArrayList<Pair<CritterTemplate,Integer>> list) { // throws NotEnoughCrittersException, TooManyCrittersException {
+		if (list == null || list.size() == 0) {
+			// throw new NotEnoughCrittersException();
+		}
+		
 		initTemplateList = list;
 		Iterator<Pair<CritterTemplate,Integer>> iter = list.iterator();
 		ArrayList<Critter> critterList = new ArrayList<Critter>();
+		int total = 0;
 		while (iter.hasNext()) {
 			Pair<CritterTemplate,Integer> nextPair = iter.next();
+			total = total + nextPair.getRight();
 			for (int i = 0; i < nextPair.getRight(); i++) {
 				critterList.add(CritterFactory.getCritter(nextPair.getLeft()));
 			}
+		}
+		
+		if (total == 0) {
+			// throw new NotEnoughCrittersException();
+		}
+		
+		if ((double) total / (double) (sizeX * sizeY) > (double) ((sizeX * sizeY) * .75)) {
+			// throw new TooManyCrittersException();
 		}
 		randomPopulate(critterList.iterator());
 		initMap = new Critter[sizeX][sizeY];
@@ -377,6 +393,10 @@ public class World implements DatabaseObject, TimeListener {
 			for (int j = 0;j < sizeY;j++)
 				initMap[i][j] = map[i][j];
 		logFile.setLogger();
+		// display the initial map
+		for (WorldObserver observer : observers) {
+			observer.updateWorld(this);
+		}
 	}
 
 	/**
@@ -508,11 +528,11 @@ public class World implements DatabaseObject, TimeListener {
 		
 	}
 
-	@Override
-	public Object getId() {
-		// Always a constant as it is a singleton.
-		return 0;
-	}
+//	@Override
+//	public Object getId() {
+//		// Always a constant as it is a singleton.
+//		return 0;
+//	}
 
 	public ArrayList<Pair<CritterTemplate, Integer>> getInitTemplateList() {
 		return initTemplateList;

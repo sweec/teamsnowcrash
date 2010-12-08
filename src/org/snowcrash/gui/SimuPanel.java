@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 
 import org.snowcrash.critter.Critter;
 import org.snowcrash.critter.data.CritterPrototype;
+import org.snowcrash.utilities.Constants;
 
 /**
  * @author dong
@@ -52,9 +53,9 @@ public class SimuPanel extends JPanel {
 		isDirty = new boolean[w][h];
 		
     	try {
-    		Image originalPlant = ImageIO.read(new File("images/plant.png"));
-    		Image originalPrey = ImageIO.read(new File("images/prey-right.png"));
-    		Image originalPredator = ImageIO.read(new File("images/predator-right.png"));
+        	Image originalPlant = ImageIO.read(new File(Constants.SYSTEM_PATH + "images/plant.png"));
+        	Image originalPrey = ImageIO.read(new File(Constants.SYSTEM_PATH + "images/prey-right.png"));
+        	Image originalPredator = ImageIO.read(new File(Constants.SYSTEM_PATH + "images/predator-right.png"));
     	    plant = originalPlant.getScaledInstance(wUnit, hUnit, java.awt.Image.SCALE_SMOOTH);
        	    prey = originalPrey.getScaledInstance(wUnit, hUnit, java.awt.Image.SCALE_SMOOTH);
        	    predator = originalPredator.getScaledInstance(wUnit, hUnit, java.awt.Image.SCALE_SMOOTH);

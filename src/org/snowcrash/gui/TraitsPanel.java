@@ -30,6 +30,7 @@ import org.snowcrash.critter.data.CritterPrototype;
 import org.snowcrash.critter.data.Size;
 import org.snowcrash.critter.data.Trait;
 import org.snowcrash.dataaccess.DAOException;
+import org.snowcrash.utilities.Constants;
 import org.snowcrash.utilities.Pair;
 
 public class TraitsPanel extends JPanel implements ChangeListener, ActionListener
@@ -131,7 +132,7 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		lowCamoSlider = this.traitsSlider();
 		lowCamoSlider.addChangeListener(this);
 		JPanel camoflagePanel = new JPanel();
-		camoflagePanel = this.sliderPanel(upCamoSlider, lowCamoSlider, "Camoflage");
+		camoflagePanel = this.sliderPanel(upCamoSlider, lowCamoSlider, "Camouflage");
 		cPanelInner.add(camoflagePanel);
 		this.traitSeparator(cPanelInner);
 		
@@ -230,15 +231,15 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 		String imageFile; 
 		if (critterType.equals(CritterPrototype.PLANT))
 		{
-			imageFile = "images/plant.png";	
+			imageFile = Constants.SYSTEM_PATH + "images/plant.png";	
 		}
 		else if (critterType.equals(CritterPrototype.PREY))
 		{
-			imageFile = "images/prey-right.png";
+			imageFile = Constants.SYSTEM_PATH + "images/prey-right.png";
 		}
 		else if (critterType.equals(CritterPrototype.PREDATOR))
 		{
-			imageFile = "images/predator-right.png";
+			imageFile = Constants.SYSTEM_PATH + "images/predator-right.png";
 		}
 		else
 		{
@@ -638,15 +639,15 @@ public class TraitsPanel extends JPanel implements ChangeListener, ActionListene
 	{
 		if (e.getActionCommand().equals("Small")) // for critter size
 		{
-			tempSize.equals(Size.SMALL);
+			tempSize = (Size.SMALL);
 		}
 		else if (e.getActionCommand().equals("Medium"))
 		{
-			tempSize.equals(Size.MEDIUM);
+			tempSize = (Size.MEDIUM);
 		}
-		else if (e.getActionCommand().equals("large"))
+		else if (e.getActionCommand().equals("Large"))
 		{
-			tempSize.equals(Size.LARGE);
+			tempSize = (Size.LARGE);
 		}
 		else if (e.getActionCommand().equals("jtextname")) // for critter name field
 		{
